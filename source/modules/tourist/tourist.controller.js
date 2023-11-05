@@ -1,6 +1,6 @@
 import {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
-    ReasonPhrases, StatusCodes, systemRoles
+    ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses
 } from './tourist.controller.imports.js'
 
 // for tourist sign up :
@@ -35,9 +35,10 @@ export const TouristSignUp = async (req, res, next) => {
         // address
     }
     let image
+    let uploadPath
     if (req.file) {
         const customId = nanoid()
-        const uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+        uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: uploadPath
         })
@@ -46,7 +47,7 @@ export const TouristSignUp = async (req, res, next) => {
         }
         image = { secure_url, public_id }
         userData.profilePicture = image
-        userData.customeId = customId
+        userData.customId = customId
     }
 
     req.imagePath = uploadPath
@@ -54,9 +55,31 @@ export const TouristSignUp = async (req, res, next) => {
     userData.password = hashedPassword
 
     if (age) { userData.age = age }
-    if (gender) { userData.gender = gender }
-    if (language) { userData.language = language }
-    if (phoneNumber) { userData.phoneNumber = phoneNumber }
+    if (gender) {
+        if (gender !== 'male' && gender !== 'female' && gender !== 'not specified') {
+            return next(new Error('invalid gender!', { cause: 400 }))
+        }
+        userData.gender = gender
+    }
+    if (language) {
+        if (!languages.includes(language)) {
+            return next(new Error("please enter a valid language!", { cause: 400 }))
+        }
+        userData.language = language
+    }
+    if (phoneNumber) {
+        console.log({
+            length1: phoneNumber.length,
+            length2: String.length(phoneNumber)
+        })
+        if (phoneNumber.length !== 11) {
+            return next(new Error("enter a valid phone number!", { cause: 400 }))
+        }
+        if (!EGphoneCodes.includes(phoneNumber.subString(0, 3))) {
+            return next(new Error("please enter an egyptian number!", { cause: 400 }))
+        }
+        userData.phoneNumber = phoneNumber
+    }
 
     const saveUser = await touristModel.create(userData)
     if (!saveUser) {
@@ -71,11 +94,12 @@ export const TouristSignUp = async (req, res, next) => {
             _id: saveUser._id,
             email: saveUser.email,
             userName: saveUser.userName,
+            role: systemRoles.tourist
         }
     })
 
     saveUser.token = token
-    saveUser.status = 'Online'
+    saveUser.status = statuses.online
     await saveUser.save()
 
     const confirmToken = generateToken({ payload: { email }, signature: process.env.CONFIRM_LINK_SECRETE_KEY, expiresIn: '1h' })
@@ -143,13 +167,14 @@ export const touristLogIn = async (req, res, next) => {
             _id: getUser._id,
             email: getUser.email,
             userName: getUser.userName,
+            role: systemRoles.tourist
         }
     })
     if (!token) {
         return next(new Error('failed to generate user token', { cause: 500 }))
     }
 
-    const updateUser = await touristModel.findOneAndUpdate({ email }, { status: 'Online', token }, { new: true })
+    const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true })
     if (!updateUser) {
         return next(new Error('failed to login the user!', { cause: 500 }))
     }
@@ -160,7 +185,7 @@ export const touristLogIn = async (req, res, next) => {
     })
 }
 
-// first make this api for tourists only , then make it for tourGuides and other roles 
+// TODO : first make this api for tourists only , then make it for tourGuides and other roles 
 export const forgetPassword = async (req, res, next) => {
     // this api occurs at the login page , doesn't need a token nor entering a password
     const { email } = req.body
@@ -240,15 +265,70 @@ export const resetPassword = async (req, res, next) => {
 }
 
 // tourist auth , tourGuide auth (ocr) .
-// export const profileSetting = async (req, res, next) => {
-//     // if this api will occur after logging in -> we will need a token
-//     const { authorization } = req.headers // front
-//     const { phoneNumber } = req.body // front -> not in DB document
 
-//     const token = authorization.split(' ')[1]
+// this api will be used for both first time profile setUp and profile update
+export const profileSetUp = async (req, res, next) => {
+    // if this api will occur after logging in -> we will need a token
+    const _id = req?.authUser._id
+    const { phoneNumber, gender, age, language } = req.body // front -> not in DB document
 
-//     const decodedToken = verifyToken({
-//         signature: process.env.LOGIN_SECRET_KEY,
-//         token
-//     })
-// }
+    const getUser = await touristModel.findById(_id)
+    if (!getUser) {
+        return next(new Error("couldn't find user", { cause: 400 }))
+    }
+
+    if (phoneNumber) {
+        console.log({
+            length: phoneNumber.length,
+        })
+        if (phoneNumber.length !== 11) {
+            return next(new Error("enter a valid phone number!", { cause: 400 }))
+        }
+        if (!EGphoneCodes.includes(phoneNumber.slice(0, 3))) {
+            return next(new Error("please enter an egyptian number!", { cause: 400 }))
+        }
+        getUser.phoneNumber = phoneNumber
+    }
+
+    if (gender) {
+        if (gender !== 'male' && gender !== 'female' && gender !== 'not specified') {
+            return next(new Error('invalid gender!', { cause: 400 }))
+        }
+        getUser.gender = gender
+    }
+
+    if (age) {
+        getUser.age = age
+    }
+
+    if (language) {
+        if (!languages.includes(language)) {
+            return next(new Error("please enter a valid language!", { cause: 400 }))
+        }
+        getUser.language = language
+    }
+
+    let uploadPath
+    if (req.file) {
+        const customId = nanoid()
+        uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: uploadPath
+        })
+        if (!secure_url || !public_id) {
+            return next(new Error("couldn't save the image!", { cause: 400 }))
+        }
+        getUser.profilePicture = { secure_url, public_id }
+        getUser.customId = customId
+    }
+
+    req.imagePath = uploadPath
+
+    if (!await getUser.save()) {
+        return next(new Error("couldn't update the user in database!", { cause: 500 }))
+    }
+    res.status(200).json({
+        message: "your profile setting is completed!",
+        user: getUser
+    })
+}

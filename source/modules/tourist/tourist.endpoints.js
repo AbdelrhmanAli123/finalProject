@@ -1,6 +1,7 @@
 import { systemRoles } from "../../utilities/systemRoles.js"
 
-export const touristAPIroles = [
-    addTrip = [],
-    generateTrip = []
-]
+export const touristAPIroles = {
+    profile_setUp: [systemRoles.tourist],
+    addTrip: [],
+    generateTrip: []
+}

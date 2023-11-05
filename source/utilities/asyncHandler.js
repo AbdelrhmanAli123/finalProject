@@ -10,7 +10,7 @@ export const asyncHandler = (API) => { // API -> api controller
                     message: err.message,
                     details: err.message.details
                 })
-                if (req.imagePath) {
+                if (req?.imagePath) {
                     await cloudinary.api.delete_resources_by_prefix(req.imagePath)
                     await cloudinary.api.delete_folder(req.imagePath)
                 }

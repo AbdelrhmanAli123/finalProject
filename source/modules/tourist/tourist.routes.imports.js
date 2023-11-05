@@ -6,7 +6,9 @@ import { multerHostFunction } from '../../services/multerHost.js'
 import * as touristCont from './tourist.controller.js'
 import * as touristVS from './tourist.validationSchemas.js'
 import { allowedExtensions } from '../../utilities/allowedUploadExtensions.js'
+import { touristAPIroles } from './tourist.endpoints.js'
 
 export {
-    Router, isAuth, validationCoreFunction, asyncHandler, multerHostFunction, touristCont, touristVS, allowedExtensions
+    Router, isAuth, validationCoreFunction, asyncHandler, multerHostFunction, touristCont, touristVS, allowedExtensions,
+    touristAPIroles
 }

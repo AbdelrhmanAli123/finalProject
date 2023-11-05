@@ -7,8 +7,11 @@ import { customAlphabet } from 'nanoid' // custom id
 import { emailService } from "../../services/mailService.js"
 import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 import { systemRoles } from '../../utilities/systemRoles.js'
+import { EGphoneCodes } from "../../utilities/phoneCodes.js"
+import { statuses } from '../../utilities/activityStatuses.js'
+import { languages } from '../../utilities/languages.js'
 
 export {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
-    ReasonPhrases, StatusCodes, systemRoles
+    ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses
 }

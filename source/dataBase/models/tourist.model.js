@@ -1,5 +1,7 @@
 import { Schema, model } from "mongoose"
 import { systemRoles } from "../../utilities/systemRoles.js"
+import { statuses } from "../../utilities/activityStatuses.js"
+import { languages, languagesCodes } from "../../utilities/languages.js"
 
 const touristSchema = new Schema({
     // userName , email , pass -> are the main data for request in sign Up , the rest should be not required
@@ -35,7 +37,8 @@ const touristSchema = new Schema({
     },
     language: {
         type: String,
-        default: 'English'
+        enum: languages,
+        default: languagesCodes.eng
     },
     role: {
         type: String,
@@ -52,8 +55,8 @@ const touristSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['Online', 'Offline', 'Do not disturb'],
-        default: 'Offline'
+        enum: [statuses.online, statuses.offline, statuses.doNotDisturb],
+        default: statuses.offline
     },
     customId: String,
     confirmed: {

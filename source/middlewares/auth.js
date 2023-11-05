@@ -1,6 +1,7 @@
 import { generateToken, verifyToken } from "../utilities/tokenFunctions.js"
 import { touristModel } from "../dataBase/models/tourist.model.js"
 import { systemRoles } from "../utilities/systemRoles.js"
+import { statuses } from "../utilities/activityStatuses.js"
 
 // TODO : modify this function to authenticate the tourguide after creating the tourGuide model
 export const isAuth = (roles = []) => {
@@ -22,6 +23,7 @@ export const isAuth = (roles = []) => {
                     token: splittedToken,
                     signature: process.env.LOGIN_SECRET_KEY
                 })
+                console.log({ decodedToken })
                 if (!decodedToken) {
                     return next(new Error('invalid token', { cause: 400 }))
                 }
@@ -37,7 +39,7 @@ export const isAuth = (roles = []) => {
                     if (!getUser) {
                         return next(new Error('user is not found!', { cause: 400 }))
                     }
-                    if (getUser.status !== 'Online') {
+                    if (getUser.status !== statuses.online) {
                         return next(new Error('user must be logged in!', { cause: 400 }))
                     }
                     if (getUser.confirmed !== true) {
@@ -48,6 +50,7 @@ export const isAuth = (roles = []) => {
                         return next(new Error('un Authorized to access this API', { cause: 401 }))
                     }
                 }
+                // TODO : tourGuide authentication
                 // else if(decodedToken.role === systemRoles.tourGuide) {
 
                 // }

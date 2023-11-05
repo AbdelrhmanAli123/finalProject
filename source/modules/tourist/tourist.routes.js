@@ -1,6 +1,6 @@
 import {
     Router, isAuth, validationCoreFunction, asyncHandler, multerHostFunction, touristCont, touristVS,
-    allowedExtensions
+    allowedExtensions, touristAPIroles
 } from './tourist.routes.imports.js'
 
 const router = Router()
@@ -33,9 +33,15 @@ router.patch(
 router.patch(
     '/resetPassword:token',
     validationCoreFunction(touristVS.touristResetPassSchema),
-    asyncHandler(touristCont.resetPassword), (req, res, next) => {
+    asyncHandler(touristCont.resetPassword)
+)
 
-    }
+router.patch(
+    '/profileSetUp',
+    isAuth(touristAPIroles.profile_setUp),
+    multerHostFunction(allowedExtensions.image).single('profilePicture'),
+    validationCoreFunction(touristVS.touristProfileSetUpSchema),
+    asyncHandler(touristCont.profileSetUp)
 )
 
 export default router

@@ -10,7 +10,7 @@ export const signUpValidSchema = {
         confirmPassword: joi.string().valid(joi.ref('password')).messages({
             'password.confirm.status': 'failed'
         }).required(),
-        phoneNumber: joi.string().min(11).max(11).optional(),
+        phoneNumber: joi.string().length(11).optional(),
         gender: joi.string().valid('male', 'female').optional(),
         age: joi.number().optional(),
         language: joi.string().optional()
@@ -54,4 +54,26 @@ export const touristResetPassSchema = {
     body: joi.object({
         newPassword: generalFields.password
     })
+}
+
+export const touristProfileSetUpSchema = {
+    body: joi.object({
+        phoneNumber: joi.string().length(11),
+        gender: joi.string().valid('male', 'female'),
+        age: joi.number(),
+        language: joi.string()
+    }).presence('optional'),
+    file: joi.object({
+        fieldname: joi.string(),
+        originalname: joi.string(),
+        encoding: joi.string(),
+        mimetype: joi.string(),
+        destination: joi.string(),
+        filename: joi.string(),
+        path: joi.string(),
+        size: joi.number()
+    }).unknown(true).presence('optional'),
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
 }
