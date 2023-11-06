@@ -50,6 +50,20 @@ export const TouristSignUp = async (req, res, next) => {
         userData.customId = customId
     }
 
+    // let uploadPath
+    // if (req.file) {
+    //     const customId = nanoid()
+    //     uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+    //     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+    //         folder: uploadPath
+    //     })
+    //     if (!secure_url || !public_id) {
+    //         return next(new Error("couldn't save the image!", { cause: 400 }))
+    //     }
+    //     getUser.profilePicture = { secure_url, public_id }
+    //     getUser.customId = customId
+    // }
+
     req.imagePath = uploadPath
     const hashedPassword = bcrypt.hashSync(password, +process.env.SIGN_UP_SALT_ROUNDS)
     userData.password = hashedPassword
@@ -328,7 +342,7 @@ export const profileSetUp = async (req, res, next) => {
         return next(new Error("couldn't update the user in database!", { cause: 500 }))
     }
     res.status(200).json({
-        message: "your profile setting is completed!",
+        message: "your profile updating is completed!",
         user: getUser
     })
 }
