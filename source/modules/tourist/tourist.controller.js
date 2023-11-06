@@ -288,7 +288,6 @@ export const resetPassword = async (req, res, next) => {
     }
     res.status(200).json({
         message: "reset password done!",
-        user: getUser
     })
 }
 
