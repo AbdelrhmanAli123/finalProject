@@ -216,14 +216,14 @@ export const forgetPassword = async (req, res, next) => {
             resetCode: hashedCode
         },
         signature: process.env.reset_password_secret_key,
-        expiresIn: '1h'
+        expiresIn: '300s'
     })
     // const resetPassLink = `${req.protocol}://${req.headers.host}/tourist/resetPassword${token}`
     const resetEmail = emailService({
         to: email,
         subject: 'Reset password',
         message: ` <h1>use this code below to reset your password in you app</h1>
-                    <p>${code}</p>`
+                <p>${code}</p>`
     })
     console.log(resetEmail)
     if (!resetEmail) {
@@ -244,13 +244,27 @@ export const forgetPassword = async (req, res, next) => {
 export const resetPassword = async (req, res, next) => {
     const { token } = req.params
     const { newPassword } = req.body
-    const decodedToken = verifyToken({
-        token,
-        signature: process.env.reset_password_secret_key
-    })
+    let decodedToken
+    try {
+        decodedToken = verifyToken({
+            token,
+            signature: process.env.reset_password_secret_key
+        })
+    } catch (error) {
+        console.log({
+            JWTerrorName: error.name,
+            JWTerrorMessage: error.message
+        })
+        if (error.name == 'TokenExpiredError') {
+            return next(new Error('reset code expired!', { cause: 408 }))
+        }
+    }
     if (!decodedToken) {
         return next(new Error('failed to decode the token', { cause: 400 }))
     }
+    // if (decodedToken.Error.message === 'TokenExpiredError') {
+    //     return next(new Error('reset code expired!', { cause: 408 }))
+    // }
     const getUser = await touristModel.findOne({
         email: decodedToken.email,
     })
