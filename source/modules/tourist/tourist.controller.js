@@ -1,6 +1,7 @@
 import {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
-    ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses
+    ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses,
+    languagesCodes, countries, countriesCodes
 } from './tourist.controller.imports.js'
 
 // for tourist sign up :
@@ -14,7 +15,7 @@ const nanoid2 = customAlphabet('1234567890', 6)
 
 export const TouristSignUp = async (req, res, next) => {
     const {
-        userName, email, password, confirmPassword, phoneNumber, gender, age, language
+        userName, email, password, confirmPassword, phoneNumber, gender, age, language, country
     } = req.body
     console.log(req.file)
     const findUser = await touristModel.findOne({ $or: [{ email: email }, { userName: userName }] })
@@ -50,20 +51,6 @@ export const TouristSignUp = async (req, res, next) => {
         userData.customId = customId
     }
 
-    // let uploadPath
-    // if (req.file) {
-    //     const customId = nanoid()
-    //     uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
-    //     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-    //         folder: uploadPath
-    //     })
-    //     if (!secure_url || !public_id) {
-    //         return next(new Error("couldn't save the image!", { cause: 400 }))
-    //     }
-    //     getUser.profilePicture = { secure_url, public_id }
-    //     getUser.customId = customId
-    // }
-
     req.imagePath = uploadPath
     const hashedPassword = bcrypt.hashSync(password, +process.env.SIGN_UP_SALT_ROUNDS)
     userData.password = hashedPassword
@@ -93,6 +80,14 @@ export const TouristSignUp = async (req, res, next) => {
             return next(new Error("please enter an egyptian number!", { cause: 400 }))
         }
         userData.phoneNumber = phoneNumber
+    }
+
+    if (country) {
+        if (countries.includes(country)) {
+            userData.country = country
+        } else {
+            return next(new Error('invalid country!', { cause: 400 }))
+        }
     }
 
     const saveUser = await touristModel.create(userData)
@@ -297,7 +292,7 @@ export const resetPassword = async (req, res, next) => {
 export const profileSetUp = async (req, res, next) => {
     // if this api will occur after logging in -> we will need a token
     const _id = req?.authUser._id
-    const { phoneNumber, gender, age, language } = req.body // front -> not in DB document
+    const { phoneNumber, gender, age, language, country, preferences } = req.body // front -> not in DB document
 
     const getUser = await touristModel.findById(_id)
     if (!getUser) {
@@ -324,6 +319,14 @@ export const profileSetUp = async (req, res, next) => {
         getUser.gender = gender
     }
 
+    if (country) {
+        if (countries.includes(country)) {
+            getUser.country = country
+        } else {
+            return next(new Error('invalid country!', { cause: 400 }))
+        }
+    }
+
     if (age) {
         getUser.age = age
     }
@@ -333,6 +336,10 @@ export const profileSetUp = async (req, res, next) => {
             return next(new Error("please enter a valid language!", { cause: 400 }))
         }
         getUser.language = language
+    }
+
+    if (preferences) {
+        getUser.preferences = preferences
     }
 
     let uploadPath
@@ -357,5 +364,95 @@ export const profileSetUp = async (req, res, next) => {
     res.status(200).json({
         message: "your profile updating is completed!",
         user: getUser
+    })
+}
+
+// let uploadPath
+// if (req.file) {
+//     const customId = nanoid()
+//     uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+//     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+//         folder: uploadPath
+//     })
+//     if (!secure_url || !public_id) {
+//         return next(new Error("couldn't save the image!", { cause: 400 }))
+//     }
+//     getUser.profilePicture = { secure_url, public_id }
+//     getUser.customId = customId
+// }
+
+export const logOut = async (req, res, next) => {
+    const { _id } = req.authUser
+    const getUser = await touristModel.findById(_id)
+    if (!getUser) {
+        return next(new Error('user not found!', { cause: 400 }))
+    }
+    getUser.token = null
+    getUser.status = statuses.offline
+    if (!await getUser.save()) {
+        return next(new Error('failed to logout the user!', { cause: 400 }))
+    }
+    res.status(200).json({
+        message: "logout is successfull!"
+    })
+}
+
+export const deleteUser = async (req, res, next) => {
+    const { _id } = req.authUser
+    const getUser = await touristModel.findById(_id)
+    if (!getUser) {
+        return next(new Error('user not found!', { cause: 400 }))
+    }
+    const deleteUser = await touristModel.findByIdAndDelete(_id)
+    if (!deleteUser) {
+        return next(new Error("couldn't delete the user!", { cause: 500 }))
+    }
+    // the front end might want the token back to delete it from his local storage
+    res.status(200).json({
+        message: "User deleted successfully!",
+        token: deleteUser.token
+    })
+}
+
+export const getUserInfo = async (req, res, next) => {
+    const { _id } = req.authUser
+    const getUser = await touristModel.findById(_id)
+        .select('userName email gender age phoneNumber language profilePicture.secure_url status country preferences')
+    if (!getUser) {
+        return next(new Error('user not found!', { cause: 400 }))
+    }
+    res.status(200).json({
+        message: "user fetching is successfull!",
+        user: getUser
+    })
+}
+
+export const changePassword = async (req, res, next) => {
+    const { _id } = req.authUser
+    const { oldPassword, newPassword, confirmNewPassword } = req.body
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+        return next(new Error("passwords are missing!", { cause: 411 }))
+    }
+    if (newPassword !== confirmNewPassword) {
+        return next(new Error('passwords must match!', { cause: 400 }))
+    }
+    const hashedNewPassword = bcrypt.hashSync(newPassword, +process.env.SIGN_UP_SALT_ROUNDS)
+    const getUser = await touristModel.findOne({
+        _id,
+    })
+    if (!getUser) {
+        return next(new Error('user not found!', { cause: 400 }))
+    }
+    const isPassMatch = bcrypt.compareSync(oldPassword, getUser.password)
+    if (!isPassMatch) {
+        return next(new Error('invalid old password!', { cause: 400 }))
+    }
+    getUser.password = hashedNewPassword
+    if (!await getUser.save()) {
+        return next(new Error("couldn't change password", { cause: 500 }))
+    }
+    res.status(200).json({
+        message: "changing password is successfull!",
+        userToken: getUser.token
     })
 }

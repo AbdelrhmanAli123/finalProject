@@ -36,12 +36,40 @@ router.patch(
     asyncHandler(touristCont.resetPassword)
 )
 
-router.patch(
+router.post(
     '/profileSetUp',
     isAuth(touristAPIroles.profile_setUp),
     multerHostFunction(allowedExtensions.image).single('profilePicture'),
     validationCoreFunction(touristVS.touristProfileSetUpSchema),
     asyncHandler(touristCont.profileSetUp)
+)
+
+router.get(
+    '/viewProfile',
+    isAuth(touristAPIroles.getUserInfo),
+    validationCoreFunction(touristVS.viewProfileSchmea),
+    asyncHandler(touristCont.getUserInfo)
+)
+
+router.delete(
+    '/deleteUser',
+    isAuth(touristAPIroles.deleteUser),
+    validationCoreFunction(touristVS.deleteUser),
+    asyncHandler(touristCont.deleteUser)
+)
+
+router.patch(
+    '/changePassword',
+    isAuth(touristAPIroles.changePassword),
+    validationCoreFunction(touristVS.changePassword),
+    asyncHandler(touristCont.changePassword)
+)
+
+router.post(
+    '/logout',
+    isAuth(touristAPIroles.logout),
+    validationCoreFunction(touristVS.logout),
+    asyncHandler(touristCont.logOut)
 )
 
 export default router

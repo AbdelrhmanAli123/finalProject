@@ -77,3 +77,34 @@ export const touristProfileSetUpSchema = {
         authorization: generalFields.jwtToken
     }).presence('required').unknown(true)
 }
+
+export const viewProfileSchmea = {
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
+}
+
+export const deleteUser = {
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
+}
+
+export const changePassword = {
+    body: joi.object({
+        oldPassword: generalFields.password,
+        newPassword: generalFields.password,
+        confirmNewPassword: joi.string().valid(joi.ref('newPassword')).messages({
+            'newPassword confirm status': 'failed to confirm the new password'
+        })
+    }).presence('required'),
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
+}
+
+export const logout = {
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
+}

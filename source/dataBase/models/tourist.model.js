@@ -69,6 +69,13 @@ const touristSchema = new Schema({
         type: Boolean,
         default: false
     },
+    country: {
+        type: String,
+        required: false
+    },
+    preferences: {
+        type: [String]
+    }
     // resetToken:String
     // address: {
     // }
