@@ -7,7 +7,10 @@ const router = Router()
 
 router.post(
     '/signUp',
-    multerHostFunction(allowedExtensions.image).single('profilePicture'),
+    multerHostFunction(allowedExtensions.image).fields([
+        { name: 'profilePicture', maxCount: 1 },
+        { name: 'coverPicture', maxCount: 1 }
+    ]),
     validationCoreFunction(touristVS.signUpValidSchema),
     asyncHandler(touristCont.TouristSignUp)
 )
@@ -34,7 +37,10 @@ router.post(
 router.post(
     '/profileSetUp',
     isAuth(touristAPIroles.profile_setUp),
-    multerHostFunction(allowedExtensions.image).single('profilePicture'),
+    multerHostFunction(allowedExtensions.image).fields([
+        { name: 'profilePicture', maxCount: 1 },
+        { name: 'coverPicture', maxCount: 1 }
+    ]),
     validationCoreFunction(touristVS.touristProfileSetUpSchema),
     asyncHandler(touristCont.profileSetUp)
 )

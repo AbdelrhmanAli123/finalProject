@@ -10,9 +10,13 @@ export const asyncHandler = (API) => { // API -> api controller
                     message: err.message,
                     details: err.message.details
                 })
-                if (req?.imagePath) {
-                    await cloudinary.api.delete_resources_by_prefix(req.imagePath)
-                    await cloudinary.api.delete_folder(req.imagePath)
+                if (req?.coverImgPath) {
+                    await cloudinary.api.delete_resources_by_prefix(req.coverImgPath)
+                    await cloudinary.api.delete_folder(req.coverImgPath)
+                }
+                if (req?.profileImgPath) {
+                    await cloudinary.api.delete_resources_by_prefix(req.profileImgPath)
+                    await cloudinary.api.delete_folder(req.profileImgPath)
                 }
                 return next(new Error(`API failed to run !, cause: ${err.message}`, { cause: 500 }))
             })

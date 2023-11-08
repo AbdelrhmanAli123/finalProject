@@ -53,6 +53,14 @@ const touristSchema = new Schema({
             type: String,
         },
     },
+    coverPicture: {
+        secure_url: {
+            type: String,
+        },
+        public_id: {
+            type: String,
+        },
+    },
     status: {
         type: String,
         enum: [statuses.online, statuses.offline, statuses.doNotDisturb],

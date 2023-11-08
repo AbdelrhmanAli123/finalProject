@@ -35,23 +35,49 @@ export const TouristSignUp = async (req, res, next) => {
         slug,
         // address
     }
-    let image
-    let uploadPath
-    if (req.file) {
+    let profilePic, coverPic
+    let profileUploadPath // for profile Picture
+    let coverUploadPath // for cover picture
+    if (req.files) {
         const customId = nanoid()
-        uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: uploadPath
-        })
-        if (!secure_url || !public_id) {
-            return next(new Error("couldn't save the image!", { cause: 400 }))
-        }
-        image = { secure_url, public_id }
-        userData.profilePicture = image
         userData.customId = customId
+        profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+        coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
+        for (const file of req.files) {
+            if (file.fieldname === 'profilePicture') {
+                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                    folder: profileUploadPath
+                })
+                if (!secure_url || !public_id) {
+                    return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+                }
+                profilePic = { secure_url, public_id }
+                userData.profilePicture = profilePic
+            }
+            else if (file.fieldname === 'coverPicture') {
+                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                    folder: coverUploadPath
+                })
+                if (!secure_url || !public_id) {
+                    return next(new Error("couldn't save the image!", { cause: 400 }))
+                }
+                coverPic = { secure_url, public_id }
+                userData.coverPicture = coverPic
+            }
+            else {
+                return next(new Error('invalid file fieldName!', { cause: 400 }))
+            }
+        }
+    } else {
+        profilePic = null
+        coverPic = null
+        profileUploadPath = null
+        coverUploadPath = null
     }
 
-    req.imagePath = uploadPath
+    req.profileImgPath = profileUploadPath
+    req.coverImgPath = coverUploadPath
+
     const hashedPassword = bcrypt.hashSync(password, +process.env.SIGN_UP_SALT_ROUNDS)
     userData.password = hashedPassword
 
@@ -183,7 +209,7 @@ export const touristLogIn = async (req, res, next) => {
         return next(new Error('failed to generate user token', { cause: 500 }))
     }
 
-    const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true })
+    const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true }).select('userName email token')
     if (!updateUser) {
         return next(new Error('failed to login the user!', { cause: 500 }))
     }
@@ -343,21 +369,49 @@ export const profileSetUp = async (req, res, next) => {
         getUser.preferences = preferences
     }
 
-    let uploadPath
-    if (req.file) {
+    let profilePic, coverPic
+    let profileUploadPath // for profile Picture
+    let coverUploadPath // for cover picture
+    if (req.files) {
         const customId = nanoid()
-        uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: uploadPath
-        })
-        if (!secure_url || !public_id) {
-            return next(new Error("couldn't save the image!", { cause: 400 }))
+        userData.customId = customId
+        profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+        coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
+        for (const file of req.files) {
+            if (file.fieldname === 'profilePicture') {
+                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                    folder: profileUploadPath
+                })
+                if (!secure_url || !public_id) {
+                    return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+                }
+                profilePic = { secure_url, public_id }
+                userData.profilePicture = profilePic
+            }
+            else if (file.fieldname === 'coverPicture') {
+                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                    folder: coverUploadPath
+                })
+                if (!secure_url || !public_id) {
+                    return next(new Error("couldn't save the image!", { cause: 400 }))
+                }
+                coverPic = { secure_url, public_id }
+                userData.coverPicture = coverPic
+            }
+            else {
+                return next(new Error('invalid file fieldName!', { cause: 400 }))
+            }
         }
-        getUser.profilePicture = { secure_url, public_id }
-        getUser.customId = customId
+    } else {
+        profilePic = null
+        coverPic = null
+        profileUploadPath = null
+        coverUploadPath = null
     }
 
-    req.imagePath = uploadPath
+    req.profileImgPath = profileUploadPath
+    req.coverImgPath = coverUploadPath
+
     getUser.__v++
 
     if (!await getUser.save()) {
@@ -368,20 +422,6 @@ export const profileSetUp = async (req, res, next) => {
         user: getUser
     })
 }
-
-// let uploadPath
-// if (req.file) {
-//     const customId = nanoid()
-//     uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
-//     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-//         folder: uploadPath
-//     })
-//     if (!secure_url || !public_id) {
-//         return next(new Error("couldn't save the image!", { cause: 400 }))
-//     }
-//     getUser.profilePicture = { secure_url, public_id }
-//     getUser.customId = customId
-// }
 
 export const logOut = async (req, res, next) => {
     const { _id } = req.authUser
@@ -419,7 +459,7 @@ export const deleteUser = async (req, res, next) => {
 export const getUserInfo = async (req, res, next) => {
     const { _id } = req.authUser
     const getUser = await touristModel.findById(_id)
-        .select('userName email gender age phoneNumber language profilePicture.secure_url status country preferences')
+        .select('userName email gender age phoneNumber language profilePicture.secure_url coverPicture.secure_url status confirmed country preferences')
     if (!getUser) {
         return next(new Error('user not found!', { cause: 400 }))
     }
@@ -430,6 +470,7 @@ export const getUserInfo = async (req, res, next) => {
 }
 
 export const changePassword = async (req, res, next) => {
+    // TODO : make it on 2 APIs
     const { _id } = req.authUser
     const { oldPassword, newPassword, confirmNewPassword } = req.body
     if (!oldPassword || !newPassword || !confirmNewPassword) {

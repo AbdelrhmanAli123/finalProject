@@ -15,7 +15,7 @@ export const signUpValidSchema = {
         age: joi.number().optional(),
         language: joi.string().optional()
     }),
-    file: joi.object({
+    files: joi.array().items(joi.object({
         fieldname: joi.string(),
         originalname: joi.string(),
         encoding: joi.string(),
@@ -24,7 +24,7 @@ export const signUpValidSchema = {
         filename: joi.string(),
         path: joi.string(),
         size: joi.number()
-    }).unknown(true).presence('optional')
+    }).unknown(true).presence('optional'))
 }
 
 export const confirmAccountSchema = {
@@ -63,7 +63,7 @@ export const touristProfileSetUpSchema = {
         age: joi.number(),
         language: joi.string()
     }).presence('optional'),
-    file: joi.object({
+    files: joi.array().items(joi.object({
         fieldname: joi.string(),
         originalname: joi.string(),
         encoding: joi.string(),
@@ -72,7 +72,7 @@ export const touristProfileSetUpSchema = {
         filename: joi.string(),
         path: joi.string(),
         size: joi.number()
-    }).unknown(true).presence('optional'),
+    }).unknown(true).presence('optional').options({ presence: 'optional' })),
     headers: joi.object({
         authorization: generalFields.jwtToken
     }).presence('required').unknown(true)

@@ -142,3 +142,64 @@ app.get('/get-location', (req, res) => {
   }
 });
 ```
+
+========================================
+
+## unused codes
+
+```js
+// let uploadPath
+// if (req.file) {
+//     const customId = nanoid()
+//     uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+//     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+//         folder: uploadPath
+//     })
+//     if (!secure_url || !public_id) {
+//         return next(new Error("couldn't save the image!", { cause: 400 }))
+//     }
+//     getUser.profilePicture = { secure_url, public_id }
+//     getUser.customId = customId
+// }
+
+// req.imagePath = uploadPath
+
+// let uploadPath
+// if (req.file) {
+//     const customId = nanoid()
+//     uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+//     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+//         folder: uploadPath
+//     })
+//     if (!secure_url || !public_id) {
+//         return next(new Error("couldn't save the image!", { cause: 400 }))
+//     }
+//     getUser.profilePicture = { secure_url, public_id }
+//     getUser.customId = customId
+// }
+
+// if (req.file) {
+//     const customId = nanoid()
+//     uploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+//     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+//         folder: uploadPath
+//     })
+//     if (!secure_url || !public_id) {
+//         return next(new Error("couldn't save the image!", { cause: 400 }))
+//     }
+//     image = { secure_url, public_id }
+//     userData.profilePicture = image
+//     userData.customId = customId
+// }
+
+// file: joi.object({
+//     fieldname: joi.string(),
+//     originalname: joi.string(),
+//     encoding: joi.string(),
+//     mimetype: joi.string(),
+//     destination: joi.string(),
+//     filename: joi.string(),
+//     path: joi.string(),
+//     size: joi.number()
+// }).unknown(true).presence('optional')
+```
