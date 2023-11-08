@@ -278,6 +278,7 @@ export const resetPassword = async (req, res, next) => {
     getUser.password = hashedNewPassword
     getUser.resetCode = null
     getUser.forgetPassword = false
+    getUser.__v++
     if (!await getUser.save()) {
         return next(new Error('failed to reset password in data base', { cause: 500 }))
     }
@@ -357,6 +358,7 @@ export const profileSetUp = async (req, res, next) => {
     }
 
     req.imagePath = uploadPath
+    getUser.__v++
 
     if (!await getUser.save()) {
         return next(new Error("couldn't update the user in database!", { cause: 500 }))
@@ -448,6 +450,7 @@ export const changePassword = async (req, res, next) => {
         return next(new Error('invalid old password!', { cause: 400 }))
     }
     getUser.password = hashedNewPassword
+    getUser.__v++
     if (!await getUser.save()) {
         return next(new Error("couldn't change password", { cause: 500 }))
     }
