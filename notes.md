@@ -4,6 +4,10 @@
 
 - `ulqd hqcv wljo hpry`
 
+## figma UIs link (mahmoud sobhy)
+
+- <https://www.figma.com/file/nHx2JHTZHGIioOccX7oCC2/Graduation-project?type=design&node-id=0%3A1&mode=design&t=zoIaIQAaGZjfgpCo-1>
+
 ========================================
 
 ## geoSpatial queries
