@@ -116,13 +116,12 @@ export const TouristSignUp = async (req, res, next) => {
     }
     if (phoneNumber) {
         console.log({
-            length1: phoneNumber.length,
-            length2: String.length(phoneNumber)
+            length1: phoneNumber.length
         })
         if (phoneNumber.length !== 11) {
             return next(new Error("enter a valid phone number!", { cause: 400 }))
         }
-        if (!EGphoneCodes.includes(phoneNumber.subString(0, 3))) {
+        if (!EGphoneCodes.includes(phoneNumber.substring(0, 3))) {
             return next(new Error("please enter an egyptian number!", { cause: 400 }))
         }
         userData.phoneNumber = phoneNumber
