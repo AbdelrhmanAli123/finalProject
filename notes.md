@@ -202,4 +202,44 @@ app.get('/get-location', (req, res) => {
 //     path: joi.string(),
 //     size: joi.number()
 // }).unknown(true).presence('optional')
+
+// for (const file in req.files) {
+//     console.log(file)
+//     console.log({ typeOfFile: typeof (file) })
+//     console.log({ fileFieldName: file.fieldname })
+//     if (file['profilePicture'] === 'profilePicture') {
+//         const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+//             folder: profileUploadPath
+//         })
+//         if (!secure_url || !public_id) {
+//             return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+//         }
+//         profilePic = { secure_url, public_id }
+//         userData.profilePicture = profilePic
+//     }
+//     else if (file['coverPicture'] === 'coverPicture') {
+//         const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+//             folder: coverUploadPath
+//         })
+//         if (!secure_url || !public_id) {
+//             return next(new Error("couldn't save the image!", { cause: 400 }))
+//         }
+//         coverPic = { secure_url, public_id }
+//         userData.coverPicture = coverPic
+//     }
+//     else {
+//         return next(new Error('invalid file fieldName!', { cause: 400 }))
+//     }
+// }
+
+  // files: joi.array().items(joi.object({
+  //     fieldname: joi.string(),
+  //     originalname: joi.string(),
+  //     encoding: joi.string(),
+  //     mimetype: joi.string(),
+  //     destination: joi.string(),
+  //     filename: joi.string(),
+  //     path: joi.string(),
+  //     size: joi.number()
+  // }).unknown(true).presence('optional')).options({ presence: 'optional' })
 ```

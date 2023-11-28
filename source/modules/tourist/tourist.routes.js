@@ -8,8 +8,8 @@ const router = Router()
 router.post(
     '/signUp',
     multerHostFunction(allowedExtensions.image).fields([
-        { name: 'profilePicture', maxCount: 1 },
-        { name: 'coverPicture', maxCount: 1 }
+        { name: 'profilePicture', maxCount: 1 }, // array of objects
+        { name: 'coverPicture', maxCount: 1 } // array of objects
     ]),
     validationCoreFunction(touristVS.signUpValidSchema),
     asyncHandler(touristCont.TouristSignUp)
@@ -62,6 +62,20 @@ router.patch(
     isAuth(touristAPIroles.changePassword),
     validationCoreFunction(touristVS.changePassword),
     asyncHandler(touristCont.changePassword)
+)
+
+router.get(
+    '/confirmOldPassword',
+    isAuth(touristAPIroles.changePassword),
+    validationCoreFunction(touristVS.confirmOldPasswordSchema),
+    asyncHandler(touristCont.confrirmOldPass)
+)
+
+router.patch(
+    '/changeoldPass:passToken',
+    isAuth(touristAPIroles.changePassword),
+    validationCoreFunction(touristVS.changeOldPassSchema),
+    asyncHandler(touristCont.changeOldPass)
 )
 
 router.get(

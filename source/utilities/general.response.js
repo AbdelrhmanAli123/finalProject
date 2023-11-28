@@ -1,5 +1,6 @@
 export const GeneralResponse = (err, req, res, next) => {
     if (err) {
+        const statusCode = err.cause || 500
         if (req.validationErrors) {
             return res
                 .status(err['cause'] || 400)
@@ -7,7 +8,7 @@ export const GeneralResponse = (err, req, res, next) => {
                     message: req.validationErrors
                 })
         }
-        res.status(err.cause).json({
+        res.status(statusCode).json({
             message: err.message,
             status: err.cause
         })

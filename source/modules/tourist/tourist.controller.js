@@ -3,7 +3,6 @@ import {
     ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses,
     languagesCodes, countries, countriesCodes
 } from './tourist.controller.imports.js'
-
 // for tourist sign up :
 const nanoid = customAlphabet('asdfghjkl123456789_#$%!', 5)
 // for password reset :
@@ -17,7 +16,6 @@ export const TouristSignUp = async (req, res, next) => {
     const {
         userName, email, password, confirmPassword, phoneNumber, gender, age, language, country
     } = req.body
-    console.log(req.file)
     const findUser = await touristModel.findOne({ $or: [{ email: email }, { userName: userName }] })
     if (findUser?.email === email) {
         return next(new Error('email already exists!', { cause: 400 }))
@@ -39,33 +37,55 @@ export const TouristSignUp = async (req, res, next) => {
     let profileUploadPath // for profile Picture
     let coverUploadPath // for cover picture
     if (req.files) {
+        console.log({
+            files: req.files,
+            filesType: typeof (req.files),
+            filesobjectKeys: Object.keys(req.files),
+        })
+        console.log({
+            profilePicture: req.files['profilePicture'],
+            coverPicture: req.files['coverPicture']
+        })
         const customId = nanoid()
         userData.customId = customId
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
-        for (const file of req.files) {
-            if (file.fieldname === 'profilePicture') {
-                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-                    folder: profileUploadPath
-                })
-                if (!secure_url || !public_id) {
-                    return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+
+        // TODO : fix this code and optimize it , you can either stick to nested loops , or single loops or without loops since you know that should be there
+        for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
+            console.log({
+                iterationArrayName: array,
+                typeOfIterationArray: typeof (array)
+            })
+            // console.log({ arrayFieldName: array.fieldname }) // this will always gete undefined since array is a string that has no properties
+            const arrayFields = req.files[array] // this should access the first array of req.files
+            console.log({ iterationArray: arrayFields })
+            for (const file of arrayFields) { // each object of the array inside the object
+                if (file.fieldname === 'profilePicture') {
+                    console.log({ accessed: true })
+                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                        folder: profileUploadPath
+                    })
+                    if (!secure_url || !public_id) {
+                        return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+                    }
+                    profilePic = { secure_url, public_id }
+                    userData.profilePicture = profilePic
                 }
-                profilePic = { secure_url, public_id }
-                userData.profilePicture = profilePic
-            }
-            else if (file.fieldname === 'coverPicture') {
-                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-                    folder: coverUploadPath
-                })
-                if (!secure_url || !public_id) {
-                    return next(new Error("couldn't save the image!", { cause: 400 }))
+                else if (file.fieldname === 'coverPicture') {
+                    console.log({ accessed: true })
+                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                        folder: coverUploadPath
+                    })
+                    if (!secure_url || !public_id) {
+                        return next(new Error("couldn't save the image!", { cause: 400 }))
+                    }
+                    coverPic = { secure_url, public_id }
+                    userData.coverPicture = coverPic
                 }
-                coverPic = { secure_url, public_id }
-                userData.coverPicture = coverPic
-            }
-            else {
-                return next(new Error('invalid file fieldName!', { cause: 400 }))
+                else {
+                    return next(new Error('invalid file fieldName!', { cause: 400 }))
+                }
             }
         }
     } else {
@@ -323,7 +343,7 @@ export const profileSetUp = async (req, res, next) => {
 
     const getUser = await touristModel.findById(_id)
     if (!getUser) {
-        return next(new Error("couldn't find user", { cause: 400 }))
+        return next(new Error("couldn't find user , invalid userID", { cause: 400 }))
     }
 
     if (phoneNumber) {
@@ -373,33 +393,57 @@ export const profileSetUp = async (req, res, next) => {
     let profileUploadPath // for profile Picture
     let coverUploadPath // for cover picture
     if (req.files) {
-        const customId = nanoid()
-        userData.customId = customId
+        console.log({ files: req.files })
+        // we can either make a new customId for the usesd document or not , it may be better for security
+        let customId
+        if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
+            customId = getUser.customId
+        }
+        else { // else meanse that you don't have
+            customId = nanoid()
+            getUser.customId = customId
+        }
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
-        for (const file of req.files) {
-            if (file.fieldname === 'profilePicture') {
-                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-                    folder: profileUploadPath
-                })
-                if (!secure_url || !public_id) {
-                    return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+        for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
+            console.log({
+                iterationArrayName: array,
+                typeOfIterationArray: typeof (array)
+            })
+            const arrayFields = req.files[array] // this should access the first array of req.files
+            console.log({ iterationArray: arrayFields })
+            for (const file of arrayFields) { // each object of the array inside the object
+                if (file.fieldname === 'profilePicture') {
+                    console.log({ accessed: true })
+                    await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
+                    await cloudinary.api.delete_folder(profileUploadPath)
+                    console.log({ profilePicDeleted: true })
+                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                        folder: profileUploadPath
+                    })
+                    if (!secure_url || !public_id) {
+                        return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+                    }
+                    profilePic = { secure_url, public_id }
+                    getUser.profilePicture = profilePic
                 }
-                profilePic = { secure_url, public_id }
-                userData.profilePicture = profilePic
-            }
-            else if (file.fieldname === 'coverPicture') {
-                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-                    folder: coverUploadPath
-                })
-                if (!secure_url || !public_id) {
-                    return next(new Error("couldn't save the image!", { cause: 400 }))
+                else if (file.fieldname === 'coverPicture') {
+                    console.log({ accessed: true })
+                    await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
+                    await cloudinary.api.delete_folder(coverUploadPath)
+                    console.log({ coverPicDeleted: true })
+                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                        folder: coverUploadPath
+                    })
+                    if (!secure_url || !public_id) {
+                        return next(new Error("couldn't save the image!", { cause: 400 }))
+                    }
+                    coverPic = { secure_url, public_id }
+                    getUser.coverPicture = coverPic
                 }
-                coverPic = { secure_url, public_id }
-                userData.coverPicture = coverPic
-            }
-            else {
-                return next(new Error('invalid file fieldName!', { cause: 400 }))
+                else {
+                    return next(new Error('invalid file fieldName!', { cause: 400 }))
+                }
             }
         }
     } else {
@@ -498,5 +542,75 @@ export const changePassword = async (req, res, next) => {
     res.status(200).json({
         message: "changing password is successfull!",
         userToken: getUser.token
+    })
+}
+
+export const confrirmOldPass = async (req, res, next) => {
+    const { _id } = req.authUser
+    const { oldPassword } = req.body
+    if (!oldPassword) {
+        return next(new Error('old password must be entered!', { cause: 400 }))
+    }
+    const getUser = await touristModel.findById(_id)
+    if (!getUser) {
+        return next(new Error('user not found , invalid userID', { cause: 400 }))
+    }
+    // this line will fail if the stored password in the data base is not hashed because bcrypt will hash it anyways then compare it
+    const isPassMatch = bcrypt.compareSync(oldPassword, getUser.password)
+    if (!isPassMatch) {
+        return next(new Error("incorrect password!", { cause: 400 }))
+    }
+
+    const passToken = generateToken({ payload: { email: getUser.email }, signature: process.env.change_password_secret_key, expiresIn: '1h' })
+
+    const changePassLink = `${req.protocol}://${req.headers.host}/tourist/changeoldPass${passToken}`
+    const message = `<a href = ${changePassLink} >PLEASE USE THIS LINK TO CHANGE YOUR PASSWORD !</a>`
+    const subject = 'password changing'
+    const sendEMail = emailService({ message, to: getUser.email, subject })
+    if (!sendEMail) {
+        return next(new Error('sending email failed!', { cause: 500 }))
+    }
+
+    res.status(200).json({
+        message: "please check your email to continue changing you password!"
+    })
+}
+
+export const changeOldPass = async (req, res, next) => {
+    const { _id } = req.authUser
+    const { passToken } = req.params
+    const { newPassword, confirmNewPassword } = req.body
+    if (!newPassword) {
+        return next(new Error('you must enter the new Password!', { cause: 400 }))
+    }
+    if (!confirmNewPassword) {
+        return next(new Error('you must confirm the new Password!', { cause: 400 }))
+    }
+    if (newPassword !== confirmNewPassword) {
+        return next(new Error('passwords must match!', { cause: 400 }))
+    }
+    const decodedToken = verifyToken({ token: passToken, signature: process.env.change_password_secret_key })
+    if (!decodedToken) {
+        return next(new Error('invalid token!', { cause: 400 }))
+    }
+    const getUser = await touristModel.findOne({
+        _id,
+        email: decodedToken.email
+    })
+    if (!getUser) {
+        return next(new Error("couldn't find the user , invalid userID!", { cause: 400 }))
+    }
+    const isPassMatch = bcrypt.compareSync(newPassword, getUser.password)
+    if (isPassMatch) {
+        return next(new Error('you must enter a new Password!', { cause: 400 }))
+    }
+    const newHashedPassword = bcrypt.hashSync(newPassword, +process.env.SIGN_UP_SALT_ROUNDS)
+    getUser.password = newHashedPassword
+    getUser.__v++
+    if (!await getUser.save()) {
+        return next(new Error('failed to save new password!', { cause: 500 }))
+    }
+    res.status(200).json({
+        message: "changing password is successfull!"
     })
 }
