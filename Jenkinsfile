@@ -26,7 +26,6 @@ pipeline {
                 sh """ 
                     docker build . -t  projectimage
                     """
-                } 
             }
         }
         stage('deploy the javaApp'){
