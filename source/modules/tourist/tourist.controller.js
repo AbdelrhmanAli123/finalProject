@@ -186,6 +186,8 @@ export const confirmAccount = async (req, res, next) => {
     if (!getUser) {
         return next(new Error('failed to find user!', { cause: 500 }))
     }
+    // the reason that this API on cloud gets this response always is that it sends the request twice by itslef
+    // but it still works and not always has the request for hit twice , sometimes it hit once and it does work
     if (getUser.confirmed === true) {
         return next(new Error('user is already confirmed!', { cause: 400 }))
     }
