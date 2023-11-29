@@ -14,7 +14,7 @@ const nanoid2 = customAlphabet('1234567890', 6)
 
 export const TouristSignUp = async (req, res, next) => {
     const {
-        userName, email, password, confirmPassword, phoneNumber, gender, age, language, country
+        userName, email, password, confirmPassword, phoneNumber, gender, age, language, country, countryFlag
     } = req.body
     const findUser = await touristModel.findOne({ $or: [{ email: email }, { userName: userName }] })
     if (findUser?.email === email) {
@@ -116,12 +116,12 @@ export const TouristSignUp = async (req, res, next) => {
     }
     if (phoneNumber) {
         console.log({
-            length1: phoneNumber.length
+            length: phoneNumber.length
         })
-        if (phoneNumber.length !== 11) {
+        if (phoneNumber.length !== 10) {
             return next(new Error("enter a valid phone number!", { cause: 400 }))
         }
-        if (!EGphoneCodes.includes(phoneNumber.substring(0, 3))) {
+        if (!EGphoneCodes.includes(phoneNumber.substring(0, 2))) {
             return next(new Error("please enter an egyptian number!", { cause: 400 }))
         }
         userData.phoneNumber = phoneNumber
@@ -133,6 +133,10 @@ export const TouristSignUp = async (req, res, next) => {
         } else {
             return next(new Error('invalid country!', { cause: 400 }))
         }
+    }
+
+    if (countryFlag) {
+        userData.countryFlag = countryFlag
     }
 
     const saveUser = await touristModel.create(userData)
@@ -351,10 +355,10 @@ export const profileSetUp = async (req, res, next) => {
         console.log({
             length: phoneNumber.length,
         })
-        if (phoneNumber.length !== 11) {
+        if (phoneNumber.length !== 10) {
             return next(new Error("enter a valid phone number!", { cause: 400 }))
         }
-        if (!EGphoneCodes.includes(phoneNumber.slice(0, 3))) {
+        if (!EGphoneCodes.includes(phoneNumber.slice(0, 2))) {
             return next(new Error("please enter an egyptian number!", { cause: 400 }))
         }
         getUser.phoneNumber = phoneNumber
@@ -388,6 +392,10 @@ export const profileSetUp = async (req, res, next) => {
 
     if (preferences) {
         getUser.preferences = preferences
+    }
+
+    if (countryFlag) {
+        userData.countryFlag = countryFlag
     }
 
     let profilePic, coverPic
@@ -504,7 +512,7 @@ export const deleteUser = async (req, res, next) => {
 export const getUserInfo = async (req, res, next) => {
     const { _id } = req.authUser
     const getUser = await touristModel.findById(_id)
-        .select('userName email gender age phoneNumber language profilePicture.secure_url coverPicture.secure_url status confirmed country preferences')
+        .select('userName email gender age phoneNumber language profilePicture.secure_url coverPicture.secure_url status confirmed country countryFlag preferences')
     if (!getUser) {
         return next(new Error('user not found!', { cause: 400 }))
     }

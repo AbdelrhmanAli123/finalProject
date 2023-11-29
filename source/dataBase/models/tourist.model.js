@@ -26,8 +26,8 @@ const touristSchema = new Schema({
     },
     gender: {
         type: String,
-        enum: ['male', 'female', 'not specified'], // not specified -> means the user didn't say male or female
-        defaul: 'not specified'
+        enum: ['male', 'female', 'Male', 'Female', 'MALE', 'FEMALE', 'not specified'], // not specified -> means the user didn't say male or female
+        default: 'not specified'
     },
     age: {
         type: Number,
@@ -77,12 +77,15 @@ const touristSchema = new Schema({
         type: Boolean,
         default: false
     },
-    country: {
+    country: { // nationality
         type: String,
         required: false
     },
     preferences: {
         type: [String]
+    },
+    countryFlag: {
+        type: String
     }
     // resetToken:String
     // address: {

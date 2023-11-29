@@ -1,1 +1,1 @@
-export const EGphoneCodes = ['012', '011', '010', '015']
+export const EGphoneCodes = ['12', '11', '10', '15']
