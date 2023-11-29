@@ -344,7 +344,7 @@ export const resetPassword = async (req, res, next) => {
 export const profileSetUp = async (req, res, next) => {
     // if this api will occur after logging in -> we will need a token
     const _id = req?.authUser._id
-    const { phoneNumber, gender, age, language, country, preferences } = req.body // front -> not in DB document
+    const { phoneNumber, gender, age, language, country, preferences, countryFlag } = req.body // front -> not in DB document
 
     const getUser = await touristModel.findById(_id)
     if (!getUser) {
