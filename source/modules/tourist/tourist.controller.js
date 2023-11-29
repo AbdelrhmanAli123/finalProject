@@ -395,7 +395,7 @@ export const profileSetUp = async (req, res, next) => {
     }
 
     if (countryFlag) {
-        userData.countryFlag = countryFlag
+        getUser.countryFlag = countryFlag
     }
 
     let profilePic, coverPic
