@@ -1,5 +1,5 @@
 pipeline {
-  agent any
+  agent {label 'admin'}
 
     stages {
         // stage('Maven Build') {
