@@ -1,33 +1,30 @@
 pipeline {
-  agent {label 'ballo'}
+  agent any
 
     stages {
-        stage('Maven Build') {
-            steps {
-                sh 'mvn clean install'
-           }
-                 // Post building archive Java application
+        // stage('Maven Build') {
+        //     steps {
+        //         sh 'mvn clean install'
+        //    }
+        //          // Post building archive Java application
 
-            post {
-                success {
-                    archiveArtifacts artifacts: '**/target/*.jar'
-                }
-            }
+        //     post {
+        //         success {
+        //             archiveArtifacts artifacts: '**/target/*.jar'
+        //         }
+        //     }
         
-        }
-        stage('Maven test'){
-            steps {
-                sh 'mvn test'
-            }
-        }
+        // }
+        // stage('Maven test'){
+        //     steps {
+        //         sh 'mvn test'
+        //     }
+        // }
         stage('Build Docker Image') {
             steps {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
+                    // withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
                 sh """ 
-                    docker build . -t  javaimage:latest
-                    docker tag javaimage abdelrhmandevops/javaimage:latest
-                    docker login -u ${username} -p ${password}
-                    docker push abdelrhmandevops/javaimage:latest
+                    docker build . -t  projectimage
                     """
                 } 
             }
@@ -35,9 +32,9 @@ pipeline {
         stage('deploy the javaApp'){
             steps{
                 sh """
-                    docker stop javaApp || true && docker rm javaApp || true
-                    docker pull abdelrhmandevops/javaimage
-                    docker run --name javaApp -d -p 8081:8081 palakbhawsar/javawebapp
+                    docker stop projectcontainer || true && docker rm projectcontainer || true
+                    docker run --name  projectcontainer -d -p 8081:4000 projectimage
+                    docker rmi --force projectimage || true
                 """
             }
         }
@@ -50,26 +47,26 @@ pipeline {
 
 
 
-pipeline {
-  agent {label 'ballo'}
-  stages {
-    stage('Clone Repository') {
-      steps {
-        git branch: 'main', url: 'https://github.com/AbdelrhmanAli123/docker-deploy-website'
-      }
-    }
-    stage('Build Docker Image') {
-      steps {
-          withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
-          sh """ 
-          docker build . -t abdelrhmandevops/helllllo
-          docker login -u ${username} -p ${password}
-          docker push abdelrhmandevops/helllllo
-          """
+// pipeline {
+//   agent {label 'ballo'}
+//   stages {
+//     stage('Clone Repository') {
+//       steps {
+//         git branch: 'main', url: 'https://github.com/AbdelrhmanAli123/docker-deploy-website'
+//       }
+//     }
+//     stage('Build Docker Image') {
+//       steps {
+//           withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
+//           sh """ 
+//           docker build . -t abdelrhmandevops/helllllo
+//           docker login -u ${username} -p ${password}
+//           docker push abdelrhmandevops/helllllo
+//           """
           
-    // some block
-        }
-      }
-    }
-  }
-}
+//     // some block
+//         }
+//       }
+//     }
+//   }
+// }
