@@ -405,12 +405,14 @@ export const profileSetUp = async (req, res, next) => {
         console.log({ files: req.files })
         // we can either make a new customId for the usesd document or not , it may be better for security
         let customId
+        let flag = false
         if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
             customId = getUser.customId
         }
         else { // else meanse that you don't have
             customId = nanoid()
             getUser.customId = customId
+            flag = true
         }
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
@@ -424,8 +426,10 @@ export const profileSetUp = async (req, res, next) => {
             for (const file of arrayFields) { // each object of the array inside the object
                 if (file.fieldname === 'profilePicture') {
                     console.log({ accessed: true })
-                    await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
-                    await cloudinary.api.delete_folder(profileUploadPath)
+                    if (flag == false) {
+                        await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
+                        await cloudinary.api.delete_folder(profileUploadPath)
+                    }
                     console.log({ profilePicDeleted: true })
                     const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
                         folder: profileUploadPath
@@ -438,8 +442,10 @@ export const profileSetUp = async (req, res, next) => {
                 }
                 else if (file.fieldname === 'coverPicture') {
                     console.log({ accessed: true })
-                    await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
-                    await cloudinary.api.delete_folder(coverUploadPath)
+                    if (flag == false) {
+                        await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
+                        await cloudinary.api.delete_folder(coverUploadPath)
+                    }
                     console.log({ coverPicDeleted: true })
                     const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
                         folder: coverUploadPath
@@ -635,20 +641,24 @@ export const test = async (req, res, next) => {
     let coverUploadPath // for cover picture
     if (req.files) {
         let customId
+        let flag = false
         if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
             customId = getUser.customId
         }
         else { // else meanse that you don't have
             customId = nanoid()
             getUser.customId = customId
+            flag = true
         }
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
         for (const file of req.files) {
             if (file.fieldname === 'profilePicture') {
                 console.log({ accessed: true })
-                await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
-                await cloudinary.api.delete_folder(profileUploadPath)
+                if (flag == false) {
+                    await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
+                    await cloudinary.api.delete_folder(profileUploadPath)
+                }
                 console.log({ profilePicDeleted: true })
                 const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
                     folder: profileUploadPath
@@ -660,8 +670,10 @@ export const test = async (req, res, next) => {
                 getUser.profilePicture = profilePic
             } else if (file.fieldname === 'coverPicture') {
                 console.log({ accessed: true })
-                await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
-                await cloudinary.api.delete_folder(coverUploadPath)
+                if (flag == false) {
+                    await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
+                    await cloudinary.api.delete_folder(coverUploadPath)
+                }
                 console.log({ coverPicDeleted: true })
                 const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
                     folder: coverUploadPath
