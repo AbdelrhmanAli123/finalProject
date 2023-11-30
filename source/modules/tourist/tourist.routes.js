@@ -92,4 +92,12 @@ router.delete(
     asyncHandler(touristCont.deleteUser)
 )
 
+router.patch(
+    '/testAny',
+    isAuth(touristAPIroles.profile_setUp),
+    multerHostFunction(allowedExtensions.image).any(),
+    validationCoreFunction(touristVS.testSchema),
+    asyncHandler(touristCont.test)
+)
+
 export default router

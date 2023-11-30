@@ -623,3 +623,77 @@ export const changeOldPass = async (req, res, next) => {
         message: "changing password is successfull!"
     })
 }
+
+export const test = async (req, res, next) => {
+    const { _id } = req.authUser
+    const getUser = await touristModel.findById(_id)
+    if (!getUser) {
+        return next(new Error("couldn't find the user", { cause: 400 }))
+    }
+    let profilePic, coverPic
+    let profileUploadPath // for profile Picture
+    let coverUploadPath // for cover picture
+    if (req.files) {
+        let customId
+        if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
+            customId = getUser.customId
+        }
+        else { // else meanse that you don't have
+            customId = nanoid()
+            getUser.customId = customId
+        }
+        profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+        coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
+        for (const file of req.files) {
+            if (file.fieldname === 'profilePicture') {
+                console.log({ accessed: true })
+                await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
+                await cloudinary.api.delete_folder(profileUploadPath)
+                console.log({ profilePicDeleted: true })
+                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                    folder: profileUploadPath
+                })
+                if (!secure_url || !public_id) {
+                    return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+                }
+                profilePic = { secure_url, public_id }
+                getUser.profilePicture = profilePic
+            } else if (file.fieldname === 'coverPicture') {
+                console.log({ accessed: true })
+                await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
+                await cloudinary.api.delete_folder(coverUploadPath)
+                console.log({ coverPicDeleted: true })
+                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                    folder: coverUploadPath
+                })
+                if (!secure_url || !public_id) {
+                    return next(new Error("couldn't save the image!", { cause: 400 }))
+                }
+                coverPic = { secure_url, public_id }
+                getUser.coverPicture = coverPic
+            } else {
+                return next(new Error('invalid file fieldName!', { cause: 400 }))
+            }
+        }
+    }
+    else {
+        profilePic = null
+        coverPic = null
+        profileUploadPath = null
+        coverUploadPath = null
+    }
+
+    req.profileImgPath = profileUploadPath
+    req.coverImgPath = coverUploadPath
+
+    getUser.__v++
+
+    if (!await getUser.save()) {
+        return next(new Error("couldn't update the user in database!", { cause: 500 }))
+    }
+
+    res.status(200).json({
+        message: "(any) pictures update is successfull!",
+        getUser
+    })
+}

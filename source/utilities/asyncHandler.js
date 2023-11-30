@@ -7,8 +7,7 @@ export const asyncHandler = (API) => { // API -> api controller
             .catch(async (err) => {
                 console.log({
                     err: err,
-                    message: err.message,
-                    details: err.message.details
+                    message: err?.message
                 })
                 if (req?.coverImgPath) {
                     await cloudinary.api.delete_resources_by_prefix(req.coverImgPath)
