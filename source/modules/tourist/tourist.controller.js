@@ -403,6 +403,10 @@ export const profileSetUp = async (req, res, next) => {
     let coverUploadPath // for cover picture
     if (req.files) {
         console.log({ files: req.files })
+        console.log({
+            profileArray: req.files['profilePicture'],
+            coverArray: req.files['coverPicture']
+        })
         // we can either make a new customId for the usesd document or not , it may be better for security
         let customId
         let flag = false
