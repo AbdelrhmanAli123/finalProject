@@ -709,3 +709,13 @@ export const test = async (req, res, next) => {
         getUser
     })
 }
+
+export const test2 = async (req, res, next) => {
+    if (req.file) {
+        console.log(req.file)
+        res.status(200).json({
+            message: "file",
+            file: req.file
+        })
+    }
+}

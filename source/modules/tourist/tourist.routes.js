@@ -100,4 +100,9 @@ router.patch(
     asyncHandler(touristCont.test)
 )
 
+router.post(
+    '/test2',
+    asyncHandler(touristCont.test2)
+)
+
 export default router
