@@ -427,7 +427,7 @@ export const profileSetUp = async (req, res, next) => {
             })
             const arrayFields = req.files[array] // this should access the first array of req.files
             console.log({ iterationArray: arrayFields })
-            for (const file of arrayFields) { // each object of the array inside the object
+            for (const file in arrayFields) { // each object of the array inside the object
                 if (file.fieldname === 'profilePicture') {
                     console.log({ accessed: true })
                     if (flag == false) {
@@ -724,6 +724,6 @@ export const test2 = async (req, res, next) => {
     }
     res.json({
         message: "no file",
-        file: req.file
+        file: req.photo
     })
 }
