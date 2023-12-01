@@ -719,6 +719,7 @@ export const test2 = async (req, res, next) => {
         })
     }
     res.json({
-        message: "no file"
+        message: "no file",
+        file: req.photo
     })
 }
