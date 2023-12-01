@@ -718,4 +718,7 @@ export const test2 = async (req, res, next) => {
             file: req.file
         })
     }
+    res.json({
+        message: "no file"
+    })
 }
