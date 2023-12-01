@@ -77,7 +77,7 @@ export const touristProfileSetUpSchema = {
         age: joi.number(),
         language: joi.string(),
         country: joi.string(),
-        prefences: joi.array().items(joi.string())
+        preferences: joi.array().items(joi.string())
     }).presence('optional'),
     files: joi.object({
         profilePicture: joi.array().items(joi.object({
