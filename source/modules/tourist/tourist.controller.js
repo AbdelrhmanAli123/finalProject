@@ -344,7 +344,8 @@ export const resetPassword = async (req, res, next) => {
 export const profileSetUp = async (req, res, next) => {
     // if this api will occur after logging in -> we will need a token
     console.log({
-        req
+        body: req.body,
+        files: req.files
     })
     const _id = req?.authUser._id
     const { phoneNumber, gender, age, language, country, preferences, countryFlag } = req.body // front -> not in DB document
@@ -478,11 +479,11 @@ export const profileSetUp = async (req, res, next) => {
     req.profileImgPath = profileUploadPath
     req.coverImgPath = coverUploadPath
 
-    getUser.__v++
 
     if (!await getUser.save()) {
         return next(new Error("couldn't update the user in database!", { cause: 500 }))
     }
+    getUser.__v++
     res.status(200).json({
         message: "your profile updating is completed!",
         user: getUser
