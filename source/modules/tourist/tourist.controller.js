@@ -343,6 +343,9 @@ export const resetPassword = async (req, res, next) => {
 // this api will be used for both first time profile setUp and profile update
 export const profileSetUp = async (req, res, next) => {
     // if this api will occur after logging in -> we will need a token
+    console.log({
+        req
+    })
     const _id = req?.authUser._id
     const { phoneNumber, gender, age, language, country, preferences, countryFlag } = req.body // front -> not in DB document
 
