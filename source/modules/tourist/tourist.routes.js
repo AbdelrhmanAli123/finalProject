@@ -7,10 +7,7 @@ const router = Router()
 
 router.post(
     '/signUp',
-    multerHostFunction(allowedExtensions.image).fields([
-        { name: 'profilePicture', maxCount: 2 }, // array of objects
-        { name: 'coverPicture', maxCount: 2 } // array of objects
-    ]),
+    multerHostFunction(allowedExtensions.image).single('profilePicture'),
     validationCoreFunction(touristVS.signUpValidSchema),
     asyncHandler(touristCont.TouristSignUp)
 )

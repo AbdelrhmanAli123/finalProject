@@ -79,28 +79,38 @@ export const touristProfileSetUpSchema = {
         country: joi.string(),
         preferences: joi.array().items(joi.string())
     }).presence('optional'),
-    files: joi.object({
-        profilePicture: joi.array().items(joi.object({
-            fieldname: joi.string(),
-            originalname: joi.string(),
-            encoding: joi.string(),
-            mimetype: joi.string(),
-            destination: joi.string(),
-            filename: joi.string(),
-            path: joi.string(),
-            size: joi.number()
-        })),
-        coverPicture: joi.array().items(joi.object({
-            fieldname: joi.string(),
-            originalname: joi.string(),
-            encoding: joi.string(),
-            mimetype: joi.string(),
-            destination: joi.string(),
-            filename: joi.string(),
-            path: joi.string(),
-            size: joi.number()
-        }))
+    file: joi.object({
+        fieldname: joi.string(),
+        originalname: joi.string(),
+        encoding: joi.string(),
+        mimetype: joi.string(),
+        destination: joi.string(),
+        filename: joi.string(),
+        path: joi.string(),
+        size: joi.number()
     }).unknown(true).presence('optional').options({ presence: 'optional' }),
+    // files: joi.object({
+    //     profilePicture: joi.array().items(joi.object({
+    //         fieldname: joi.string(),
+    //         originalname: joi.string(),
+    //         encoding: joi.string(),
+    //         mimetype: joi.string(),
+    //         destination: joi.string(),
+    //         filename: joi.string(),
+    //         path: joi.string(),
+    //         size: joi.number()
+    //     })),
+    //     coverPicture: joi.array().items(joi.object({
+    //         fieldname: joi.string(),
+    //         originalname: joi.string(),
+    //         encoding: joi.string(),
+    //         mimetype: joi.string(),
+    //         destination: joi.string(),
+    //         filename: joi.string(),
+    //         path: joi.string(),
+    //         size: joi.number()
+    //     }))
+    // }).unknown(true).presence('optional').options({ presence: 'optional' }),
     headers: joi.object({
         authorization: generalFields.jwtToken
     }).presence('required').unknown(true)

@@ -405,6 +405,33 @@ export const profileSetUp = async (req, res, next) => {
     let profilePic, coverPic
     let profileUploadPath // for profile Picture
     let coverUploadPath // for cover picture
+    if (req.file) {
+        let customId
+        let flag = false
+        if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
+            customId = getUser.customId
+        }
+        else { // else meanse that you don't have
+            customId = nanoid()
+            getUser.customId = customId
+            flag = true
+        }
+        profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+        console.log({ accessed: true })
+        if (flag == false) {
+            await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
+            await cloudinary.api.delete_folder(profileUploadPath)
+        }
+        console.log({ profilePicDeleted: true })
+        const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+            folder: profileUploadPath
+        })
+        if (!secure_url || !public_id) {
+            return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+        }
+        profilePic = { secure_url, public_id }
+        getUser.profilePicture = profilePic
+    }
     if (req.files) {
         console.log({ files: req.files })
         console.log({
