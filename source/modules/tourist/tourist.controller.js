@@ -347,6 +347,10 @@ export const profileSetUp = async (req, res, next) => {
         body: req.body,
         files: req.files
     })
+    console.log({
+        request: req,
+        requestFile: req.file
+    })
     const _id = req?.authUser._id
     const { phoneNumber, gender, age, language, country, preferences, countryFlag } = req.body // front -> not in DB document
 
