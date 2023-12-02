@@ -432,79 +432,79 @@ export const profileSetUp = async (req, res, next) => {
         profilePic = { secure_url, public_id }
         getUser.profilePicture = profilePic
     }
-    if (req.files) {
-        console.log({ files: req.files })
-        console.log({
-            profileArray: req.files['profilePicture'],
-            coverArray: req.files['coverPicture']
-        })
-        // we can either make a new customId for the usesd document or not , it may be better for security
-        let customId
-        let flag = false
-        if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
-            customId = getUser.customId
-        }
-        else { // else meanse that you don't have
-            customId = nanoid()
-            getUser.customId = customId
-            flag = true
-        }
-        profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
-        coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
-        for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
-            console.log({
-                iterationArrayName: array,
-                typeOfIterationArray: typeof (array)
-            })
-            const arrayFields = req.files[array] // this should access the first array of req.files
-            console.log({ iterationArray: arrayFields })
-            for (const file of arrayFields) { // each object of the array inside the object
-                if (file.fieldname === 'profilePicture') {
-                    console.log({ accessed: true })
-                    if (flag == false) {
-                        await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
-                        await cloudinary.api.delete_folder(profileUploadPath)
-                    }
-                    console.log({ profilePicDeleted: true })
-                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-                        folder: profileUploadPath
-                    })
-                    if (!secure_url || !public_id) {
-                        return next(new Error("couldn't save the profile picture!", { cause: 400 }))
-                    }
-                    profilePic = { secure_url, public_id }
-                    getUser.profilePicture = profilePic
-                }
-                else if (file.fieldname === 'coverPicture') {
-                    console.log({ accessed: true })
-                    if (flag == false) {
-                        await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
-                        await cloudinary.api.delete_folder(coverUploadPath)
-                    }
-                    console.log({ coverPicDeleted: true })
-                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-                        folder: coverUploadPath
-                    })
-                    if (!secure_url || !public_id) {
-                        return next(new Error("couldn't save the image!", { cause: 400 }))
-                    }
-                    coverPic = { secure_url, public_id }
-                    getUser.coverPicture = coverPic
-                }
-                else {
-                    return next(new Error('invalid file fieldName!', { cause: 400 }))
-                }
-            }
-        }
-    } else {
-        profilePic = null
-        coverPic = null
-        profileUploadPath = null
-        coverUploadPath = null
-    }
+    // if (req.files) {
+    //     console.log({ files: req.files })
+    //     console.log({
+    //         profileArray: req.files['profilePicture'],
+    //         coverArray: req.files['coverPicture']
+    //     })
+    //     // we can either make a new customId for the usesd document or not , it may be better for security
+    //     let customId
+    //     let flag = false
+    //     if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
+    //         customId = getUser.customId
+    //     }
+    //     else { // else meanse that you don't have
+    //         customId = nanoid()
+    //         getUser.customId = customId
+    //         flag = true
+    //     }
+    //     profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+    //     coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
+    //     for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
+    //         console.log({
+    //             iterationArrayName: array,
+    //             typeOfIterationArray: typeof (array)
+    //         })
+    //         const arrayFields = req.files[array] // this should access the first array of req.files
+    //         console.log({ iterationArray: arrayFields })
+    //         for (const file of arrayFields) { // each object of the array inside the object
+    //             if (file.fieldname === 'profilePicture') {
+    //                 console.log({ accessed: true })
+    //                 if (flag == false) {
+    //                     await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
+    //                     await cloudinary.api.delete_folder(profileUploadPath)
+    //                 }
+    //                 console.log({ profilePicDeleted: true })
+    //                 const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+    //                     folder: profileUploadPath
+    //                 })
+    //                 if (!secure_url || !public_id) {
+    //                     return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+    //                 }
+    //                 profilePic = { secure_url, public_id }
+    //                 getUser.profilePicture = profilePic
+    //             }
+    //             else if (file.fieldname === 'coverPicture') {
+    //                 console.log({ accessed: true })
+    //                 if (flag == false) {
+    //                     await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
+    //                     await cloudinary.api.delete_folder(coverUploadPath)
+    //                 }
+    //                 console.log({ coverPicDeleted: true })
+    //                 const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+    //                     folder: coverUploadPath
+    //                 })
+    //                 if (!secure_url || !public_id) {
+    //                     return next(new Error("couldn't save the image!", { cause: 400 }))
+    //                 }
+    //                 coverPic = { secure_url, public_id }
+    //                 getUser.coverPicture = coverPic
+    //             }
+    //             else {
+    //                 return next(new Error('invalid file fieldName!', { cause: 400 }))
+    //             }
+    //         }
+    //     }
+    // } else {
+    //     profilePic = null
+    //     coverPic = null
+    //     profileUploadPath = null
+    //     coverUploadPath = null
+    // }
 
     req.profileImgPath = profileUploadPath
-    req.coverImgPath = coverUploadPath
+    // req.coverImgPath = coverUploadPath
 
 
     if (!await getUser.save()) {
