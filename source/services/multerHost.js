@@ -9,12 +9,12 @@ export const multerHostFunction = (extensions = []) => {
     const fileUplaod = multer({
         storage: multerStorage
         ,
-        // fileFilter: (req, file, cb) => {
-        //     if (extensions.includes(file?.mimetype) !== true) {
-        //         cb(null, false)
-        //     }
-        //     cb(null, true)
-        // }
+        fileFilter: (req, file, cb) => {
+            if (extensions.includes(file?.mimetype) !== true) {
+                cb(null, false)
+            }
+            cb(null, true)
+        }
     })
     return fileUplaod
 }
