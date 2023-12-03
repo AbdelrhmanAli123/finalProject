@@ -637,12 +637,13 @@ export const profileSetUp = async (req, res, next) => {
         console.log({
             request_file: req.file
         })
+        // we must check that if you have a custom id but you don't have an image on the cloud
         let customId
         let flag = false
         if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
             customId = getUser.customId
         }
-        else { // else meanse that you don't have
+        else { // else means that you don't have
             customId = nanoid()
             getUser.customId = customId
             flag = true
@@ -650,13 +651,19 @@ export const profileSetUp = async (req, res, next) => {
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         console.log({ accessed: true })
         if (flag == false) {
-            await cloudinary.api.delete_resources_by_prefix(profileUploadPath).catch((err) => {
-                console.log(err)
-            })
-            await cloudinary.api.delete_folder(profileUploadPath).catch((err) => {
-                console.log(err)
-            })
-            console.log({ profilePicDeleted: true })
+            const isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+            if (isFileExists) { // if there is a file
+                console.log({
+                    existing_file_to_be_deleted: isFileExists
+                })
+                await cloudinary.api.delete_resources_by_prefix(profileUploadPath).catch((err) => {
+                    console.log(err)
+                })
+                await cloudinary.api.delete_folder(profileUploadPath).catch((err) => {
+                    console.log(err)
+                })
+                console.log({ profilePicDeleted: true })
+            }
         }
         const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
             folder: profileUploadPath
