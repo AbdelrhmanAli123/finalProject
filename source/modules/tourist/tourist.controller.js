@@ -572,7 +572,7 @@ export const profileSetUp = async (req, res, next) => {
         files: req.files
     })
     console.log({
-        request: req,
+        // request: req,
         requestFile: req.file
     })
     const _id = req?.authUser._id
