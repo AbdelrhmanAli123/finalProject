@@ -647,10 +647,14 @@ export const profileSetUp = async (req, res, next) => {
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         console.log({ accessed: true })
         if (flag == false) {
-            await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
-            await cloudinary.api.delete_folder(profileUploadPath)
+            await cloudinary.api.delete_resources_by_prefix(profileUploadPath).catch((err) => {
+                console.log(err)
+            })
+            await cloudinary.api.delete_folder(profileUploadPath).catch((err) => {
+                console.log(err)
+            })
+            console.log({ profilePicDeleted: true })
         }
-        console.log({ profilePicDeleted: true })
         const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
             folder: profileUploadPath
         })
