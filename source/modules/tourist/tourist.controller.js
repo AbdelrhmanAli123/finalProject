@@ -642,21 +642,34 @@ export const profileSetUp = async (req, res, next) => {
         let flag = false
         if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
             customId = getUser.customId
+            console.log({
+                message: "user has a customId"
+            })
         }
         else { // else means that you don't have
             customId = nanoid()
             getUser.customId = customId
+            await getUser.save()
             flag = true
+            console.log({
+                message: "a customId is generated"
+            })
         }
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+        console.log({
+            profilePath: profileUploadPath
+        })
         console.log({ accessed: true })
         if (flag == false) {
-            const isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id).catch((error) => {
+            let isFileExists
+            try {
+                isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+            } catch (error) {
                 console.log({
                     message: "file isn't found!",
                     error: error
                 })
-            })
+            }
             if (isFileExists) { // if there is a file
                 console.log({
                     existing_file_to_be_deleted: isFileExists
@@ -670,7 +683,8 @@ export const profileSetUp = async (req, res, next) => {
                 console.log({ profilePicDeleted: true })
             }
         }
-        const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+        console.log({ message: "about to upload" })
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: profileUploadPath
         })
         if (!secure_url || !public_id) {
@@ -994,7 +1008,11 @@ export const test = async (req, res, next) => {
 }
 
 export const test2 = async (req, res, next) => {
+    const custom = nanoid()
     console.log(req.file)
+    await cloudinary.uploader.upload(req.file.path, {
+        folder: `test/${custom}/`
+    })
     res.status(200).json({
         message: "file",
         file: req.file

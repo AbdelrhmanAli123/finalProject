@@ -8,7 +8,7 @@ export const multerHostFunction = (extensions = []) => {
     const multerStorage = multer.diskStorage({})
     const fileUplaod = multer({
         storage: multerStorage
-        // ,
+        ,
         // fileFilter: (req, file, cb) => {
         //     if (extensions.includes(file?.mimetype) !== true) {
         //         cb(null, false)
