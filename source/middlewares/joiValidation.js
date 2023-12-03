@@ -19,6 +19,7 @@ export const generalFields = {
 }
 
 export const validationCoreFunction = (schema) => {
+    console.log("\nVALIDATION\n")
     const reqElements = ['body', 'params', 'query', 'headers', 'file', 'files'] // known parts of the request object (they are also objects)
     return async (req, res, next) => {
         const validationErrors = []
@@ -31,7 +32,7 @@ export const validationCoreFunction = (schema) => {
             }
         }
         if (validationErrors.length) {
-            console.log(validationErrors)
+            console.log({ validation_errors: validationErrors })
             // return res.status(400).json({
             //     message: "validation error(s)!",
             //     Errors: validationErrors
@@ -39,6 +40,7 @@ export const validationCoreFunction = (schema) => {
             req.validationErrors = validationErrors
             return next(new Error({ ...validationErrors }, { cause: 400 }))
         }
+        console.log("\nVALIDATION IS SUCCESSFULL\n")
         next()
     }
 }

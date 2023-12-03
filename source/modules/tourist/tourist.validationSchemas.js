@@ -91,14 +91,14 @@ export const touristProfileSetUpSchema = {
     }).unknown(true).presence('optional').options({ presence: 'optional' }),
     // files: joi.object({
     //     profilePicture: joi.array().items(joi.object({
-    //         fieldname: joi.string(),
-    //         originalname: joi.string(),
-    //         encoding: joi.string(),
-    //         mimetype: joi.string(),
-    //         destination: joi.string(),
-    //         filename: joi.string(),
-    //         path: joi.string(),
-    //         size: joi.number()
+    // fieldname: joi.string(),
+    // originalname: joi.string(),
+    // encoding: joi.string(),
+    // mimetype: joi.string(),
+    // destination: joi.string(),
+    // filename: joi.string(),
+    // path: joi.string(),
+    // size: joi.number()
     //     })),
     //     coverPicture: joi.array().items(joi.object({
     //         fieldname: joi.string(),

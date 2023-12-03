@@ -34,10 +34,7 @@ router.post(
 router.post(
     '/profileSetUp',
     isAuth(touristAPIroles.profile_setUp),
-    multerHostFunction(allowedExtensions.image).fields([
-        { name: 'profilePicture', maxCount: 1 },
-        { name: 'coverPicture', maxCount: 1 }
-    ]),
+    multerHostFunction(allowedExtensions.image).single('profilePicture'),
     validationCoreFunction(touristVS.touristProfileSetUpSchema),
     asyncHandler(touristCont.profileSetUp)
 )
@@ -99,6 +96,7 @@ router.patch(
 
 router.post(
     '/test2',
+    multerHostFunction(allowedExtensions.image).single('photo'),
     asyncHandler(touristCont.test2)
 )
 

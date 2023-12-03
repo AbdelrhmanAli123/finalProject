@@ -6,21 +6,23 @@ export const multerHostFunction = (extensions = []) => {
         extensions = allowedExtensions.image
     }
     const multerStorage = multer.diskStorage({})
-    // const fileFilter = (req, file, cb) => {
-    //     const fileExtension = file.originalname.split('.').pop().toLowerCase();
-    //     if (!extensions.includes(fileExtension)) {
-    //         cb(null, false)
-    //     }
-    //     cb(null, true)
-    // }
     const fileUplaod = multer({
-        storage: multerStorage,
-        fileFilter: (req, file, cb) => {
-            if (!extensions.includes(file?.mimetype)) {
-                cb(null, false)
-            }
-            cb(null, true)
-        }
+        storage: multerStorage
+        // ,
+        // fileFilter: (req, file, cb) => {
+        //     if (extensions.includes(file?.mimetype) !== true) {
+        //         cb(null, false)
+        //     }
+        //     cb(null, true)
+        // }
     })
     return fileUplaod
 }
+
+// const fileFilter = (req, file, cb) => {
+//     const fileExtension = file.originalname.split('.').pop().toLowerCase();
+//     if (!extensions.includes(fileExtension)) {
+//         cb(null, false)
+//     }
+//     cb(null, true)
+// }

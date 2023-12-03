@@ -7,15 +7,19 @@ import { statuses } from "../utilities/activityStatuses.js"
 export const isAuth = (roles = []) => {
     return async (req, res, next) => {
         try {
+            console.log("\nAUTHENTICATION\n")
             const { authorization } = req.headers
+            console.log({ token: authorization })
             if (!authorization) {
                 return next(new Error('token is missing!', { cause: 400 }))
             }
+            console.log({ token_prefix: authorization.split(' ')[0] })
             if (authorization.split(' ')[0] !== process.env.USER_LOGIN_TOKEN_PREFIX) {
                 return next(new Error('invalid token prefix', { cause: 400 }))
             }
             // tokenPrefix asvxcvcxvcxvxvx12eds#vcxcxvx
             const splittedToken = authorization.split(' ')[1]
+            console.log({ splitted_Token: splittedToken })
             // another try , catch is made so the variable "splitted token" is seen in a catch scope bcs it wont be seen in the first catch scope
             try {
                 // when a token expires , it doesn't get decoded
@@ -23,13 +27,15 @@ export const isAuth = (roles = []) => {
                     token: splittedToken,
                     signature: process.env.LOGIN_SECRET_KEY
                 })
-                console.log({ decodedToken })
+                console.log({ decodedToken: decodedToken })
                 if (!decodedToken) {
                     return next(new Error('invalid token', { cause: 400 }))
                 }
                 if (!decodedToken._id) {
                     return next(new Error('critical token data is missing!', { cause: 400 }))
                 }
+                console.log("\nAUTHENTICATION IS SUCCESSFULL\n")
+                console.log("\nAUTHORIZATION\n")
                 let getUser // tourist or tourGuide or other 
                 if (decodedToken.role === systemRoles.tourist) {
                     getUser = await touristModel.findOne({
@@ -54,9 +60,11 @@ export const isAuth = (roles = []) => {
                 // else if(decodedToken.role === systemRoles.tourGuide) {
 
                 // }
+                console.log("\nAUTHORIZATION IS SUCCESSFULL\n")
                 req.authUser = getUser
                 next()
             } catch (error) {
+                console.log("\nTOKEN REFRESHING\n")
                 if (error == 'TokenExpiredError: jwt expired') {
                     const user = await touristModel.findOne({
                         token: splittedToken
@@ -75,9 +83,11 @@ export const isAuth = (roles = []) => {
                             role: user.role
                         }
                     })
+                    console.log({ User_new_token: newToken })
                     user.token = newToken
-                    user.save()
+                    await user.save()
                     req.authUser = user
+                    console.log("\nTOKEN REFRESHING IS SUCCESSFULL\n")
                     return res.status(200).json({
                         message: "token refreshed!",
                         newToken

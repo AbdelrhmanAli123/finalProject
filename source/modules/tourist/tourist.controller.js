@@ -1,3 +1,4 @@
+import { log } from 'console'
 import {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
     ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses,
@@ -13,19 +14,47 @@ const nanoid2 = customAlphabet('1234567890', 6)
 // TODO : find a two-way encryption module that can be used in both node.js + flutter
 
 export const TouristSignUp = async (req, res, next) => {
+
+    console.log("\nTOURIST SIGN UP API\n")
+
     const {
         userName, email, password, confirmPassword, phoneNumber, gender, age, language, country, countryFlag
     } = req.body
+
     const findUser = await touristModel.findOne({ $or: [{ email: email }, { userName: userName }] })
+    console.log({ is_user_Found: findUser })
+
     if (findUser?.email === email) {
+        console.log({
+            api_error_message: "user shouldn't be found!",
+            user: findUser
+        })
         return next(new Error('email already exists!', { cause: 400 }))
     } else if (findUser?.userName === userName) {
+        console.log({
+            api_error_message: "username duplication!",
+            req_body_username: userName,
+            existing_username: findUser?.userName
+        })
         return next(new Error('userName already exists!', { cause: 400 }))
     }
+
     if (password !== confirmPassword) {
+        console.log({
+            api_error_message: "password duplication!",
+            req_body_password: password,
+            existing_password: findUser?.password
+        })
         return next(new Error("passwords don't match!", { cause: 400 }))
     }
+
     const slug = slugify(userName, '_')
+    console.log({
+        message: "slugging done!",
+        plain_name: userName,
+        sluggified_name: slug
+    })
+
     // TODO : add the address to the object when you deal with addresses
     const userData = {
         userName,
@@ -33,9 +62,14 @@ export const TouristSignUp = async (req, res, next) => {
         slug,
         // address
     }
+    console.log({
+        message: "email , userName and slug are done!"
+    })
+
     let profilePic, coverPic
     let profileUploadPath // for profile Picture
     let coverUploadPath // for cover picture
+
     if (req.files) {
         console.log({
             files: req.files,
@@ -46,6 +80,7 @@ export const TouristSignUp = async (req, res, next) => {
             profilePicture: req.files['profilePicture'],
             coverPicture: req.files['coverPicture']
         })
+
         const customId = nanoid()
         userData.customId = customId
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
@@ -71,6 +106,10 @@ export const TouristSignUp = async (req, res, next) => {
                     }
                     profilePic = { secure_url, public_id }
                     userData.profilePicture = profilePic
+                    console.log({
+                        message: "profile picture is added!",
+                        profile_pic_url: userData.profilePicture
+                    })
                 }
                 else if (file.fieldname === 'coverPicture') {
                     console.log({ accessed: true })
@@ -82,8 +121,16 @@ export const TouristSignUp = async (req, res, next) => {
                     }
                     coverPic = { secure_url, public_id }
                     userData.coverPicture = coverPic
+                    console.log({
+                        message: "cover picture is added!",
+                        profile_pic_url: userData.coverPicture
+                    })
                 }
                 else {
+                    console.log({
+                        message: "invalid file fieldname",
+                        file_field_name: file.fieldname
+                    })
                     return next(new Error('invalid file fieldName!', { cause: 400 }))
                 }
             }
@@ -100,48 +147,90 @@ export const TouristSignUp = async (req, res, next) => {
 
     const hashedPassword = bcrypt.hashSync(password, +process.env.SIGN_UP_SALT_ROUNDS)
     userData.password = hashedPassword
+    console.log({
+        message: "password encryption done!",
+    })
 
-    if (age) { userData.age = age }
+    if (age) {
+        userData.age = age
+        console.log({
+            message: "age added!"
+        })
+    }
+
     if (gender) {
         if (gender !== 'male' && gender !== 'female' && gender !== 'not specified') {
             return next(new Error('invalid gender!', { cause: 400 }))
         }
         userData.gender = gender
+        console.log({
+            message: "gender added!"
+        })
     }
+
     if (language) {
         if (!languages.includes(language)) {
             return next(new Error("please enter a valid language!", { cause: 400 }))
         }
         userData.language = language
+        console.log({
+            message: "language added!"
+        })
     }
+
     if (phoneNumber) {
         console.log({
             length: phoneNumber.length
         })
         if (phoneNumber.length !== 10) {
+            console.log({
+                api_error_message: "invalid phone number length",
+                phone_length: phoneNumber.length
+            })
             return next(new Error("enter a valid phone number!", { cause: 400 }))
         }
         if (!EGphoneCodes.includes(phoneNumber.substring(0, 2))) {
+            console.log({
+                api_error_message: "invalid phone number code",
+                phone_code: phoneNumber.substring(0, 2)
+            })
             return next(new Error("please enter an egyptian number!", { cause: 400 }))
         }
         userData.phoneNumber = phoneNumber
+        console.log({
+            message: "phone number added!"
+        })
     }
 
     if (country) {
         if (countries.includes(country)) {
             userData.country = country
+            console.log({
+                message: "country added!"
+            })
         } else {
+            console.log({
+                api_error_message: "invalid country",
+                country: country
+            })
             return next(new Error('invalid country!', { cause: 400 }))
         }
     }
 
     if (countryFlag) {
         userData.countryFlag = countryFlag
+        console.log({
+            message: "country flag added!"
+        })
     }
 
     const saveUser = await touristModel.create(userData)
     if (!saveUser) {
-        await cloudinary.uploader.destroy(image.public_id)
+        console.log({
+            api_error_message: "couldn't save the user in the data base , SERVER ERROR"
+        })
+        await cloudinary.uploader.destroy(profilePic?.public_id)
+        await cloudinary.uploader.destroy(coverPic?.public_id)
         return next(new Error("couldn't save the user in the data base !", { cause: 500 }))
     }
 
@@ -155,13 +244,16 @@ export const TouristSignUp = async (req, res, next) => {
             role: systemRoles.tourist
         }
     })
+    console.log({ message: "user token generated!" })
 
     saveUser.token = token
     saveUser.status = statuses.online
     await saveUser.save()
+    console.log({ message: "user saved and is online!" })
 
     const confirmToken = generateToken({ payload: { email }, signature: process.env.CONFIRM_LINK_SECRETE_KEY, expiresIn: '1h' })
     // `${req.protocol}://${req.headers.host}:${process.env.PORT}/user/confirmEmail/${EmailConfirmToken}`
+    console.log({ message: "account confirmation token generated!" })
 
     // TODO : you might add a '/' before 'confirmToken'
     console.log(`req destination host:${req.headers.host}`)
@@ -170,9 +262,13 @@ export const TouristSignUp = async (req, res, next) => {
     const subject = 'Email confirmation'
     const sendEMail = emailService({ message, to: email, subject })
     if (!sendEMail) {
+        console.log({
+            api_error_message: "account confirmation email sending failure!"
+        })
         return next(new Error('sending email failed!', { cause: 500 }))
     }
 
+    console.log("\nTOURIST SIGN UP IS DONE!\n")
     res.status(200).json({
         message: "user added!",
         user: saveUser
@@ -180,23 +276,52 @@ export const TouristSignUp = async (req, res, next) => {
 }
 
 export const confirmAccount = async (req, res, next) => {
+    console.log("\nTOURIST ACCOUNT CONFIRMATION API\n")
+
     const { confirmToken } = req.params
+
     const decodeToken = verifyToken({ token: confirmToken, signature: process.env.CONFIRM_LINK_SECRETE_KEY })
+    console.log({
+        message: "confirmation token is decoded!",
+        confirmation_token: decodeToken
+    })
     if (!decodeToken) {
-        return next(new Error('failed to decode the token!', { cause: 400 }))
+        console.log({
+            api_error_message: "failed to decode the confirmation token"
+        })
+        return next(new Error('failed to decode the confirmation token!', { cause: 400 }))
     }
+
     const getUser = await touristModel.findOne({ email: decodeToken?.email })
-    console.log({ confirmAccountDbErrors: getUser.errors })
+    console.log({ user_fetching_errors: getUser.errors })
     if (!getUser) {
+        console.log({
+            api_error_message: "failed to fetch the user!",
+        })
         return next(new Error('failed to find user!', { cause: 500 }))
     }
+    console.log({
+        message: "user fetched!",
+        fetched_user: getUser
+    })
+
     // the reason that this API on cloud gets this response always is that it sends the request twice by itslef
     // but it still works and not always has the request for hit twice , sometimes it hit once and it does work
     if (getUser.confirmed === true) {
+        console.log({
+            message: "user is already confirmed!",
+            is_user_confirmed: getUser.confirmed
+        })
         return next(new Error('user is already confirmed!', { cause: 400 }))
     }
+
     getUser.confirmed = true
+    console.log("user is confirmed!")
+
     getUser.save()
+    console.log("user is saved!")
+
+    console.log("\nTOURIST ACCOUNT CONFIRMATION IS DONE\n")
     res.status(200).json({
         message: "confirmation done!",
         user: getUser
@@ -204,19 +329,31 @@ export const confirmAccount = async (req, res, next) => {
 }
 
 export const touristLogIn = async (req, res, next) => {
+    console.log("\nTOURIST LOGIN API\n")
+
     const { email, password } = req.body
+
     const getUser = await touristModel.findOne({ email })
+    console.log({ user_fetching_errors: getUser.errors })
     if (!getUser) {
-        console.log('email error')
+        console.log({
+            user_error_message: "login email is invalid!"
+        })
         return next(new Error('invalid login credentials', { cause: 400 }))
     }
-    console.log('User found:', getUser)
+    console.log({
+        message: "user is found!",
+        user: getUser
+    })
+
     const isPassMatch = bcrypt.compareSync(password, getUser.password)
     console.log({
-        hashedPassword: isPassMatch
+        is_password_valid: isPassMatch
     })
     if (!isPassMatch) {
-        console.log('pass error')
+        console.log({
+            user_error_message: "login password is invalid!"
+        })
         return next(new Error('your email or password is wrong!', { cause: 400 }))
     }
 
@@ -231,14 +368,29 @@ export const touristLogIn = async (req, res, next) => {
         }
     })
     if (!token) {
+        console.log({
+            api_error_message: "failed to generate user token!",
+        })
         return next(new Error('failed to generate user token', { cause: 500 }))
     }
+    console.log({
+        message: "user token is generated!"
+    })
 
     const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true }).select('userName email token')
+    console.log({ user_updating_errors: updateUser.errors })
     if (!updateUser) {
+        console.log({
+            api_error_message: "failed to generate user token!",
+        })
         return next(new Error('failed to login the user!', { cause: 500 }))
     }
+    console.log({
+        message: "user is now online!",
+        logged_in_user: updateUser
+    })
 
+    console.log("\nTOURIST LOGIN IS DONE!\n")
     res.status(200).json({
         message: "login is successfull!",
         user: updateUser
@@ -248,13 +400,27 @@ export const touristLogIn = async (req, res, next) => {
 // TODO : first make this api for tourists only , then make it for tourGuides and other roles 
 export const forgetPassword = async (req, res, next) => {
     // this api occurs at the login page , doesn't need a token nor entering a password
+    console.log("\nTOURIST FORGET PASSWORD API\n")
     const { email } = req.body
+
     const getUser = await touristModel.findOne({ email })
+    console.log({ user_fetching_errors: getUser.errors })
     if (!getUser) {
+        console.log({
+            api_error_message: "failed to fetch the user!",
+        })
         return next(new Error('invalid email', { cause: 400 }))
     }
+    console.log({
+        message: "user fetched!",
+        fetched_user: getUser
+    })
+
     const code = nanoid2() // reset code generated
+    console.log("reset code generated!")
     const hashedCode = bcrypt.hashSync(code, +process.env.FORGET_PASSWORD_CODE_SALT) // reset code hashed
+    console.log("reset code hashed!")
+
     // we need this token to get the user Data from database in the reset password api
     const token = generateToken({
         payload: {
@@ -264,6 +430,16 @@ export const forgetPassword = async (req, res, next) => {
         signature: process.env.reset_password_secret_key,
         expiresIn: '300s'
     })
+    if (!token) {
+        console.log({
+            api_error_message: "failed to generate password reset token!",
+        })
+        return next(new Error('failed to generate password reset token', { cause: 500 }))
+    }
+    console.log({
+        message: "password reset token is generated!"
+    })
+
     // const resetPassLink = `${req.protocol}://${req.headers.host}/tourist/resetPassword${token}`
     const resetEmail = emailService({
         to: email,
@@ -271,15 +447,31 @@ export const forgetPassword = async (req, res, next) => {
         message: ` <h1>use this code below to reset your password in you app</h1>
                 <p>${code}</p>`
     })
-    console.log(resetEmail)
     if (!resetEmail) {
-        return next(new Error('failed to reset the password', { cause: 400 }))
+        console.log({
+            api_error_message: "failed to send password reset email!",
+        })
+        return next(new Error('failed to send password reset email!', { cause: 400 }))
     }
+    console.log({
+        message: "password reset email sent!",
+        reset_email: resetEmail
+    })
+
     const updateUser = await touristModel.findOneAndUpdate({ email }, { resetCode: hashedCode, forgetPassword: true }, { new: true })
+    console.log({ user_updating_errors: updateUser.errors })
     if (!updateUser) {
+        console.log({
+            api_error_message: "failed to forget password in data base!",
+        })
         return next(new Error('failed to update password status in data base!', { cause: 400 }))
     }
+    console.log({
+        message: "password is now forgotten!"
+    })
+
     // TODO : in the response , the 'resetCode' must be hashed or encrypted for the front end also and the front end can take that and dehash it
+    console.log("\nTOURIST FORGET PASSWORD IS DONE!\n")
     res.status(200).json({
         message: "forget password done!",
         token,
@@ -288,8 +480,10 @@ export const forgetPassword = async (req, res, next) => {
 }
 
 export const resetPassword = async (req, res, next) => {
+    console.log("\nTOURIST RESET PASSWORD API\n")
     const { token } = req.params
     const { newPassword } = req.body
+
     let decodedToken
     try {
         decodedToken = verifyToken({
@@ -298,6 +492,7 @@ export const resetPassword = async (req, res, next) => {
         })
     } catch (error) {
         console.log({
+            message: "token decoding error",
             JWTerrorName: error.name,
             JWTerrorMessage: error.message
         })
@@ -306,25 +501,54 @@ export const resetPassword = async (req, res, next) => {
         }
     }
     if (!decodedToken) {
+        console.log({
+            message: "token decoding failure"
+        })
         return next(new Error('failed to decode the token', { cause: 400 }))
     }
+    console.log({
+        message: "token decoded!",
+        decoded_token: decodedToken
+    })
     // if (decodedToken.Error.message === 'TokenExpiredError') {
     //     return next(new Error('reset code expired!', { cause: 408 }))
     // }
+
     const getUser = await touristModel.findOne({
         email: decodedToken.email,
     })
-    if (decodedToken.resetCode !== getUser.resetCode) {
-        return next(new Error('invalid reset code token!', { cause: 400 }))
-    }
+    console.log({ user_fetching_errors: getUser.errors })
     if (!getUser) {
+        console.log({
+            message: "failed to find user!"
+        })
         return next(new Error('failed to find user', { cause: 400 }))
     }
+    if (decodedToken.resetCode !== getUser.resetCode) {
+        console.log({
+            message: "invalid reset code token!"
+        })
+        return next(new Error('invalid reset code token!', { cause: 400 }))
+    }
+    console.log({
+        message: "user found!",
+        user: getUser
+    })
+
     const isPassMatch = await bcrypt.compare(newPassword, getUser.password)
-    console.log({ resetPasswordMatch: isPassMatch })
     if (isPassMatch) {
+        console.log({
+            message: "new password duplicate",
+            old_password: getUser.password,
+            entered_new_password: newPassword
+        })
         return next(new Error('enter a different password', { cause: 400 }))
     }
+    console.log({
+        message: "passwords match!",
+        resetPasswordMatch: isPassMatch
+    })
+
     const hashedNewPassword = bcrypt.hashSync(newPassword, +process.env.reset_password_salt)
     getUser.password = hashedNewPassword
     getUser.resetCode = null
@@ -435,6 +659,9 @@ export const profileSetUp = async (req, res, next) => {
         }
         profilePic = { secure_url, public_id }
         getUser.profilePicture = profilePic
+    }
+    else {
+        return next(new Error('file must exist!', { cause: 400 }))
     }
     // if (req.files) {
     //     console.log({ files: req.files })
@@ -615,6 +842,8 @@ export const confrirmOldPass = async (req, res, next) => {
         return next(new Error("incorrect password!", { cause: 400 }))
     }
 
+    // no email message , no extra token
+
     const passToken = generateToken({ payload: { email: getUser.email }, signature: process.env.change_password_secret_key, expiresIn: '1h' })
 
     const changePassLink = `${req.protocol}://${req.headers.host}/tourist/changeoldPass${passToken}`
@@ -750,15 +979,9 @@ export const test = async (req, res, next) => {
 }
 
 export const test2 = async (req, res, next) => {
-    if (req.file) {
-        console.log(req.file)
-        res.status(200).json({
-            message: "file",
-            file: req.file
-        })
-    }
-    res.json({
-        message: "no file",
-        file: req.photo
+    console.log(req.file)
+    res.status(200).json({
+        message: "file",
+        file: req.file
     })
 }
