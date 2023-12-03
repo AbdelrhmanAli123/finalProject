@@ -885,14 +885,11 @@ export const changeOldPass = async (req, res, next) => {
     if (newPassword !== confirmNewPassword) {
         return next(new Error('passwords must match!', { cause: 400 }))
     }
-    const decodedToken = verifyToken({ token: passToken, signature: process.env.change_password_secret_key })
-    if (!decodedToken) {
-        return next(new Error('invalid token!', { cause: 400 }))
-    }
-    const getUser = await touristModel.findOne({
-        _id,
-        email: decodedToken.email
-    })
+    // const decodedToken = verifyToken({ token: passToken, signature: process.env.change_password_secret_key })
+    // if (!decodedToken) {
+    //     return next(new Error('invalid token!', { cause: 400 }))
+    // }
+    const getUser = await touristModel.findById(_id)
     if (!getUser) {
         return next(new Error("couldn't find the user , invalid userID!", { cause: 400 }))
     }
