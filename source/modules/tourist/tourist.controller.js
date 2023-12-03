@@ -651,7 +651,12 @@ export const profileSetUp = async (req, res, next) => {
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         console.log({ accessed: true })
         if (flag == false) {
-            const isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+            const isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id).catch((error) => {
+                console.log({
+                    message: "file isn't found!",
+                    error: error
+                })
+            })
             if (isFileExists) { // if there is a file
                 console.log({
                     existing_file_to_be_deleted: isFileExists
