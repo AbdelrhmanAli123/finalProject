@@ -157,9 +157,9 @@ export const changeOldPassSchema = {
             'password.confirm.status': 'failed'
         })
     }).presence('required'),
-    params: joi.object({
-        passToken: joi.string()
-    }).presence('required'),
+    // params: joi.object({
+    //     passToken: joi.string()
+    // }).presence('required'),
     headers: joi.object({
         authorization: generalFields.jwtToken
     }).presence('required').unknown(true)

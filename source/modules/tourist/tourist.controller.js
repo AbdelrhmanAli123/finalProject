@@ -858,24 +858,23 @@ export const confrirmOldPass = async (req, res, next) => {
 
     // no email message , no extra token
 
-    const passToken = generateToken({ payload: { email: getUser.email }, signature: process.env.change_password_secret_key, expiresIn: '1h' })
+    // const passToken = generateToken({ payload: { email: getUser.email }, signature: process.env.change_password_secret_key, expiresIn: '1h' })
 
-    const changePassLink = `${req.protocol}://${req.headers.host}/tourist/changeoldPass${passToken}`
-    const message = `<a href = ${changePassLink} >PLEASE USE THIS LINK TO CHANGE YOUR PASSWORD !</a>`
-    const subject = 'password changing'
-    const sendEMail = emailService({ message, to: getUser.email, subject })
-    if (!sendEMail) {
-        return next(new Error('sending email failed!', { cause: 500 }))
-    }
+    // const changePassLink = `${req.protocol}://${req.headers.host}/tourist/changeoldPass${passToken}`
+    // const message = `<a href = ${changePassLink} >PLEASE USE THIS LINK TO CHANGE YOUR PASSWORD !</a>`
+    // const subject = 'password changing'
+    // const sendEMail = emailService({ message, to: getUser.email, subject })
+    // if (!sendEMail) {
+    //     return next(new Error('sending email failed!', { cause: 500 }))
+    // }
 
     res.status(200).json({
-        message: "please check your email to continue changing you password!"
+        message: "you can continue to change your password!"
     })
 }
 
 export const changeOldPass = async (req, res, next) => {
     const { _id } = req.authUser
-    const { passToken } = req.params
     const { newPassword, confirmNewPassword } = req.body
     if (!newPassword) {
         return next(new Error('you must enter the new Password!', { cause: 400 }))

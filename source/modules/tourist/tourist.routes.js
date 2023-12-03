@@ -66,7 +66,7 @@ router.get(
 )
 
 router.patch(
-    '/changeoldPass:passToken',
+    '/changeoldPass',
     isAuth(touristAPIroles.changePassword),
     validationCoreFunction(touristVS.changeOldPassSchema),
     asyncHandler(touristCont.changeOldPass)
