@@ -634,6 +634,9 @@ export const profileSetUp = async (req, res, next) => {
     let profileUploadPath // for profile Picture
     let coverUploadPath // for cover picture
     if (req.file) {
+        console.log({
+            request_file: req.file
+        })
         let customId
         let flag = false
         if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
