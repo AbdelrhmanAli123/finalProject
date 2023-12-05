@@ -334,7 +334,7 @@ export const touristLogIn = async (req, res, next) => {
     const { email, password } = req.body
 
     const getUser = await touristModel.findOne({ email })
-    console.log({ user_fetching_errors: getUser.errors })
+    console.log({ user_fetching_errors: getUser?.errors })
     if (!getUser) {
         console.log({
             user_error_message: "login email is invalid!"
@@ -802,8 +802,10 @@ export const deleteUser = async (req, res, next) => {
     let userProfilePath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
     let userCoverPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
     let userFolderPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}`
+
     // we need to delete the user's images and folders on cloudinary :
     console.log({ message: "about to delete user assets!" })
+
     console.log({ message: "about to delete user profile picture!" })
     await cloudinary.api.resource(getUser.profilePicture?.public_id)
         .then(async () => {
@@ -844,6 +846,11 @@ export const deleteUser = async (req, res, next) => {
     await cloudinary.api.delete_folder(userFolderPath)
         .then(() => console.log({ message: "user main folder is deleted!" }))
         .catch((err) => console.log({ message: "failed to delete the user's main folder!" }))
+
+    customId = null
+    userProfilePath = null
+    userCoverPath = null
+    userFolderPath = null
 
     const deleteUser = await touristModel.findByIdAndDelete(_id)
     if (!deleteUser) {
