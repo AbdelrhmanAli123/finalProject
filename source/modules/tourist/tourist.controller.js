@@ -792,11 +792,59 @@ export const logOut = async (req, res, next) => {
 }
 
 export const deleteUser = async (req, res, next) => {
+    console.log("\nTOURIST DELETE API\n")
     const { _id } = req.authUser
     const getUser = await touristModel.findById(_id)
     if (!getUser) {
         return next(new Error('user not found!', { cause: 400 }))
     }
+    let customId = getUser.customId
+    let userProfilePath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+    let userCoverPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
+    let userFolderPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}`
+    // we need to delete the user's images and folders on cloudinary :
+    console.log({ message: "about to delete user assets!" })
+    console.log({ message: "about to delete user profile picture!" })
+    await cloudinary.api.resource(getUser.profilePicture?.public_id)
+        .then(async () => {
+            await cloudinary.api.delete_resources_by_prefix(userProfilePath)
+                .then(() => console.log({ message: "profile picture is deleted!" }))
+                .catch((err) => console.log({ message: "failed to delete profile picture!" }))
+
+            await cloudinary.api.delete_folder(userProfilePath)
+                .then(() => console.log({ message: "profile picture folder is deleted!" }))
+                .catch((err) => console.log({ message: "failed to delete profile picture folder!" }))
+        })
+        .catch((err) => {
+            console.log({
+                message: "profile picture is not found!",
+                err: err
+            })
+        })
+
+    console.log({ message: "about to delete user cover picture!" })
+    await cloudinary.api.resource(getUser.coverPicture?.public_id)
+        .then(async () => {
+            await cloudinary.api.delete_resources_by_prefix(userCoverPath)
+                .then(() => console.log({ message: "cover picture is deleted!" }))
+                .catch((err) => console.log({ message: "failed to delete cover picture!" }))
+
+            await cloudinary.api.delete_folder(userCoverPath)
+                .then(() => console.log({ message: "cover picture folder is deleted!" }))
+                .catch((err) => console.log({ message: "failed to delete cover picture folder!" }))
+        })
+        .catch((err) => {
+            console.log({
+                message: "cover picture is not found!",
+                err: err
+            })
+        })
+
+    console.log({ message: "about to delete user main folder!" })
+    await cloudinary.api.delete_folder(userFolderPath)
+        .then(() => console.log({ message: "user main folder is deleted!" }))
+        .catch((err) => console.log({ message: "failed to delete the user's main folder!" }))
+
     const deleteUser = await touristModel.findByIdAndDelete(_id)
     if (!deleteUser) {
         return next(new Error("couldn't delete the user!", { cause: 500 }))
