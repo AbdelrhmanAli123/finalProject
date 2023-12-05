@@ -260,4 +260,84 @@ app.get('/get-location', (req, res) => {
   //     path: joi.string(),
   //     size: joi.number()
   // }).unknown(true).presence('optional')).options({ presence: 'optional' })
+
+  // no email message , no extra token
+
+    // const passToken = generateToken({ payload: { email: getUser.email }, signature: process.env.change_password_secret_key, expiresIn: '1h' })
+
+    // const changePassLink = `${req.protocol}://${req.headers.host}/tourist/changeoldPass${passToken}`
+    // const message = `<a href = ${changePassLink} >PLEASE USE THIS LINK TO CHANGE YOUR PASSWORD !</a>`
+    // const subject = 'password changing'
+    // const sendEMail = emailService({ message, to: getUser.email, subject })
+    // if (!sendEMail) {
+    //     return next(new Error('sending email failed!', { cause: 500 }))
+    // }
+```
+
+- req.file code (.single()) :
+
+```js
+  if (req.file) {
+        console.log({
+            request_file: req.file
+        })
+        // we must check that if you have a custom id but you don't have an image on the cloud
+        let customId
+        let flag = false
+        if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
+            customId = getUser.customId
+            console.log({
+                message: "user has a customId"
+            })
+        }
+        else { // else means that you don't have
+            customId = nanoid()
+            getUser.customId = customId
+            await getUser.save()
+            flag = true
+            console.log({
+                message: "a customId is generated"
+            })
+        }
+        profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+        console.log({
+            profilePath: profileUploadPath
+        })
+        console.log({ accessed: true })
+        if (flag == false) {
+            let isFileExists
+            try {
+                isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+            } catch (error) {
+                console.log({
+                    message: "file isn't found!",
+                    error: error
+                })
+            }
+            if (isFileExists) { // if there is a file
+                console.log({
+                    existing_file_to_be_deleted: isFileExists
+                })
+                await cloudinary.api.delete_resources_by_prefix(profileUploadPath).catch(async (err) => {
+                    console.log(err)
+                })
+                await cloudinary.api.delete_folder(profileUploadPath).catch(async (err) => {
+                    console.log(err)
+                })
+                console.log({ profilePicDeleted: true })
+            }
+        }
+        console.log({ message: "about to upload" })
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: profileUploadPath
+        })
+        if (!secure_url || !public_id) {
+            return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+        }
+        profilePic = { secure_url, public_id }
+        getUser.profilePicture = profilePic
+    }
+    else {
+        return next(new Error('file must exist!', { cause: 400 }))
+    }
 ```

@@ -480,7 +480,7 @@ export const forgetPassword = async (req, res, next) => {
 }
 
 export const resetPassword = async (req, res, next) => {
-    console.log("\nTOURIST RESET PASSWORD API\n")
+    console.log("\nTOURIST PASSWORD RESET API\n")
     const { token } = req.params
     const { newPassword } = req.body
 
@@ -492,7 +492,7 @@ export const resetPassword = async (req, res, next) => {
         })
     } catch (error) {
         console.log({
-            message: "token decoding error",
+            api_error_message: "token decoding error",
             JWTerrorName: error.name,
             JWTerrorMessage: error.message
         })
@@ -502,7 +502,7 @@ export const resetPassword = async (req, res, next) => {
     }
     if (!decodedToken) {
         console.log({
-            message: "token decoding failure"
+            api_error_message: "token decoding failure"
         })
         return next(new Error('failed to decode the token', { cause: 400 }))
     }
@@ -520,13 +520,13 @@ export const resetPassword = async (req, res, next) => {
     console.log({ user_fetching_errors: getUser.errors })
     if (!getUser) {
         console.log({
-            message: "failed to find user!"
+            api_error_message: "failed to find user!"
         })
         return next(new Error('failed to find user', { cause: 400 }))
     }
     if (decodedToken.resetCode !== getUser.resetCode) {
         console.log({
-            message: "invalid reset code token!"
+            api_error_message: "invalid reset code token!"
         })
         return next(new Error('invalid reset code token!', { cause: 400 }))
     }
@@ -538,7 +538,7 @@ export const resetPassword = async (req, res, next) => {
     const isPassMatch = await bcrypt.compare(newPassword, getUser.password)
     if (isPassMatch) {
         console.log({
-            message: "new password duplicate",
+            api_error_message: "new password duplicate",
             old_password: getUser.password,
             entered_new_password: newPassword
         })
@@ -550,13 +550,35 @@ export const resetPassword = async (req, res, next) => {
     })
 
     const hashedNewPassword = bcrypt.hashSync(newPassword, +process.env.reset_password_salt)
+    if (!hashedNewPassword) {
+        console.log({
+            api_error_message: "failure in hashing the new password"
+        })
+        return next(new Error('failed to hash the new password', { cause: 500 }))
+    }
     getUser.password = hashedNewPassword
+    console.log({
+        message: "new password added in database!",
+    })
+
     getUser.resetCode = null
     getUser.forgetPassword = false
     getUser.__v++
+    console.log({
+        message: "resetCode , forgetPassword are now back to default and version is incremented!"
+    })
+
     if (!await getUser.save()) {
+        console.log({
+            api_error_message: "failed to save user changes in data base!"
+        })
         return next(new Error('failed to reset password in data base', { cause: 500 }))
     }
+    console.log({
+        message: "user changes are saved in data base!"
+    })
+
+    console.log("\nTOURIST PASSWORD RESET IS DONE!\n")
     res.status(200).json({
         message: "reset password done!",
     })
@@ -566,6 +588,8 @@ export const resetPassword = async (req, res, next) => {
 
 // this api will be used for both first time profile setUp and profile update
 export const profileSetUp = async (req, res, next) => {
+    // ظظظcontinue logging from here
+
     // if this api will occur after logging in -> we will need a token
     console.log({
         body: req.body,
@@ -633,142 +657,111 @@ export const profileSetUp = async (req, res, next) => {
     let profilePic, coverPic
     let profileUploadPath // for profile Picture
     let coverUploadPath // for cover picture
-    if (req.file) {
+    if (req.files) {
+        console.log({ files: req.files })
         console.log({
-            request_file: req.file
+            profileArray: req.files['profilePicture'],
+            coverArray: req.files['coverPicture']
         })
-        // we must check that if you have a custom id but you don't have an image on the cloud
+        // we can either make a new customId for the usesd document or not , it may be better for security
         let customId
         let flag = false
         if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
             customId = getUser.customId
-            console.log({
-                message: "user has a customId"
-            })
         }
-        else { // else means that you don't have
+        else { // else meanse that you don't have
             customId = nanoid()
             getUser.customId = customId
-            await getUser.save()
             flag = true
-            console.log({
-                message: "a customId is generated"
-            })
         }
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
-        console.log({
-            profilePath: profileUploadPath
-        })
-        console.log({ accessed: true })
-        if (flag == false) {
-            let isFileExists
-            try {
-                isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
-            } catch (error) {
-                console.log({
-                    message: "file isn't found!",
-                    error: error
-                })
-            }
-            if (isFileExists) { // if there is a file
-                console.log({
-                    existing_file_to_be_deleted: isFileExists
-                })
-                await cloudinary.api.delete_resources_by_prefix(profileUploadPath).catch((err) => {
-                    console.log(err)
-                })
-                await cloudinary.api.delete_folder(profileUploadPath).catch((err) => {
-                    console.log(err)
-                })
-                console.log({ profilePicDeleted: true })
+        coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
+        for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
+            console.log({
+                iterationArrayName: array,
+                typeOfIterationArray: typeof (array)
+            })
+            const arrayFields = req.files[array] // this should access the first array of req.files
+            console.log({ iterationArray: arrayFields })
+            for (const file of arrayFields) { // each object of the array inside the object
+                if (file.fieldname === 'profilePicture') {
+                    console.log({ accessed: true })
+                    let isFileExists
+                    try {
+                        isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+                    } catch (error) {
+                        console.log({
+                            message: "file isn't found!",
+                            error: error
+                        })
+                    }
+                    if (isFileExists) { // if there is a file
+                        console.log({
+                            existing_file_to_be_deleted: isFileExists
+                        })
+                        await cloudinary.api.delete_resources_by_prefix(profileUploadPath).catch(async (err) => {
+                            console.log(err)
+                        })
+                        await cloudinary.api.delete_folder(profileUploadPath).catch(async (err) => {
+                            console.log(err)
+                        })
+                        console.log({ profilePicDeleted: true })
+                    }
+                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                        folder: profileUploadPath
+                    })
+                    if (!secure_url || !public_id) {
+                        return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+                    }
+                    profilePic = { secure_url, public_id }
+                    getUser.profilePicture = profilePic
+                } else if (file.fieldname === 'coverPicture') {
+                    console.log({ accessed: true })
+                    let isFileExists
+                    try {
+                        isFileExists = await cloudinary.api.resource(getUser.coverPicture?.public_id)
+                    } catch (error) {
+                        console.log({
+                            message: "file isn't found!",
+                            error: error
+                        })
+                    }
+                    if (isFileExists) { // if there is a file
+                        console.log({
+                            existing_file_to_be_deleted: isFileExists
+                        })
+                        await cloudinary.api.delete_resources_by_prefix(coverUploadPath).catch(async (err) => {
+                            console.log(err)
+                        })
+                        await cloudinary.api.delete_folder(coverUploadPath).catch(async (err) => {
+                            console.log(err)
+                        })
+                        console.log({ coverPicDeleted: true })
+                    }
+                    console.log({ coverPicDeleted: true })
+                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+                        folder: coverUploadPath
+                    })
+                    if (!secure_url || !public_id) {
+                        return next(new Error("couldn't save the image!", { cause: 400 }))
+                    }
+                    coverPic = { secure_url, public_id }
+                    getUser.coverPicture = coverPic
+                } else {
+                    return next(new Error('invalid file fieldName!', { cause: 400 }))
+                }
             }
         }
-        console.log({ message: "about to upload" })
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: profileUploadPath
-        })
-        if (!secure_url || !public_id) {
-            return next(new Error("couldn't save the profile picture!", { cause: 400 }))
-        }
-        profilePic = { secure_url, public_id }
-        getUser.profilePicture = profilePic
+    } else {
+        profilePic = null
+        coverPic = null
+        profileUploadPath = null
+        coverUploadPath = null
     }
-    else {
-        return next(new Error('file must exist!', { cause: 400 }))
-    }
-    // if (req.files) {
-    //     console.log({ files: req.files })
-    //     console.log({
-    //         profileArray: req.files['profilePicture'],
-    //         coverArray: req.files['coverPicture']
-    //     })
-    //     // we can either make a new customId for the usesd document or not , it may be better for security
-    //     let customId
-    //     let flag = false
-    //     if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
-    //         customId = getUser.customId
-    //     }
-    //     else { // else meanse that you don't have
-    //         customId = nanoid()
-    //         getUser.customId = customId
-    //         flag = true
-    //     }
-    //     profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
-    //     coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
-    //     for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
-    //         console.log({
-    //             iterationArrayName: array,
-    //             typeOfIterationArray: typeof (array)
-    //         })
-    //         const arrayFields = req.files[array] // this should access the first array of req.files
-    //         console.log({ iterationArray: arrayFields })
-    //         for (const file of arrayFields) { // each object of the array inside the object
-    //             if (file.fieldname === 'profilePicture') {
-    //                 console.log({ accessed: true })
-    //                 if (flag == false) {
-    //                     await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
-    //                     await cloudinary.api.delete_folder(profileUploadPath)
-    //                 }
-    //                 console.log({ profilePicDeleted: true })
-    //                 const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-    //                     folder: profileUploadPath
-    //                 })
-    //                 if (!secure_url || !public_id) {
-    //                     return next(new Error("couldn't save the profile picture!", { cause: 400 }))
-    //                 }
-    //                 profilePic = { secure_url, public_id }
-    //                 getUser.profilePicture = profilePic
-    //             }
-    //             else if (file.fieldname === 'coverPicture') {
-    //                 console.log({ accessed: true })
-    //                 if (flag == false) {
-    //                     await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
-    //                     await cloudinary.api.delete_folder(coverUploadPath)
-    //                 }
-    //                 console.log({ coverPicDeleted: true })
-    //                 const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-    //                     folder: coverUploadPath
-    //                 })
-    //                 if (!secure_url || !public_id) {
-    //                     return next(new Error("couldn't save the image!", { cause: 400 }))
-    //                 }
-    //                 coverPic = { secure_url, public_id }
-    //                 getUser.coverPicture = coverPic
-    //             }
-    //             else {
-    //                 return next(new Error('invalid file fieldName!', { cause: 400 }))
-    //             }
-    //         }
-    //     }
-    // } else {
-    //     profilePic = null
-    //     coverPic = null
-    //     profileUploadPath = null
-    //     coverUploadPath = null
-    // }
+
 
     req.profileImgPath = profileUploadPath
-    // req.coverImgPath = coverUploadPath
+    req.coverImgPath = coverUploadPath
 
 
     if (!await getUser.save()) {
@@ -780,6 +773,7 @@ export const profileSetUp = async (req, res, next) => {
         user: getUser
     })
 }
+
 
 export const logOut = async (req, res, next) => {
     const { _id } = req.authUser
@@ -874,18 +868,6 @@ export const confrirmOldPass = async (req, res, next) => {
     if (!isPassMatch) {
         return next(new Error("incorrect password!", { cause: 400 }))
     }
-
-    // no email message , no extra token
-
-    // const passToken = generateToken({ payload: { email: getUser.email }, signature: process.env.change_password_secret_key, expiresIn: '1h' })
-
-    // const changePassLink = `${req.protocol}://${req.headers.host}/tourist/changeoldPass${passToken}`
-    // const message = `<a href = ${changePassLink} >PLEASE USE THIS LINK TO CHANGE YOUR PASSWORD !</a>`
-    // const subject = 'password changing'
-    // const sendEMail = emailService({ message, to: getUser.email, subject })
-    // if (!sendEMail) {
-    //     return next(new Error('sending email failed!', { cause: 500 }))
-    // }
 
     res.status(200).json({
         message: "you can continue to change your password!"
