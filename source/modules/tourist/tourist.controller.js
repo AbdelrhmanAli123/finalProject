@@ -731,17 +731,14 @@ export const profileSetUp = async (req, res, next) => {
                         accessed_file: file
                     })
                     let isFileExists
-                    // try {
-                    //     isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
-                    // } catch (error) {
-                    //     console.log({
-                    //         message: "file isn't found!",
-                    //         error: error
-                    //     })
-                    // }
-                    isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
-                        .then(() => console.log({ message: "profile picture is found!" }))
-                        .catch((err) => console.log({ api_error_message: "profile picture isn't found!", error: err }))
+                    try {
+                        isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+                    } catch (error) {
+                        console.log({
+                            message: "file isn't found!",
+                            error: error
+                        })
+                    }
                     if (isFileExists) { // if there is a file
                         console.log({
                             existing_file_to_be_deleted: isFileExists
@@ -780,17 +777,14 @@ export const profileSetUp = async (req, res, next) => {
                         accessed_file: file
                     })
                     let isFileExists
-                    // try {
-                    //     isFileExists = await cloudinary.api.resource(getUser.coverPicture?.public_id)
-                    // } catch (error) {
-                    //     console.log({
-                    //         message: "file isn't found!",
-                    //         error: error
-                    //     })
-                    // }
-                    isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
-                        .then(() => console.log({ message: "cover picture is found!" }))
-                        .catch((err) => console.log({ api_error_message: "cover picture isn't found!", error: err }))
+                    try {
+                        isFileExists = await cloudinary.api.resource(getUser.coverPicture?.public_id)
+                    } catch (error) {
+                        console.log({
+                            message: "file isn't found!",
+                            error: error
+                        })
+                    }
                     if (isFileExists) { // if there is a file
                         console.log({
                             existing_file_to_be_deleted: isFileExists
