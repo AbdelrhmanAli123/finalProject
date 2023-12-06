@@ -53,7 +53,7 @@ export const isAuth = (roles = []) => {
                     }
                     // this checks the authority of the user
                     if (!roles.includes(getUser.role)) {
-                        return next(new Error('un Authorized to access this API', { cause: 401 }))
+                        return next(new Error('un Authorized to access this API', { cause: 403 }))
                     }
                 }
                 // TODO : tourGuide authentication
@@ -88,7 +88,7 @@ export const isAuth = (roles = []) => {
                     await user.save()
                     req.authUser = user
                     console.log("\nTOKEN REFRESHING IS SUCCESSFULL\n")
-                    return res.status(202).json({
+                    return res.status(401).json({
                         message: "token refreshed!",
                         newToken
                     })

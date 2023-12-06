@@ -1,4 +1,3 @@
-import { log } from 'console'
 import {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
     ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses,
@@ -577,71 +576,123 @@ export const resetPassword = async (req, res, next) => {
 
 // this api will be used for both first time profile setUp and profile update
 export const profileSetUp = async (req, res, next) => {
-    // ظظظcontinue logging from here
 
-    // if this api will occur after logging in -> we will need a token
+    console.log("\nTOURIST PROFILE UPDATE/SETUP API\n")
     console.log({
         body: req.body,
         files: req.files
-    })
-    console.log({
-        // request: req,
-        requestFile: req.file
     })
     const _id = req?.authUser._id
     const { phoneNumber, gender, age, language, country, preferences, countryFlag } = req.body // front -> not in DB document
 
     const getUser = await touristModel.findById(_id)
+    console.log({ user_fetched: getUser })
     if (!getUser) {
+        console.log({
+            api_error_message: "failed to fetch the user!",
+        })
         return next(new Error("couldn't find user , invalid userID", { cause: 400 }))
     }
+    console.log({
+        message: "user found!",
+        user_found: getUser
+    })
 
     if (phoneNumber) {
         console.log({
-            length: phoneNumber.length,
+            message: "phone number found in request!",
+            phone_number: phoneNumber,
+            phone_number_length: phoneNumber.length,
         })
         if (phoneNumber.length !== 10) {
+            console.log({
+                user_error_message: "user didn't enter a valid phone number length",
+                required_length: "10",
+                entered_length: phoneNumber.length
+            })
             return next(new Error("enter a valid phone number!", { cause: 400 }))
         }
         if (!EGphoneCodes.includes(phoneNumber.slice(0, 2))) {
+            console.log({
+                user_error_message: "user didn't enter a valid phone number code",
+                valid_codes: "10 || 11 || 12 || 15",
+                entered_code: phoneNumber.slice(0, 2)
+            })
             return next(new Error("please enter an egyptian number!", { cause: 400 }))
         }
         getUser.phoneNumber = phoneNumber
+        console.log({ message: "phone number updated!" })
     }
 
     if (gender) {
+        console.log({
+            message: "gender found in request!",
+            entered_gender: gender
+        })
         if (gender !== 'male' && gender !== 'female' && gender !== 'not specified') {
+            console.log({
+                user_error_message: "user entered an invalid gender",
+                available_genders: "male || female || not specified",
+                entered_gender: gender
+            })
             return next(new Error('invalid gender!', { cause: 400 }))
         }
         getUser.gender = gender
+        console.log({ message: "gender is updated!" })
     }
 
     if (country) {
+        console.log({
+            message: "country found in request!",
+            country_entered: country
+        })
         getUser.country = country
+        console.log({ message: "country is updated!" })
     }
 
     if (age) {
+        console.log({
+            message: "age found in request!",
+            enetered_age: age
+        })
         getUser.age = age
+        console.log({ message: "age updated!" })
     }
 
     if (language) {
+        console.log({
+            message: "language found in request!",
+            enetered_language: language
+        })
         getUser.language = language
+        console.log({ message: "language updated!" })
     }
 
     if (preferences) {
+        console.log({
+            message: "preferences are found in request!",
+            enetered_preferences: preferences
+        })
         getUser.preferences = preferences
+        console.log({ message: "preferences updated!" })
     }
 
     if (countryFlag) {
+        console.log({
+            message: "country flage found in request!",
+            enetered_countryFlag: countryFlag
+        })
         getUser.countryFlag = countryFlag
+        console.log({ message: "country flag is updated!" })
     }
 
     let profilePic, coverPic
     let profileUploadPath // for profile Picture
     let coverUploadPath // for cover picture
     if (req.files) {
-        console.log({ files: req.files })
         console.log({
+            message: "files are found in request!",
+            files: req.files,
             profileArray: req.files['profilePicture'],
             coverArray: req.files['coverPicture']
         })
@@ -649,97 +700,139 @@ export const profileSetUp = async (req, res, next) => {
         let customId
         let flag = false
         if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
+            console.log({
+                message: "user has a custom id and maybe uploaded an image before",
+                existing_customId: getUser.customId
+            })
             customId = getUser.customId
         }
         else { // else meanse that you don't have
             customId = nanoid()
             getUser.customId = customId
+            console.log({
+                message: "user didn't have a custom id and maybe didn't upload an image before",
+                created_customId: customId
+            })
             flag = true
         }
         profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
         coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
         for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
             console.log({
-                iterationArrayName: array,
-                typeOfIterationArray: typeof (array)
+                message: `the "${array}" array is accessed!`,
+                iteration_array_name: array,
+                type_of_iteration_array: typeof (array),
+                iteration_array: req.files[array]
             })
             const arrayFields = req.files[array] // this should access the first array of req.files
-            console.log({ iterationArray: arrayFields })
             for (const file of arrayFields) { // each object of the array inside the object
                 if (file.fieldname === 'profilePicture') {
-                    console.log({ accessed: true })
+                    console.log({
+                        profile_picture_accessed: true,
+                        accessed_file: file
+                    })
                     let isFileExists
-                    try {
-                        isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
-                    } catch (error) {
-                        console.log({
-                            message: "file isn't found!",
-                            error: error
-                        })
-                    }
+                    // try {
+                    //     isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+                    // } catch (error) {
+                    //     console.log({
+                    //         message: "file isn't found!",
+                    //         error: error
+                    //     })
+                    // }
+                    isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+                        .then(() => console.log({ message: "profile picture is found!" }))
+                        .catch((err) => console.log({ api_error_message: "profile picture isn't found!", error: err }))
                     if (isFileExists) { // if there is a file
                         console.log({
                             existing_file_to_be_deleted: isFileExists
                         })
-                        await cloudinary.api.delete_resources_by_prefix(profileUploadPath).catch(async (err) => {
-                            console.log(err)
-                        })
-                        await cloudinary.api.delete_folder(profileUploadPath).catch(async (err) => {
-                            console.log(err)
-                        })
-                        console.log({ profilePicDeleted: true })
+                        await cloudinary.api.delete_resources_by_prefix(profileUploadPath)
+                            .then(() => console.log({ message: "profile picture deleted!", profilePicDeleted: true }))
+                            .catch(async (err) => {
+                                console.log({
+                                    message: "failed to delete profile picture",
+                                    error: err
+                                })
+                            })
+                        await cloudinary.api.delete_folder(profileUploadPath)
+                            .then(() => console.log({ message: "profile picture folder deleted!" }))
+                            .catch(async (err) => {
+                                console.log({
+                                    message: "failed to delete profile picture folder!",
+                                    error: err
+                                })
+                            })
                     }
                     const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
                         folder: profileUploadPath
-                    })
+                    }).then(() => console.log({ message: "profile picture uploaded!" }))
                     if (!secure_url || !public_id) {
-                        return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+                        console.log({ message: "failed to upload the profile picture!" })
+                        return next(new Error("couldn't upload the profile picture!", { cause: 400 }))
                     }
                     profilePic = { secure_url, public_id }
                     getUser.profilePicture = profilePic
+                    console.log({ message: "profile picture is updated!" })
                 } else if (file.fieldname === 'coverPicture') {
-                    console.log({ accessed: true })
+                    console.log({
+                        cover_picture_accessed: true,
+                        accessed_file: file
+                    })
                     let isFileExists
-                    try {
-                        isFileExists = await cloudinary.api.resource(getUser.coverPicture?.public_id)
-                    } catch (error) {
-                        console.log({
-                            message: "file isn't found!",
-                            error: error
-                        })
-                    }
+                    // try {
+                    //     isFileExists = await cloudinary.api.resource(getUser.coverPicture?.public_id)
+                    // } catch (error) {
+                    //     console.log({
+                    //         message: "file isn't found!",
+                    //         error: error
+                    //     })
+                    // }
+                    isFileExists = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+                        .then(() => console.log({ message: "cover picture is found!" }))
+                        .catch((err) => console.log({ api_error_message: "cover picture isn't found!", error: err }))
                     if (isFileExists) { // if there is a file
                         console.log({
                             existing_file_to_be_deleted: isFileExists
                         })
-                        await cloudinary.api.delete_resources_by_prefix(coverUploadPath).catch(async (err) => {
-                            console.log(err)
-                        })
-                        await cloudinary.api.delete_folder(coverUploadPath).catch(async (err) => {
-                            console.log(err)
-                        })
-                        console.log({ coverPicDeleted: true })
+                        await cloudinary.api.delete_resources_by_prefix(coverUploadPath)
+                            .then(() => console.log({ message: "cover picture deleted!", coverPicDeleted: true }))
+                            .catch(async (err) => {
+                                console.log({
+                                    message: "failed to delete cover picture",
+                                    error: err
+                                })
+                            })
+                        await cloudinary.api.delete_folder(coverUploadPath)
+                            .then(() => console.log({ message: "cover picture folder deleted!" }))
+                            .catch(async (err) => {
+                                console.log({
+                                    message: "failed to delete cover picture folder!",
+                                    error: err
+                                })
+                            })
                     }
-                    console.log({ coverPicDeleted: true })
                     const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
                         folder: coverUploadPath
-                    })
+                    }).then(() => console.log({ message: "cover picture uploaded!" }))
                     if (!secure_url || !public_id) {
-                        return next(new Error("couldn't save the image!", { cause: 400 }))
+                        console.log({ message: "failed to upload the cover picture!" })
+                        return next(new Error("couldn't upload the cover picture!", { cause: 400 }))
                     }
                     coverPic = { secure_url, public_id }
                     getUser.coverPicture = coverPic
+                    console.log({ message: "cover picture is updated!" })
                 } else {
-                    return next(new Error('invalid file fieldName!', { cause: 400 }))
+                    console.log({ user_error_message: "user enetered invalid field name!" })
+                    return next(new Error('invalid file field name!', { cause: 400 }))
                 }
             }
         }
-    } else {
-        profilePic = null
-        coverPic = null
-        profileUploadPath = null
-        coverUploadPath = null
     }
+    profilePic = null
+    coverPic = null
+    profileUploadPath = null
+    coverUploadPath = null
 
 
     req.profileImgPath = profileUploadPath
@@ -747,9 +840,13 @@ export const profileSetUp = async (req, res, next) => {
 
 
     if (!await getUser.save()) {
+        console.log({ api_error_message: "failed to save user updates!" })
         return next(new Error("couldn't update the user in database!", { cause: 500 }))
     }
+    console.log({ message: "user updates saved!" })
     getUser.__v++
+
+    console.log("\nTOURIST PROFILE SETUP/UPDATE DONE!\n")
     res.status(200).json({
         message: "your profile updating is completed!",
         user: getUser
@@ -758,16 +855,30 @@ export const profileSetUp = async (req, res, next) => {
 
 
 export const logOut = async (req, res, next) => {
+    console.log("\nTOURIST LOGOUT API\n")
     const { _id } = req.authUser
+
     const getUser = await touristModel.findById(_id)
     if (!getUser) {
+        console.log({ api_error_message: "user id not found!" })
         return next(new Error('user not found!', { cause: 400 }))
     }
+    console.log({
+        message: "user is found!",
+        user_found: getUser
+    })
+
     getUser.token = null
     getUser.status = statuses.offline
+    console.log({ message: "user is now offline!" })
+
     if (!await getUser.save()) {
+        console.log({ api_error_message: "failed to logout the user" })
         return next(new Error('failed to logout the user!', { cause: 400 }))
     }
+    console.log({ message: "user is logged out!" })
+
+    console.log("\nTOURIST LOGOUT IS DONE!\n")
     res.status(200).json({
         message: "logout is successfull!"
     })
@@ -776,14 +887,23 @@ export const logOut = async (req, res, next) => {
 export const deleteUser = async (req, res, next) => {
     console.log("\nTOURIST DELETE API\n")
     const { _id } = req.authUser
+
     const getUser = await touristModel.findById(_id)
     if (!getUser) {
+        console.log({ api_error_message: "user is not found!" })
         return next(new Error('user not found!', { cause: 400 }))
     }
+    console.log({
+        message: "user is found!",
+        user_found: getUser
+    })
+
     let customId = getUser.customId
     let userProfilePath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
     let userCoverPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
     let userFolderPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}`
+    let profilePublicId = getUser.profilePicture?.public_id
+    let coverPictureId = getUser.coverPicture?.public_id
 
     // we need to delete the user's images and folders on cloudinary :
     console.log({ message: "about to delete user assets!" })
@@ -793,15 +913,15 @@ export const deleteUser = async (req, res, next) => {
         .then(async () => {
             await cloudinary.api.delete_resources_by_prefix(userProfilePath)
                 .then(() => console.log({ message: "profile picture is deleted!" }))
-                .catch((err) => console.log({ message: "failed to delete profile picture!" }))
+                .catch((err) => console.log({ api_error_message: "failed to delete profile picture!" }))
 
             await cloudinary.api.delete_folder(userProfilePath)
                 .then(() => console.log({ message: "profile picture folder is deleted!" }))
-                .catch((err) => console.log({ message: "failed to delete profile picture folder!" }))
+                .catch((err) => console.log({ api_error_message: "failed to delete profile picture folder!" }))
         })
         .catch((err) => {
             console.log({
-                message: "profile picture is not found!",
+                api_error_message: "profile picture is not found!",
                 err: err
             })
         })
@@ -811,15 +931,15 @@ export const deleteUser = async (req, res, next) => {
         .then(async () => {
             await cloudinary.api.delete_resources_by_prefix(userCoverPath)
                 .then(() => console.log({ message: "cover picture is deleted!" }))
-                .catch((err) => console.log({ message: "failed to delete cover picture!" }))
+                .catch((err) => console.log({ api_error_message: "failed to delete cover picture!" }))
 
             await cloudinary.api.delete_folder(userCoverPath)
                 .then(() => console.log({ message: "cover picture folder is deleted!" }))
-                .catch((err) => console.log({ message: "failed to delete cover picture folder!" }))
+                .catch((err) => console.log({ api_error_message: "failed to delete cover picture folder!" }))
         })
         .catch((err) => {
             console.log({
-                message: "cover picture is not found!",
+                api_error_message: "cover picture is not found!",
                 err: err
             })
         })
@@ -827,18 +947,65 @@ export const deleteUser = async (req, res, next) => {
     console.log({ message: "about to delete user main folder!" })
     await cloudinary.api.delete_folder(userFolderPath)
         .then(() => console.log({ message: "user main folder is deleted!" }))
-        .catch((err) => console.log({ message: "failed to delete the user's main folder!" }))
+        .catch((err) => console.log({ api_error_message: "failed to delete the user's main folder!" }))
 
+
+    const deleteUser = await touristModel.findByIdAndDelete(_id)
+    if (!deleteUser) {
+        console.log({ api_error_message: "failed to delete the user , attempting to restore the images!" })
+        // restoring the profile picture
+        await cloudinary.api.create_folder(userProfilePath, { resource_type: 'raw' })
+            .then(async () => {
+                console.log({ message: "user profile picture folder restored!" })
+                await cloudinary.api.restore(profilePublicId)
+                    .then(() => console.log({ message: "profile picture is restored!" }))
+                    .catch(async (err) => {
+                        console.log({
+                            message: "failed to restore the profile picture!",
+                            error: err
+                        })
+                        await cloudinary.api.delete_folder(userFolderPath)
+                            .then(() => console.log({ message: "user folder is deleted!" }))
+                            .catch((err) => console.log({ api_error_message: "failed to delete user folder!" }))
+                    })
+            })
+            .catch((err) => console.log({
+                api_error_message: "failed to restore the profile picture",
+                error: err
+            }))
+
+        await cloudinary.api.create_folder(userCoverPath, { resource_type: 'raw' })
+            .then(async () => {
+                console.log({ message: "user cover picture folder restored!" })
+                await cloudinary.api.restore(coverPictureId)
+                    .then(() => console.log({ message: "cover picture is restored!" }))
+                    .catch(async (err) => {
+                        console.log({
+                            message: "failed to restore the cover picture!",
+                            error: err
+                        })
+                        await cloudinary.api.delete_folder(userFolderPath)
+                            .then(() => console.log({ message: "user folder is deleted!" }))
+                            .catch((err) => console.log({ api_error_message: "failed to delete user folder!" }))
+                    })
+            })
+            .catch((err) => console.log({
+                api_error_message: "failed to restore the profile picture",
+                error: err
+            }))
+        customId = null
+        userProfilePath = null
+        userCoverPath = null
+        userFolderPath = null
+        return next(new Error("couldn't delete the user!", { cause: 500 }))
+    }
+    console.log({ message: "user is deleted!" })
     customId = null
     userProfilePath = null
     userCoverPath = null
     userFolderPath = null
 
-    const deleteUser = await touristModel.findByIdAndDelete(_id)
-    if (!deleteUser) {
-        return next(new Error("couldn't delete the user!", { cause: 500 }))
-    }
-    // the front end might want the token back to delete it from his local storage
+    console.log("\nTOURIST DELETE IS DONE!\n")
     res.status(200).json({
         message: "User deleted successfully!",
         token: deleteUser.token
@@ -846,20 +1013,29 @@ export const deleteUser = async (req, res, next) => {
 }
 
 export const getUserInfo = async (req, res, next) => {
+    console.log("\nTOURIST GET USER INFO API\n")
     const { _id } = req.authUser
     const getUser = await touristModel.findById(_id)
         .select('userName email gender age phoneNumber language profilePicture.secure_url coverPicture.secure_url status confirmed country countryFlag preferences')
     if (!getUser) {
+        console.log({ api_error_message: "failed to find the user!" })
         return next(new Error('user not found!', { cause: 400 }))
     }
+    console.log({
+        message: "user is found!",
+        user_found: getUser
+    })
+
+    console.log("\nTOURIST GET USER INFO IS DONE!\n")
     res.status(200).json({
         message: "user fetching is successfull!",
         user: getUser
     })
 }
 
+// DEPRICATED API
 export const changePassword = async (req, res, next) => {
-    // TODO : make it on 2 APIs
+    console.log("\nTOURIST (DEPRICATED) CHANGE PASSWORD API\n")
     const { _id } = req.authUser
     const { oldPassword, newPassword, confirmNewPassword } = req.body
     if (!oldPassword || !newPassword || !confirmNewPassword) {
@@ -891,56 +1067,101 @@ export const changePassword = async (req, res, next) => {
 }
 
 export const confrirmOldPass = async (req, res, next) => {
+    console.log("\nTOURIST CONFIRM OLD PASS API\n")
     const { _id } = req.authUser
     const { oldPassword } = req.body
+
     if (!oldPassword) {
+        console.log({
+            user_error_message: "password is missing",
+            entered_password: oldPassword,
+            purpose: "confirm current password!"
+        })
         return next(new Error('old password must be entered!', { cause: 400 }))
     }
+    console.log({ message: "password is found!" })
+
     const getUser = await touristModel.findById(_id)
     if (!getUser) {
+        console.log({ api_error_message: "user is not found!" })
         return next(new Error('user not found , invalid userID', { cause: 400 }))
     }
+    console.log({
+        message: "user is found!",
+        user_found: getUser
+    })
+
     // this line will fail if the stored password in the data base is not hashed because bcrypt will hash it anyways then compare it
     const isPassMatch = bcrypt.compareSync(oldPassword, getUser.password)
+    console.log({ is_password_valid: isPassMatch })
     if (!isPassMatch) {
+        console.log({ user_error_message: "user entered incorrect password!" })
         return next(new Error("incorrect password!", { cause: 400 }))
     }
+    console.log({ message: "the entered password is correct!" })
 
+    console.log("\nTOURIST CONFIRM OLD PASS IS DONE!\n")
     res.status(200).json({
         message: "you can continue to change your password!"
     })
 }
 
 export const changeOldPass = async (req, res, next) => {
+    console.log("\nTOURIST CHANGE PASSWORD API\n")
     const { _id } = req.authUser
     const { newPassword, confirmNewPassword } = req.body
+
     if (!newPassword) {
+        console.log({ user_error_message: "new password is missing!" })
         return next(new Error('you must enter the new Password!', { cause: 400 }))
     }
+    console.log({ message: "new password is found!" })
     if (!confirmNewPassword) {
+        console.log({ user_error_message: "confirm new password is missing!" })
         return next(new Error('you must confirm the new Password!', { cause: 400 }))
     }
+    console.log({ message: "confirm new password is found!" })
+
     if (newPassword !== confirmNewPassword) {
+        console.log({
+            user_error_message: "the user entered 2 non-matching passwords",
+            entered_new_password: newPassword,
+            entered_confirm_new_password: confirmNewPassword
+        })
         return next(new Error('passwords must match!', { cause: 400 }))
     }
-    // const decodedToken = verifyToken({ token: passToken, signature: process.env.change_password_secret_key })
-    // if (!decodedToken) {
-    //     return next(new Error('invalid token!', { cause: 400 }))
-    // }
+    console.log({ message: "the 2 entered passwords matched!" })
+
     const getUser = await touristModel.findById(_id)
     if (!getUser) {
+        console.log({ api_error_message: "user not found!" })
         return next(new Error("couldn't find the user , invalid userID!", { cause: 400 }))
     }
+    console.log({
+        message: "user found!",
+        user_found: getUser
+    })
+
     const isPassMatch = bcrypt.compareSync(newPassword, getUser.password)
+    console.log({ is_new_pass_matches_old: isPassMatch })
     if (isPassMatch) {
+        console.log({ user_error_message: "user entered the same password as the old one!" })
         return next(new Error('you must enter a new Password!', { cause: 400 }))
     }
+    console.log({ message: "the new password doesn't match the old one!" })
+
     const newHashedPassword = bcrypt.hashSync(newPassword, +process.env.SIGN_UP_SALT_ROUNDS)
     getUser.password = newHashedPassword
-    getUser.__v++
+    console.log({ message: "new password is updated!" })
+
     if (!await getUser.save()) {
+        console.log({ api_error_message: "failed to update the new password!" })
         return next(new Error('failed to save new password!', { cause: 500 }))
     }
+    getUser.__v++
+    console.log({ message: "user password is changed!" })
+
+    console.log("\nTOURIST CHANGE PASSWORD IS DONE!\n")
     res.status(200).json({
         message: "changing password is successfull!"
     })
