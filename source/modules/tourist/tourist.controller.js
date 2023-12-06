@@ -586,7 +586,6 @@ export const profileSetUp = async (req, res, next) => {
     const { phoneNumber, gender, age, language, country, preferences, countryFlag } = req.body // front -> not in DB document
 
     const getUser = await touristModel.findById(_id)
-    console.log({ user_fetched: getUser })
     if (!getUser) {
         console.log({
             api_error_message: "failed to fetch the user!",
@@ -701,7 +700,7 @@ export const profileSetUp = async (req, res, next) => {
         let flag = false
         if (getUser.customId) { // if you have a custom id then you surely have uploaded images before
             console.log({
-                message: "user has a custom id and maybe uploaded an image before",
+                message: "user has a custom id and maybe has uploaded an image before",
                 existing_customId: getUser.customId
             })
             customId = getUser.customId
@@ -766,11 +765,12 @@ export const profileSetUp = async (req, res, next) => {
                     }
                     const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
                         folder: profileUploadPath
-                    }).then(() => console.log({ message: "profile picture uploaded!" }))
+                    })
                     if (!secure_url || !public_id) {
                         console.log({ message: "failed to upload the profile picture!" })
                         return next(new Error("couldn't upload the profile picture!", { cause: 400 }))
                     }
+                    console.log({ message: "profile picture uploaded!" })
                     profilePic = { secure_url, public_id }
                     getUser.profilePicture = profilePic
                     console.log({ message: "profile picture is updated!" })
@@ -814,11 +814,12 @@ export const profileSetUp = async (req, res, next) => {
                     }
                     const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
                         folder: coverUploadPath
-                    }).then(() => console.log({ message: "cover picture uploaded!" }))
+                    })
                     if (!secure_url || !public_id) {
                         console.log({ message: "failed to upload the cover picture!" })
                         return next(new Error("couldn't upload the cover picture!", { cause: 400 }))
                     }
+                    console.log({ message: "cover picture uploaded!" })
                     coverPic = { secure_url, public_id }
                     getUser.coverPicture = coverPic
                     console.log({ message: "cover picture is updated!" })
