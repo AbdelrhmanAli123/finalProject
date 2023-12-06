@@ -88,7 +88,7 @@ export const isAuth = (roles = []) => {
                     await user.save()
                     req.authUser = user
                     console.log("\nTOKEN REFRESHING IS SUCCESSFULL\n")
-                    return res.status(200).json({
+                    return res.status(202).json({
                         message: "token refreshed!",
                         newToken
                     })

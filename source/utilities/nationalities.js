@@ -1,3 +1,5 @@
+// TODO : remove
+
 export const countries = ['EGYPT', 'PALESTINE', 'UNITED KINGDOM', 'UNITED STATES OF AMERICA', 'SPAIN', 'RUSSIA', 'GERMANY']
 
 export const countriesCodes = {

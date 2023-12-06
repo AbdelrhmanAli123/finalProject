@@ -169,9 +169,6 @@ export const TouristSignUp = async (req, res, next) => {
     }
 
     if (language) {
-        if (!languages.includes(language)) {
-            return next(new Error("please enter a valid language!", { cause: 400 }))
-        }
         userData.language = language
         console.log({
             message: "language added!"
@@ -203,18 +200,10 @@ export const TouristSignUp = async (req, res, next) => {
     }
 
     if (country) {
-        if (countries.includes(country)) {
-            userData.country = country
-            console.log({
-                message: "country added!"
-            })
-        } else {
-            console.log({
-                api_error_message: "invalid country",
-                country: country
-            })
-            return next(new Error('invalid country!', { cause: 400 }))
-        }
+        userData.country = country
+        console.log({
+            message: "country added!"
+        })
     }
 
     if (countryFlag) {
@@ -628,11 +617,7 @@ export const profileSetUp = async (req, res, next) => {
     }
 
     if (country) {
-        if (countries.includes(country)) {
-            getUser.country = country
-        } else {
-            return next(new Error('invalid country!', { cause: 400 }))
-        }
+        getUser.country = country
     }
 
     if (age) {
@@ -640,9 +625,6 @@ export const profileSetUp = async (req, res, next) => {
     }
 
     if (language) {
-        if (!languages.includes(language)) {
-            return next(new Error("please enter a valid language!", { cause: 400 }))
-        }
         getUser.language = language
     }
 
@@ -651,7 +633,7 @@ export const profileSetUp = async (req, res, next) => {
     }
 
     if (countryFlag) {
-        userData.countryFlag = countryFlag
+        getUser.countryFlag = countryFlag
     }
 
     let profilePic, coverPic

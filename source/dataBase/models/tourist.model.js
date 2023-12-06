@@ -84,16 +84,23 @@ const touristSchema = new Schema({
     preferences: {
         type: [String]
     },
-    countryFlag: {
+    countryFlag: { // will be sent in : edit profile 
+        // will be get in view profile
         type: String
     }
-    // resetToken:String
-    // address: {
+    // address: { (real time -> socket.io)
     // }
     // refreshCounter : {
     //     type:Number,
     //     max:4
     // }
 })
+
+// 1. tourist (include chatbot)
+// 2. tourguide (include ocr)
+// 3. address (location , google maps)
+// 4. real time chat
+
+// pagination
 
 export const touristModel = model('Tourist', touristSchema)
