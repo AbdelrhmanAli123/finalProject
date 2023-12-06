@@ -13,7 +13,8 @@ export const signUpValidSchema = {
         phoneNumber: joi.string().length(10).optional(),
         gender: joi.string().valid('male', 'female').optional(),
         age: joi.number().optional(),
-        language: joi.string().optional()
+        language: joi.string().optional(),
+        countryFlag: joi.string()
     }),
     files: joi.object({
         profilePicture: joi.array().items(joi.object({
@@ -77,18 +78,9 @@ export const touristProfileSetUpSchema = {
         age: joi.number(),
         language: joi.string(),
         country: joi.string(),
-        preferences: joi.array().items(joi.string())
+        preferences: joi.array().items(joi.string()),
+        countryFlag: joi.string()
     }).presence('optional'),
-    // file: joi.object({
-    //     fieldname: joi.string(),
-    //     originalname: joi.string(),
-    //     encoding: joi.string(),
-    //     mimetype: joi.string(),
-    //     destination: joi.string(),
-    //     filename: joi.string(),
-    //     path: joi.string(),
-    //     size: joi.number()
-    // }).unknown(true).presence('optional').options({ presence: 'optional' }),
     files: joi.object({
         profilePicture: joi.array().items(joi.object({
             fieldname: joi.string(),

@@ -274,7 +274,9 @@ app.get('/get-location', (req, res) => {
     // }
 ```
 
-- req.file code (.single()) :
+### req.file code (.single())
+
+- controller code :
 
 ```js
   if (req.file) {
@@ -340,4 +342,19 @@ app.get('/get-location', (req, res) => {
     else {
         return next(new Error('file must exist!', { cause: 400 }))
     }
+```
+
+- schema code :
+
+```js
+    file: joi.object({
+        fieldname: joi.string(),
+        originalname: joi.string(),
+        encoding: joi.string(),
+        mimetype: joi.string(),
+        destination: joi.string(),
+        filename: joi.string(),
+        path: joi.string(),
+        size: joi.number()
+    }).unknown(true).presence('optional').options({ presence: 'optional' }),
 ```
