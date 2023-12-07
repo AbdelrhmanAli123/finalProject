@@ -21,7 +21,7 @@ export const TouristSignUp = async (req, res, next) => {
     } = req.body
 
     const findUser = await touristModel.findOne({ $or: [{ email: email }, { userName: userName }] })
-    console.log({ is_user_Found: findUser })
+    console.log({ user_Found: findUser })
 
     if (findUser?.email === email) {
         console.log({
@@ -223,7 +223,7 @@ export const TouristSignUp = async (req, res, next) => {
     }
 
     const token = generateToken({
-        expiresIn: '1d',
+        expiresIn: '3w',
         signature: process.env.LOGIN_SECRET_KEY,
         payload: {
             _id: saveUser._id,
@@ -281,7 +281,7 @@ export const confirmAccount = async (req, res, next) => {
     }
 
     const getUser = await touristModel.findOne({ email: decodeToken?.email })
-    console.log({ user_fetching_errors: getUser.errors })
+    console.log({ user_fetching_errors: getUser?.errors })
     if (!getUser) {
         console.log({
             api_error_message: "failed to fetch the user!",
@@ -346,7 +346,7 @@ export const touristLogIn = async (req, res, next) => {
     }
 
     const token = generateToken({
-        expiresIn: '1d',
+        expiresIn: '3w',
         signature: process.env.LOGIN_SECRET_KEY,
         payload: {
             _id: getUser._id,
@@ -366,7 +366,7 @@ export const touristLogIn = async (req, res, next) => {
     })
 
     const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true }).select('userName email token')
-    console.log({ user_updating_errors: updateUser.errors })
+    console.log({ user_updating_errors: updateUser?.errors })
     if (!updateUser) {
         console.log({
             api_error_message: "failed to generate user token!",
@@ -392,7 +392,7 @@ export const forgetPassword = async (req, res, next) => {
     const { email } = req.body
 
     const getUser = await touristModel.findOne({ email })
-    console.log({ user_fetching_errors: getUser.errors })
+    console.log({ user_fetching_errors: getUser?.errors })
     if (!getUser) {
         console.log({
             api_error_message: "failed to fetch the user!",
@@ -447,7 +447,7 @@ export const forgetPassword = async (req, res, next) => {
     })
 
     const updateUser = await touristModel.findOneAndUpdate({ email }, { resetCode: hashedCode, forgetPassword: true }, { new: true })
-    console.log({ user_updating_errors: updateUser.errors })
+    console.log({ user_updating_errors: updateUser?.errors })
     if (!updateUser) {
         console.log({
             api_error_message: "failed to forget password in data base!",
@@ -505,7 +505,7 @@ export const resetPassword = async (req, res, next) => {
     const getUser = await touristModel.findOne({
         email: decodedToken.email,
     })
-    console.log({ user_fetching_errors: getUser.errors })
+    console.log({ user_fetching_errors: getUser?.errors })
     if (!getUser) {
         console.log({
             api_error_message: "failed to find user!"
@@ -879,6 +879,7 @@ export const logOut = async (req, res, next) => {
     })
 }
 
+// TODO : check the await .then() .catch() activity 
 export const deleteUser = async (req, res, next) => {
     console.log("\nTOURIST DELETE API\n")
     const { _id } = req.authUser

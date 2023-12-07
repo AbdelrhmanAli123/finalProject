@@ -64,34 +64,39 @@ export const isAuth = (roles = []) => {
                 req.authUser = getUser
                 next()
             } catch (error) {
-                console.log("\nTOKEN REFRESHING\n")
+                // console.log("\nTOKEN REFRESHING\n")
                 if (error == 'TokenExpiredError: jwt expired') {
-                    const user = await touristModel.findOne({
-                        token: splittedToken
+                    console.log({
+                        token_error_message: "token is expired!",
+                        token_error: error
                     })
-                    // if the token sent is wrong along with being expired :
-                    if (!user) {
-                        return next(new Error('invalid token', { cause: 400 }))
-                    }
-                    // generate a new token
-                    const newToken = generateToken({
-                        signature: process.env.LOGIN_SECRET_KEY,
-                        expiresIn: '1d',
-                        payload: {
-                            email: user.email,
-                            _id: user._id,
-                            role: user.role
-                        }
-                    })
-                    console.log({ User_new_token: newToken })
-                    user.token = newToken
-                    await user.save()
-                    req.authUser = user
-                    console.log("\nTOKEN REFRESHING IS SUCCESSFULL\n")
-                    return res.status(401).json({
-                        message: "token refreshed!",
-                        newToken
-                    })
+                    return next(new Error('token is expired , please sign in again!', { cause: 400 }))
+                    // const user = await touristModel.findOne({
+                    //     token: splittedToken
+                    // })
+                    // // if the token sent is wrong along with being expired :
+                    // if (!user) {
+                    //     return next(new Error('invalid token', { cause: 400 }))
+                    // }
+                    // // generate a new token
+                    // const newToken = generateToken({
+                    //     signature: process.env.LOGIN_SECRET_KEY,
+                    //     expiresIn: '1d',
+                    //     payload: {
+                    //         email: user.email,
+                    //         _id: user._id,
+                    //         role: user.role
+                    //     }
+                    // })
+                    // console.log({ User_new_token: newToken })
+                    // user.token = newToken
+                    // await user.save()
+                    // req.authUser = user
+                    // console.log("\nTOKEN REFRESHING IS SUCCESSFULL\n")
+                    // return res.status(401).json({
+                    //     message: "token refreshed!",
+                    //     newToken
+                    // })
                 }
             }
         } catch (error) {
