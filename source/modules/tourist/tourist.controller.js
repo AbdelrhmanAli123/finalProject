@@ -1,7 +1,9 @@
+import { request } from 'express'
+import fs from 'fs'
 import {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
     ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses,
-    languagesCodes, countries, countriesCodes
+    languagesCodes, countries, countriesCodes, axios
 } from './tourist.controller.imports.js'
 // for tourist sign up :
 const nanoid = customAlphabet('asdfghjkl123456789_#$%!', 5)
@@ -17,7 +19,7 @@ export const TouristSignUp = async (req, res, next) => {
     console.log("\nTOURIST SIGN UP API\n")
 
     const {
-        userName, email, password, confirmPassword, phoneNumber, gender, age, language, country, countryFlag
+        userName, email, password, confirmPassword
     } = req.body
 
     const findUser = await touristModel.findOne({ $or: [{ email: email }, { userName: userName }] })
@@ -54,7 +56,6 @@ export const TouristSignUp = async (req, res, next) => {
         sluggified_name: slug
     })
 
-    // TODO : add the address to the object when you deal with addresses
     const userData = {
         userName,
         email,
@@ -65,152 +66,11 @@ export const TouristSignUp = async (req, res, next) => {
         message: "email , userName and slug are done!"
     })
 
-    let profilePic, coverPic
-    let profileUploadPath // for profile Picture
-    let coverUploadPath // for cover picture
-
-    if (req.files) {
-        console.log({
-            files: req.files,
-            filesType: typeof (req.files),
-            filesobjectKeys: Object.keys(req.files),
-        })
-        console.log({
-            profilePicture: req.files['profilePicture'],
-            coverPicture: req.files['coverPicture']
-        })
-
-        const customId = nanoid()
-        userData.customId = customId
-        profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
-        coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
-
-        // TODO : fix this code and optimize it , you can either stick to nested loops , or single loops or without loops since you know that should be there
-        for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
-            console.log({
-                iterationArrayName: array,
-                typeOfIterationArray: typeof (array)
-            })
-            // console.log({ arrayFieldName: array.fieldname }) // this will always gete undefined since array is a string that has no properties
-            const arrayFields = req.files[array] // this should access the first array of req.files
-            console.log({ iterationArray: arrayFields })
-            for (const file of arrayFields) { // each object of the array inside the object
-                if (file.fieldname === 'profilePicture') {
-                    console.log({ accessed: true })
-                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-                        folder: profileUploadPath
-                    })
-                    if (!secure_url || !public_id) {
-                        return next(new Error("couldn't save the profile picture!", { cause: 400 }))
-                    }
-                    profilePic = { secure_url, public_id }
-                    userData.profilePicture = profilePic
-                    console.log({
-                        message: "profile picture is added!",
-                        profile_pic_url: userData.profilePicture
-                    })
-                }
-                else if (file.fieldname === 'coverPicture') {
-                    console.log({ accessed: true })
-                    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
-                        folder: coverUploadPath
-                    })
-                    if (!secure_url || !public_id) {
-                        return next(new Error("couldn't save the image!", { cause: 400 }))
-                    }
-                    coverPic = { secure_url, public_id }
-                    userData.coverPicture = coverPic
-                    console.log({
-                        message: "cover picture is added!",
-                        profile_pic_url: userData.coverPicture
-                    })
-                }
-                else {
-                    console.log({
-                        message: "invalid file fieldname",
-                        file_field_name: file.fieldname
-                    })
-                    return next(new Error('invalid file fieldName!', { cause: 400 }))
-                }
-            }
-        }
-    } else {
-        profilePic = null
-        coverPic = null
-        profileUploadPath = null
-        coverUploadPath = null
-    }
-
-    req.profileImgPath = profileUploadPath
-    req.coverImgPath = coverUploadPath
-
     const hashedPassword = bcrypt.hashSync(password, +process.env.SIGN_UP_SALT_ROUNDS)
     userData.password = hashedPassword
     console.log({
         message: "password encryption done!",
     })
-
-    if (age) {
-        userData.age = age
-        console.log({
-            message: "age added!"
-        })
-    }
-
-    if (gender) {
-        if (gender !== 'male' && gender !== 'female' && gender !== 'not specified') {
-            return next(new Error('invalid gender!', { cause: 400 }))
-        }
-        userData.gender = gender
-        console.log({
-            message: "gender added!"
-        })
-    }
-
-    if (language) {
-        userData.language = language
-        console.log({
-            message: "language added!"
-        })
-    }
-
-    if (phoneNumber) {
-        console.log({
-            length: phoneNumber.length
-        })
-        if (phoneNumber.length !== 10) {
-            console.log({
-                api_error_message: "invalid phone number length",
-                phone_length: phoneNumber.length
-            })
-            return next(new Error("enter a valid phone number!", { cause: 400 }))
-        }
-        if (!EGphoneCodes.includes(phoneNumber.substring(0, 2))) {
-            console.log({
-                api_error_message: "invalid phone number code",
-                phone_code: phoneNumber.substring(0, 2)
-            })
-            return next(new Error("please enter an egyptian number!", { cause: 400 }))
-        }
-        userData.phoneNumber = phoneNumber
-        console.log({
-            message: "phone number added!"
-        })
-    }
-
-    if (country) {
-        userData.country = country
-        console.log({
-            message: "country added!"
-        })
-    }
-
-    if (countryFlag) {
-        userData.countryFlag = countryFlag
-        console.log({
-            message: "country flag added!"
-        })
-    }
 
     const saveUser = await touristModel.create(userData)
     if (!saveUser) {
@@ -450,9 +310,9 @@ export const forgetPassword = async (req, res, next) => {
     console.log({ user_updating_errors: updateUser?.errors })
     if (!updateUser) {
         console.log({
-            api_error_message: "failed to forget password in data base!",
+            api_error_message: "failed to forget user password!",
         })
-        return next(new Error('failed to update password status in data base!', { cause: 400 }))
+        return next(new Error('failed to forget password!', { cause: 400 }))
     }
     console.log({
         message: "password is now forgotten!"
@@ -484,7 +344,7 @@ export const resetPassword = async (req, res, next) => {
             JWTerrorName: error.name,
             JWTerrorMessage: error.message
         })
-        if (error.name == 'TokenExpiredError') {
+        if (error.name === 'TokenExpiredError') {
             return next(new Error('reset code expired!', { cause: 408 }))
         }
     }
@@ -514,9 +374,9 @@ export const resetPassword = async (req, res, next) => {
     }
     if (decodedToken.resetCode !== getUser.resetCode) {
         console.log({
-            api_error_message: "invalid reset code token!"
+            api_error_message: "invalid reset code!"
         })
-        return next(new Error('invalid reset code token!', { cause: 400 }))
+        return next(new Error('invalid reset code!', { cause: 400 }))
     }
     console.log({
         message: "user found!",
@@ -546,7 +406,7 @@ export const resetPassword = async (req, res, next) => {
     }
     getUser.password = hashedNewPassword
     console.log({
-        message: "new password added in database!",
+        message: "new password added!",
     })
 
     getUser.resetCode = null
@@ -1253,4 +1113,271 @@ export const test2 = async (req, res, next) => {
         message: "file",
         file: req.file
     })
+}
+
+// const { languages } = req.body
+// console.log({
+//     message: "AI test is entered!"
+// })
+// const AiUrl = 'http://18.212.174.169:5000/process_image'
+// // const input = {
+// //     question
+// // }
+// const headers = {
+//     'Content-Type': 'multipart/form-data'
+// };
+
+// let formData2
+// const formData = new FormData() // this has headers
+// if (req?.file) {
+//     formData.append('image', req?.file)
+//     // formData2.image = req.file.buffer
+// }
+// // formData.append('question', question)
+// if (languages) {
+//     formData.append('languages', languages)
+//     // formData2.languages = languages
+// }
+// console.log({
+//     formData
+// })
+// // console.log({
+// //     message: "form data",
+// //     form_data: formData
+// // }
+
+// let AIdata
+// try {
+//     const AIresult = await axios.post(AiUrl, formData, { headers })
+//         .then(response => {
+//             AIdata = response.data
+//             console.log({
+//                 message: "Ai model gave a response",
+//                 // response: response,
+//                 data: response.data
+//                 // status: response.status,
+//                 // status_text: response.statusText,
+//                 // headers: response.headers,
+//                 // config: response.config
+//             })
+//         })
+//         .catch(error => {
+//             console.log({
+//                 axios_error: "error regarding the AI model",
+//                 error: error.message,
+//                 error_itself: error
+//             })
+//         })
+// } catch (error) {
+//     console.log({
+//         message: "failed to send request to AI",
+//         error: error
+//     })
+// }
+// console.log({
+//     message: "Ai result is successfull!",
+//     AI_data: AIdata
+// })
+// res.status(200).json({
+//     message: "Ai testing done",
+//     AI_answer: AIdata
+// })
+export const AItest = async (req, res, next) => {
+    const { languages } = req.body;
+    const AiUrl = 'http://18.212.174.169:8080/process_image'
+
+    const headers = {
+        'Content-Type': 'multipart/form-data'
+    };
+
+    const formData = new FormData();
+    // if (req?.file && req.file.buffer && req.file.originalname) {
+    //     formData.append('image', req?.file.buffer, req?.file.originalname);
+    // }
+    if (languages) {
+        formData.append('languages', languages);
+    }
+
+
+    let AI_response
+    try {
+        const response = await axios.post(AiUrl, formData, { headers });
+        console.log({
+            message: "Ai model gave a response",
+            data: response.data
+        });
+        res.status(200).json({
+            message: "Ai testing done",
+            AI_answer: response.data
+        });
+    } catch (error) {
+        console.log({
+            axios_error: "error regarding the AI model",
+            error: error.message,
+            error_itself: error
+        });
+        res.status(500).json({
+            message: "Failed to send request to AI",
+            error: error.message
+        });
+    }
+}
+
+export const AItest2 = async (req, res, next) => {
+    const { languages } = req.body
+    console.log({
+        message: "AI test is entered!"
+    })
+    const AiUrl = 'http://18.212.174.169:8081/process_image'
+    const headers = {
+        'Content-Type': 'multipart/form-data'
+    };
+    const options = {
+        'method': 'POST',
+        'url': AiUrl,
+        'headers': { 'Content-Type': 'multipart/form-data' },
+        formData: {
+            'image': {
+                'value': req?.file.originalPath,
+                'options': {
+                    'filename': req?.file.filename,
+                    'contentType': null
+                }
+            },
+            'languages': '["English", "Japanese"]'
+        }
+    };
+    const AIdata = await request(options
+        , function (error, response) {
+            if (error) {
+                return next(new Error('request error!', { cause: 400 }))
+            }
+            console.log({
+                response: response
+            })
+        })
+    res.status(200).json({
+        message: "Ai testing done",
+        AI_answer: AIdata
+    })
+}
+
+// const fs = require('fs');
+// const FormData = require('form-data');
+// const axios = require('axios');
+
+// // Assuming you have fs, FormData, and axios installed in your project
+
+// const formData = new FormData();
+
+// // Add the image file to the FormData
+// formData.append('image', fs.createReadStream('/C:/Users/CompuMall/Downloads/WhatsApp Image 2023-12-22 at 11.21.24 PM.jpeg'));
+
+// // Add the 'languages' field to the FormData
+// formData.append('languages', '["English", "Japanese"]');
+
+// // Make a POST request to yo
+
+
+
+export const AItest3 = async (req, res, next) => {
+    const { languages } = req.body
+    let data = new FormData();
+    if (req?.file?.buffer) {
+        data.append('images', req?.file.buffer);
+    }
+    data.append('languages', languages);
+
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'http://18.212.174.169:5000/process_image',
+        headers: {
+            ...data.getHeaders()
+        },
+        data: data
+    };
+
+    axios.request(config)
+        .then((response) => {
+            console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    res.status(200).json({
+        message: "test is done!"
+    })
+}
+
+export const AItest4 = async (req, res, next) => {
+    console.log({
+        message: "\nAI TEST4 API\n"
+    })
+    const { languages } = req.body
+
+    const AIurl = 'http://18.212.174.169:8081/process_image'
+
+    const headers = {
+        'Content-Type': 'multipart/form-data'
+    }
+
+    console.log({
+        request_body: req.body,
+        file: req?.file
+    })
+
+    const formData = new FormData()
+    console.log({
+        created_form_data_before_addition: formData
+    })
+    if (req?.file && req?.file.buffer) {
+        console.log({
+            message: "image condition is entered!"
+        })
+        formData.append('image', req.file.buffer, { filename: req.file.originalname })
+        console.log({
+            created_form_data_after_adding_image: formData
+        })
+    } else {
+
+        res.status(400).json({
+            message: "No file in the request"
+        });
+
+        return; // Stop execution if there's no file
+    }
+
+    if (languages) {
+        formData.append('languages', languages)
+        console.log({
+            created_form_data_after_adding_image: formData
+        })
+    }
+
+    console.log({
+        created_form_data: formData
+    })
+
+    let AIresult
+    try {
+        const AIresponse = await axios.postForm(AIurl, formData, { headers })
+            .then(response => {
+                console.log({
+                    message: "OCR gave a response",
+                    responseData: response.data
+                })
+                res.status(500).json({
+                    message: "failed to get response from the model"
+                })
+            })
+    } catch (error) {
+        console.log({
+            message: "failed to send the request",
+            error: error.message
+        })
+        res.status(500).json({
+            message: "failed to send the request"
+        })
+    }
 }

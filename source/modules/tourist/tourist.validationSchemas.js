@@ -79,7 +79,7 @@ export const touristProfileSetUpSchema = {
         language: joi.string(),
         country: joi.string(),
         preferences: joi.array().items(joi.string()),
-        countryFlag: joi.string()
+        countryFlag: joi.string() 
     }).presence('optional'),
     files: joi.object({
         profilePicture: joi.array().items(joi.object({

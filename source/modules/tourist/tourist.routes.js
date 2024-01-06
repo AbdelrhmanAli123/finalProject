@@ -3,6 +3,9 @@ import {
     allowedExtensions, touristAPIroles
 } from './tourist.routes.imports.js'
 
+import * as testCont from './test.js'
+import { multertempFunction } from '../../services/multerHost.js'
+
 const router = Router()
 
 router.post(
@@ -54,6 +57,7 @@ router.patch(
     asyncHandler(touristCont.resetPassword)
 )
 
+// depricated
 router.patch(
     '/changePassword',
     isAuth(touristAPIroles.changePassword),
@@ -101,6 +105,18 @@ router.post(
     '/test2',
     multerHostFunction(allowedExtensions.image).single('photo'),
     asyncHandler(touristCont.test2)
+)
+
+router.post(
+    '/AItest',
+    multerHostFunction().single('image'),
+    asyncHandler(testCont.fetch_request2)
+)
+
+router.post(
+    '/AItest2',
+    multertempFunction().single('image'),
+    asyncHandler(testCont.axios_request2)
 )
 
 export default router

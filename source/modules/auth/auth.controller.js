@@ -1,0 +1,495 @@
+import {
+    bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
+    ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses, languagesCodes,
+    countries, countriesCodes, axios, FormData
+} from '../tourist/tourist.controller.imports.js'
+import { tourGuideModel } from '../tourGuide/tourGuide.controller.imports.js'
+
+export const logOut = async (req, res, next) => {
+    console.log("\nAUTH LOGOUT API\n")
+    const { _id } = req.authUser
+
+    let getUser
+    if (req.userRole === systemRoles.tourist) {
+        getUser = await touristModel.findById(_id)
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    } else if (req.userRole === systemRoles.tourGuide) {
+        getUser = await tourGuideModel.findById(_id)
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    }
+
+    getUser.token = null
+    getUser.status = statuses.offline
+    console.log({ message: "user is now offline!" })
+
+    if (!await getUser.save()) {
+        console.log({ api_error_message: "failed to logout the user" })
+        return next(new Error('failed to logout the user!', { cause: 400 }))
+    }
+    console.log({ message: "user is logged out!" })
+
+    console.log("\nAUTH LOGOUT IS DONE!\n")
+    res.status(200).json({
+        message: "logout is successfull!"
+    })
+}
+
+// edit this to either differentiate between a 
+export const deleteUser = async (req, res, next) => {
+    console.log("\nAUTH DELETE API\n")
+    const { _id } = req.authUser
+
+    let getUser
+    if (req.userRole === systemRoles.tourist) {
+        getUser = await touristModel.findById(_id)
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    } else if (req.userRole === systemRoles.tourGuide) {
+        getUser = await tourGuideModel.findById(_id)
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    }
+
+    // tourist -> profile + cover
+    // tour guide -> profile + ministry + syndicate + cv
+
+    let customId = getUser.customId
+
+    let userProfilePath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+    let userCoverPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
+    let userMinistryPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/ministry_liscence`
+    let userSyndicatePath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/syndicate_liscence`
+    let userCVpath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/CV`
+
+    let userFolderPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}`
+
+    let ministryPublicId = getUser.ministyliscence?.public_id // may get an error !
+    let syndicatePubliceId = getUser.syndicateLiscence?.public_id // may get an error !
+    let CVpublicId = getUser.CV?.public_id // may get an error !
+    let profilePublicId = getUser.profilePicture?.public_id
+    let coverPictureId = getUser.coverPicture?.public_id
+
+    // we need to delete the user's images and folders on cloudinary :
+    console.log({ message: "about to delete user assets!" })
+
+    console.log({ message: "about to delete user profile picture!" })
+    await cloudinary.api.resource(getUser.profilePicture?.public_id)
+        .then(async () => {
+            await cloudinary.api.delete_resources_by_prefix(userProfilePath)
+                .then(() => console.log({ message: "profile picture is deleted!" }))
+                .catch((err) => console.log({ api_error_message: "failed to delete profile picture!", error: err }))
+
+            await cloudinary.api.delete_folder(userProfilePath)
+                .then(() => console.log({ message: "profile picture folder is deleted!" }))
+                .catch((err) => console.log({ api_error_message: "failed to delete profile picture folder!", error: err }))
+        })
+        .catch((err) => {
+            console.log({
+                api_error_message: "profile picture is not found!",
+                err: err
+            })
+        })
+
+    if (getUser.role === systemRoles.tourist) {
+        console.log({ message: "about to delete user cover picture!" })
+        await cloudinary.api.resource(getUser.coverPicture?.public_id)
+            .then(async () => {
+                await cloudinary.api.delete_resources_by_prefix(userCoverPath)
+                    .then(() => console.log({ message: "cover picture is deleted!" }))
+                    .catch((err) => console.log({ api_error_message: "failed to delete cover picture!", error: err }))
+
+                await cloudinary.api.delete_folder(userCoverPath)
+                    .then(() => console.log({ message: "cover picture folder is deleted!" }))
+                    .catch((err) => console.log({ api_error_message: "failed to delete cover picture folder!", error: err }))
+            })
+            .catch((err) => {
+                console.log({
+                    api_error_message: "cover picture is not found!",
+                    err: err
+                })
+            })
+    } else if (getUser.role === systemRoles.tourGuide) {
+        // we need to delete the CV file , ministry image and syndicate image !
+
+        // ministry liscence image
+        console.log({ message: "about to delete user ministry liscence!" })
+        await cloudinary.api.resource(getUser.ministyliscence?.public_id)
+            .then(async () => {
+                await cloudinary.api.delete_resources_by_prefix(userMinistryPath)
+                    .then(() => console.log({ message: "ministry liscence is deleted!" }))
+                    .catch((err) => console.log({ api_error_message: "failed to delete ministry liscence!", error: err }))
+
+                await cloudinary.api.delete_folder(userMinistryPath)
+                    .then(() => console.log({ message: "ministry liscence folder is deleted!" }))
+                    .catch((err) => console.log({ api_error_message: "failed to delete ministry liscence folder!", error: err }))
+            })
+            .catch((err) => {
+                console.log({
+                    api_error_message: "ministry liscence is not found!",
+                    err: err
+                })
+            })
+
+        // syndicate liscence image
+        console.log({ message: "about to delete user syndicate liscence!" })
+        await cloudinary.api.resource(getUser.syndicateLiscence?.public_id)
+            .then(async () => {
+                await cloudinary.api.delete_resources_by_prefix(userSyndicatePath)
+                    .then(() => console.log({ message: "syndicate liscence is deleted!" }))
+                    .catch((err) => console.log({ api_error_message: "failed to delete syndicate liscence!", error: err }))
+
+                await cloudinary.api.delete_folder(userSyndicatePath)
+                    .then(() => console.log({ message: "syndicate liscence folder is deleted!" }))
+                    .catch((err) => console.log({ api_error_message: "failed to delete syndicate liscence folder!", error: err }))
+            })
+            .catch((err) => {
+                console.log({
+                    api_error_message: "syndicate liscence is not found!",
+                    err: err
+                })
+            })
+
+        // CV file
+        console.log({ message: "about to delete user CV file!" })
+        await cloudinary.api.resource(getUser.CV?.public_id)
+            .then(async () => {
+                await cloudinary.api.delete_resources_by_prefix(userCVpath)
+                    .then(() => console.log({ message: "CV file is deleted!" }))
+                    .catch((err) => console.log({ api_error_message: "failed to delete CV file!", error: err }))
+
+                await cloudinary.api.delete_folder(userCVpath)
+                    .then(() => console.log({ message: "CV file folder is deleted!" }))
+                    .catch((err) => console.log({ api_error_message: "failed to delete CV file folder!", error: err }))
+            })
+            .catch((err) => {
+                console.log({
+                    api_error_message: "CV file is not found!",
+                    err: err
+                })
+            })
+    }
+
+    console.log({ message: "about to delete user main folder!" })
+    await cloudinary.api.delete_folder(userFolderPath)
+        .then(() => console.log({ message: "user main folder is deleted!" }))
+        .catch((err) => console.log({ api_error_message: "failed to delete the user's main folder!", error: err }))
+
+
+    const deleteUser = await touristModel.findByIdAndDelete(_id)
+    if (!deleteUser) {
+        console.log({ api_error_message: "failed to delete the user , attempting to restore the images!" })
+
+        // restoring the profile picture
+        await cloudinary.api.create_folder(userProfilePath, { resource_type: 'raw' })
+            .then(async () => {
+                console.log({ message: "user profile picture folder restored!" })
+                await cloudinary.api.restore(profilePublicId)
+                    .then(() => console.log({ message: "profile picture is restored!" }))
+                    .catch(async (err) => {
+                        console.log({
+                            message: "failed to restore the profile picture!",
+                            error: err
+                        })
+                        await cloudinary.api.delete_folder(userFolderPath)
+                            .then(() => console.log({ message: "user folder is deleted!" }))
+                            .catch((err) => console.log({ api_error_message: "failed to delete user folder!", error: err }))
+                    })
+            })
+            .catch((err) => console.log({
+                api_error_message: "failed to restore the profile picture",
+                error: err
+            }))
+
+        if (getUser.role === systemRoles.tourist) {
+            // restoring cover picture
+            await cloudinary.api.create_folder(userCoverPath, { resource_type: 'raw' })
+                .then(async () => {
+                    console.log({ message: "user cover picture folder restored!" })
+                    await cloudinary.api.restore(coverPictureId)
+                        .then(() => console.log({ message: "cover picture is restored!" }))
+                        .catch(async (err) => {
+                            console.log({
+                                message: "failed to restore the cover picture!",
+                                error: err
+                            })
+                            await cloudinary.api.delete_folder(userFolderPath)
+                                .then(() => console.log({ message: "user folder is deleted!" }))
+                                .catch((err) => console.log({ api_error_message: "failed to delete user folder!", error: err }))
+                        })
+                })
+                .catch((err) => console.log({
+                    api_error_message: "failed to restore the profile picture",
+                    error: err
+                }))
+        } else if (getUser.role === systemRoles.tourGuide) {
+            // restoring ministry liscence image
+            await cloudinary.api.create_folder(userMinistryPath, { resource_type: 'raw' })
+                .then(async () => {
+                    console.log({ message: "user ministry liscence folder restored!" })
+                    await cloudinary.api.restore(ministryPublicId)
+                        .then(() => console.log({ message: "ministry liscence is restored!" }))
+                        .catch(async (err) => {
+                            console.log({
+                                message: "failed to restore the ministry liscence!",
+                                error: err
+                            })
+                            await cloudinary.api.delete_folder(userFolderPath)
+                                .then(() => console.log({ message: "user folder is deleted!" }))
+                                .catch((err) => console.log({ api_error_message: "failed to delete user folder!", error: err }))
+                        })
+                })
+                .catch((err) => console.log({
+                    api_error_message: "failed to restore the ministry liscence",
+                    error: err
+                }))
+
+            // restoring syndicate liscence image
+            await cloudinary.api.create_folder(userSyndicatePath, { resource_type: 'raw' })
+                .then(async () => {
+                    console.log({ message: "user syndicate liscence folder restored!" })
+                    await cloudinary.api.restore(syndicatePubliceId)
+                        .then(() => console.log({ message: "syndicate liscence is restored!" }))
+                        .catch(async (err) => {
+                            console.log({
+                                message: "failed to restore the syndicate liscence!",
+                                error: err
+                            })
+                            await cloudinary.api.delete_folder(userFolderPath)
+                                .then(() => console.log({ message: "user folder is deleted!" }))
+                                .catch((err) => console.log({ api_error_message: "failed to delete user folder!", error: err }))
+                        })
+                })
+                .catch((err) => console.log({
+                    api_error_message: "failed to restore the syndicate liscence",
+                    error: err
+                }))
+
+            // restoring CV file
+            await cloudinary.api.create_folder(userCVpath, { resource_type: 'raw' })
+                .then(async () => {
+                    console.log({ message: "user CV file folder restored!" })
+                    await cloudinary.api.restore(CVpublicId)
+                        .then(() => console.log({ message: "CV file is restored!" }))
+                        .catch(async (err) => {
+                            console.log({
+                                message: "failed to restore the CV file!",
+                                error: err
+                            })
+                            await cloudinary.api.delete_folder(userFolderPath)
+                                .then(() => console.log({ message: "user folder is deleted!" }))
+                                .catch((err) => console.log({ api_error_message: "failed to delete user folder!", error: err }))
+                        })
+                })
+                .catch((err) => console.log({
+                    api_error_message: "failed to restore the CV file",
+                    error: err
+                }))
+        }
+
+        customId = null
+        userProfilePath = null
+        userCoverPath = null
+        userFolderPath = null
+        return next(new Error("couldn't delete the user!", { cause: 500 }))
+    }
+    console.log({ message: "user is deleted!" })
+    customId = null
+    userProfilePath = null
+    userCoverPath = null
+    userFolderPath = null
+
+    console.log("\nAUTH DELETE IS DONE!\n")
+    res.status(200).json({
+        message: "User deleted successfully!",
+        token: deleteUser.token
+    })
+}
+
+export const getUserInfo = async (req, res, next) => {
+    console.log("\nAUTH GET USER INFO API\n")
+    const { _id } = req.authUser
+
+    let getUser
+    if (req.userRole === systemRoles.tourist) {
+        getUser = await touristModel.findById(_id)
+            .select('userName email gender age phoneNumber language profilePicture.secure_url coverPicture.secure_url status confirmed country countryFlag preferences')
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    } else if (req.userRole === systemRoles.tourGuide) {
+        getUser = getUser = await tourGuideModel.findById(_id)
+            .select('userName email gender age phoneNumber language profilePicture.secure_url coverPicture.secure_url status confirmed country countryFlag preferences CV')
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    }
+
+    console.log("\nAUTH GET USER INFO IS DONE!\n")
+    res.status(200).json({
+        message: "user fetching is successfull!",
+        user: getUser
+    })
+}
+
+export const confrirmOldPass = async (req, res, next) => {
+    console.log("\nAUTH CONFIRM OLD PASS API\n")
+    const { _id } = req.authUser
+    const { oldPassword } = req.body
+
+    if (!oldPassword) {
+        console.log({
+            user_error_message: "password is missing",
+            entered_password: oldPassword,
+            purpose: "confirm current password!"
+        })
+        return next(new Error('old password must be entered!', { cause: 400 }))
+    }
+    console.log({ message: "password is found!" })
+
+    let getUser
+    if (req.userRole === systemRoles.tourist) {
+        getUser = await touristModel.findById(_id)
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    } else if (req.userRole === systemRoles.tourGuide) {
+        getUser = getUser = await tourGuideModel.findById(_id)
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    }
+
+    // this line will fail if the stored password in the data base is not hashed because bcrypt will hash it anyways then compare it
+    const isPassMatch = bcrypt.compareSync(oldPassword, getUser.password)
+    console.log({ is_password_valid: isPassMatch })
+    if (!isPassMatch) {
+        console.log({ user_error_message: "user entered incorrect password!" })
+        return next(new Error("incorrect password!", { cause: 400 }))
+    }
+    console.log({ message: "the entered password is correct!" })
+
+    console.log("\nAUTH CONFIRM OLD PASS IS DONE!\n")
+    res.status(200).json({
+        message: "you can continue to change your password!"
+    })
+}
+
+export const changeOldPass = async (req, res, next) => {
+    console.log("\nAUTH CHANGE PASSWORD API\n")
+    const { _id } = req.authUser
+    const { newPassword, confirmNewPassword } = req.body
+
+    if (!newPassword) {
+        console.log({ user_error_message: "new password is missing!" })
+        return next(new Error('you must enter the new Password!', { cause: 400 }))
+    }
+    console.log({ message: "new password is found!" })
+    if (!confirmNewPassword) {
+        console.log({ user_error_message: "confirm new password is missing!" })
+        return next(new Error('you must confirm the new Password!', { cause: 400 }))
+    }
+    console.log({ message: "confirm new password is found!" })
+
+    if (newPassword !== confirmNewPassword) {
+        console.log({
+            user_error_message: "the user entered 2 non-matching passwords",
+            entered_new_password: newPassword,
+            entered_confirm_new_password: confirmNewPassword
+        })
+        return next(new Error('passwords must match!', { cause: 400 }))
+    }
+    console.log({ message: "the 2 entered passwords matched!" })
+
+    let getUser
+    if (req.userRole === systemRoles.tourist) {
+        getUser = await touristModel.findById(_id)
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    } else if (req.userRole === systemRoles.tourGuide) {
+        getUser = getUser = await tourGuideModel.findById(_id)
+        if (!getUser) {
+            console.log({ api_error_message: "user id not found!" })
+            return next(new Error('user not found!', { cause: 400 }))
+        }
+        console.log({
+            message: "user is found!",
+            user_found: getUser
+        })
+    }
+
+    const isPassMatch = bcrypt.compareSync(newPassword, getUser.password)
+    console.log({ is_new_pass_matches_old: isPassMatch })
+    if (isPassMatch) {
+        console.log({ user_error_message: "user entered the same password as the old one!" })
+        return next(new Error('you must enter a new Password!', { cause: 400 }))
+    }
+    console.log({ message: "the new password doesn't match the old one!" })
+
+    const newHashedPassword = bcrypt.hashSync(newPassword, +process.env.SIGN_UP_SALT_ROUNDS)
+    getUser.password = newHashedPassword
+    console.log({ message: "new password is updated!" })
+
+    if (!await getUser.save()) {
+        console.log({ api_error_message: "failed to update the new password!" })
+        return next(new Error('failed to save new password!', { cause: 500 }))
+    }
+    getUser.__v++
+    console.log({ message: "user password is changed!" })
+
+    console.log("\nAUTH CHANGE PASSWORD IS DONE!\n")
+    res.status(200).json({
+        message: "changing password is successfull!"
+    })
+}

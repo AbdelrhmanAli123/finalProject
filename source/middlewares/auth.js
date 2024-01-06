@@ -1,5 +1,6 @@
 import { generateToken, verifyToken } from "../utilities/tokenFunctions.js"
 import { touristModel } from "../dataBase/models/tourist.model.js"
+import { tourGuideModel } from "../dataBase/models/tourGuide.model.js"
 import { systemRoles } from "../utilities/systemRoles.js"
 import { statuses } from "../utilities/activityStatuses.js"
 
@@ -43,25 +44,45 @@ export const isAuth = (roles = []) => {
                         email: decodedToken.email
                     })
                     if (!getUser) {
-                        return next(new Error('user is not found!', { cause: 400 }))
+                        return next(new Error('the tourist is not found!', { cause: 400 }))
                     }
                     if (getUser.status !== statuses.online) {
-                        return next(new Error('user must be logged in!', { cause: 400 }))
+                        return next(new Error('the tourist must be logged in!', { cause: 400 }))
                     }
                     if (getUser.confirmed !== true) {
-                        return next(new Error('user must be confirmed!', { cause: 400 }))
+                        return next(new Error('the tourist must be confirmed!', { cause: 400 }))
                     }
                     // this checks the authority of the user
                     if (!roles.includes(getUser.role)) {
-                        return next(new Error('un Authorized to access this API', { cause: 403 }))
+                        return next(new Error('the tourist is un Authorized to access this API', { cause: 403 }))
                     }
                 }
                 // TODO : tourGuide authentication
-                // else if(decodedToken.role === systemRoles.tourGuide) {
-
-                // }
+                else if (decodedToken.role === systemRoles.tourGuide) {
+                    getUser = await tourGuideModel.findOne({
+                        _id: decodedToken._id,
+                        email: decodedToken.email
+                    })
+                    if (!getUser) {
+                        return next(new Error('the tourGuide is not found!', { cause: 400 }))
+                    }
+                    if (getUser.status !== statuses.online) {
+                        return next(new Error('the tourGuide must be logged in!', { cause: 400 }))
+                    }
+                    if (getUser.confirmed !== true) {
+                        return next(new Error('the tourGuide must be confirmed!', { cause: 400 }))
+                    }
+                    if (getUser.verified !== true) {
+                        return next(new Error('the tourGuide must be verified!', { cause: 400 }))
+                    }
+                    // this checks the authority of the user
+                    if (!roles.includes(getUser.role)) {
+                        return next(new Error('the tourGuide is un Authorized to access this API', { cause: 403 }))
+                    }
+                }
                 console.log("\nAUTHORIZATION IS SUCCESSFULL\n")
                 req.authUser = getUser
+                req.userRole = getUser.role
                 next()
             } catch (error) {
                 // console.log("\nTOKEN REFRESHING\n")
@@ -71,6 +92,9 @@ export const isAuth = (roles = []) => {
                         token_error: error
                     })
                     return next(new Error('token is expired , please sign in again!', { cause: 400 }))
+
+                    // TODO : add the roles here as well (tourist and tourguide)
+
                     // const user = await touristModel.findOne({
                     //     token: splittedToken
                     // })

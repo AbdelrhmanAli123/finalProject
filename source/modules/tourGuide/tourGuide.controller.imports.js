@@ -1,4 +1,4 @@
-import { touristModel } from "../../dataBase/models/tourist.model.js" // DB model
+import { tourGuideModel } from "../../dataBase/models/tourGuide.model.js"
 import bcrypt from 'bcrypt' // encryption
 import cloudinary from "../../services/cloudinary.js" // cloudinary
 import slugify from "slugify" // slug
@@ -11,11 +11,13 @@ import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 import { systemRoles } from '../../utilities/systemRoles.js'
 import { EGphoneCodes } from "../../utilities/phoneCodes.js"
 import { statuses } from '../../utilities/activityStatuses.js'
-import { languages, languagesCodes } from '../../utilities/languages.js'
-import { countries, countriesCodes } from "../../utilities/nationalities.js"
+import fs from 'fs'
+import path from 'path'
+import fsPromise from 'fs/promises'
+import queryString from "query-string"
 
 export {
-    bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
-    ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses, languagesCodes,
-    countries, countriesCodes, axios, FormData
+    EGphoneCodes, FormData, ReasonPhrases, StatusCodes, axios, bcrypt, cloudinary,
+    customAlphabet, emailService, generateToken, verifyToken, slugify, statuses, systemRoles,
+    tourGuideModel, fs, path, fsPromise, queryString
 }

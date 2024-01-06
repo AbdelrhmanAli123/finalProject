@@ -96,6 +96,78 @@ newLocation.save((err, result) => {
 
 ===========================
 
+## to convert a string to a location (longitude , latiitude)
+
+To validate and geocode addresses using the Google Maps API in a Node.js application, you can use the node-geocoder module. This module allows you to interact with various geocoding services, including Google Maps. Here's how you can use it in combination with your Mongoose schema:
+
+Install the node-geocoder module:
+
+bash
+Copy code
+`npm install node-geocoder`
+Use the module in your code:
+
+javascript code :
+
+``` js
+const NodeGeocoder = require('node-geocoder');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+// Define the Mongoose schema
+const schema = new Schema({
+    // ... (other fields)
+    address: {
+        type: String,
+        required: true
+    },
+});
+
+// Define the geocoder options (replace 'YOUR_GOOGLE_MAPS_API_KEY' with your actual API key)
+const geocoderOptions = {
+    provider: 'google',
+    apiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // Replace with your actual API key
+};
+
+// Create a geocoder instance with the specified options
+const geocoder = NodeGeocoder(geocoderOptions);
+
+// Define a pre-save hook to geocode the address before saving to the database
+schema.pre('save', async function (next) {
+    try {
+        // Geocode the address and update the document with the latitude and longitude
+        const geoResult = await geocoder.geocode(this.address);
+        if (geoResult.length > 0) {
+            this.latitude = geoResult[0].latitude;
+            this.longitude = geoResult[0].longitude;
+        } else {
+            // Handle the case where the address couldn't be geocoded
+            throw new Error('Invalid address');
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Create the Mongoose model
+const MyModel = mongoose.model('MyModel', schema);
+
+// Example usage
+const instance = new MyModel({ address: '1600 Amphitheatre Parkway, Mountain View, CA' });
+instance.save()
+    .then((doc) => {
+        console.log('Document saved successfully:', doc);
+    })
+    .catch((error) => {
+        console.error('Error saving document:', error);
+    });```
+In this example, the node-geocoder module is used to geocode the provided address before saving it to the database. The latitude and longitude values are then stored in the document. Make sure to replace 'YOUR_GOOGLE_MAPS_API_KEY' with your actual Google Maps API key. Note that the usage of the API key is subject to Google's terms of service.
+
+Keep in mind that geocoding may have usage limitations and costs associated with it, depending on the number of requests made to the Google Maps API. Be sure to review the Google Maps API documentation for more details.
+
+===========================
+
 ## how to clone a repo on the aws host
 
 ### if the directory on the host has no sub directory with the same repo name , command
@@ -162,6 +234,102 @@ app.get('/get-location', (req, res) => {
 ```
 
 ========================================
+
+## FAST API sample code
+
+``` js
+  //Importing necessary libraries
+import uvicorn
+import pickle
+from pydantic import BaseModel
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+
+
+//Initializing the fast API server
+app = FastAPI()
+
+origins = [
+    "http://localhost.tiangolo.com/",
+    "https://localhost.tiangolo.com/",
+    "http://localhost/",
+    "http://localhost:8080/",
+    "http://localhost:3000/",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=[""],
+    allow_headers=[""],
+)
+//Loading up the trained model
+model = pickle.load(open('../model/prediction.pkl', 'rb'))
+
+//Defining the model input types
+class Patient(BaseModel):
+    age: int
+    gender: int
+    bmi: float
+    MBP:float
+    cholesterol: int
+    gluc: int
+    smoke: int
+    alco: int
+    active: int
+
+
+
+//Setting up the home route
+@app.get("/")
+def read_root():
+    return {"data": "Welcome to circulatory failure prediction model"}
+
+//Setting up the prediction route
+@app.post("/prediction/")
+async def get_predict(data: Patient):
+    sample = [[
+        data.age * 365.25,
+        data.gender,
+        data.cholesterol,
+        data.gluc,
+        data.smoke,
+        data.alco,
+        data.active,
+        data.bmi,
+        data.MBP,
+    ]]
+    
+    print(sample[0])
+    # sample[0]=data.age 
+    icu = model.predict(sample).tolist()[0]
+
+    return {
+        "data": {
+            'prediction': icu,
+            'interpretation': 'patient needs ICU.' if icu == 1 else 'patient does not need ICU.'
+        }
+
+    }
+
+
+//Configuring the server host and port
+if name == 'main':
+    uvicorn.run(app, port=8080, host='0.0.0.0')
+```
+
+========================================================
+
+## how to save a chatGBT chat
+
+1. open the browser inspect (or browser developer console) (f12)
+2. type this code in the console : `copy(document.body.innerText);`
+3. now you have the whole chat copied to your clipboard
+4. paste it somewhere to save it !
+
+===========================================================
 
 ## unused codes
 
@@ -271,6 +439,147 @@ app.get('/get-location', (req, res) => {
     // const sendEMail = emailService({ message, to: getUser.email, subject })
     // if (!sendEMail) {
     //     return next(new Error('sending email failed!', { cause: 500 }))
+    // }
+
+        // let profilePic, coverPic
+    // let profileUploadPath // for profile Picture
+    // let coverUploadPath // for cover picture
+
+    // if (req.files) {
+    //     console.log({
+    //         files: req.files,
+    //         filesType: typeof (req.files),
+    //         filesobjectKeys: Object.keys(req.files),
+    //     })
+    //     console.log({
+    //         profilePicture: req.files['profilePicture'],
+    //         coverPicture: req.files['coverPicture']
+    //     })
+
+    //     const customId = nanoid()
+    //     userData.customId = customId
+    //     profileUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/profilePicture`
+    //     coverUploadPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
+
+    //     // TODO : fix this code and optimize it , you can either stick to nested loops , or single loops or without loops since you know that should be there
+    //     for (const array in req.files) { // this gets the names of the arrays not the arrays them selves
+    //         console.log({
+    //             iterationArrayName: array,
+    //             typeOfIterationArray: typeof (array)
+    //         })
+    //         // console.log({ arrayFieldName: array.fieldname }) // this will always gete undefined since array is a string that has no properties
+    //         const arrayFields = req.files[array] // this should access the first array of req.files
+    //         console.log({ iterationArray: arrayFields })
+    //         for (const file of arrayFields) { // each object of the array inside the object
+    //             if (file.fieldname === 'profilePicture') {
+    //                 console.log({ accessed: true })
+    //                 const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+    //                     folder: profileUploadPath
+    //                 })
+    //                 if (!secure_url || !public_id) {
+    //                     return next(new Error("couldn't save the profile picture!", { cause: 400 }))
+    //                 }
+    //                 profilePic = { secure_url, public_id }
+    //                 userData.profilePicture = profilePic
+    //                 console.log({
+    //                     message: "profile picture is added!",
+    //                     profile_pic_url: userData.profilePicture
+    //                 })
+    //             }
+    //             else if (file.fieldname === 'coverPicture') {
+    //                 console.log({ accessed: true })
+    //                 const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, {
+    //                     folder: coverUploadPath
+    //                 })
+    //                 if (!secure_url || !public_id) {
+    //                     return next(new Error("couldn't save the image!", { cause: 400 }))
+    //                 }
+    //                 coverPic = { secure_url, public_id }
+    //                 userData.coverPicture = coverPic
+    //                 console.log({
+    //                     message: "cover picture is added!",
+    //                     profile_pic_url: userData.coverPicture
+    //                 })
+    //             }
+    //             else {
+    //                 console.log({
+    //                     message: "invalid file fieldname",
+    //                     file_field_name: file.fieldname
+    //                 })
+    //                 return next(new Error('invalid file fieldName!', { cause: 400 }))
+    //             }
+    //         }
+    //     }
+    // } else {
+    //     profilePic = null
+    //     coverPic = null
+    //     profileUploadPath = null
+    //     coverUploadPath = null
+    // }
+
+    // req.profileImgPath = profileUploadPath
+    // req.coverImgPath = coverUploadPath
+
+        // if (age) {
+    //     userData.age = age
+    //     console.log({
+    //         message: "age added!"
+    //     })
+    // }
+
+    // if (gender) {
+    //     if (gender !== 'male' && gender !== 'female' && gender !== 'not specified') {
+    //         return next(new Error('invalid gender!', { cause: 400 }))
+    //     }
+    //     userData.gender = gender
+    //     console.log({
+    //         message: "gender added!"
+    //     })
+    // }
+
+    // if (language) {
+    //     userData.language = language
+    //     console.log({
+    //         message: "language added!"
+    //     })
+    // }
+
+    // if (phoneNumber) {
+    //     console.log({
+    //         length: phoneNumber.length
+    //     })
+    //     if (phoneNumber.length !== 10) {
+    //         console.log({
+    //             api_error_message: "invalid phone number length",
+    //             phone_length: phoneNumber.length
+    //         })
+    //         return next(new Error("enter a valid phone number!", { cause: 400 }))
+    //     }
+    //     if (!EGphoneCodes.includes(phoneNumber.substring(0, 2))) {
+    //         console.log({
+    //             api_error_message: "invalid phone number code",
+    //             phone_code: phoneNumber.substring(0, 2)
+    //         })
+    //         return next(new Error("please enter an egyptian number!", { cause: 400 }))
+    //     }
+    //     userData.phoneNumber = phoneNumber
+    //     console.log({
+    //         message: "phone number added!"
+    //     })
+    // }
+
+    // if (country) {
+    //     userData.country = country
+    //     console.log({
+    //         message: "country added!"
+    //     })
+    // }
+
+    // if (countryFlag) {
+    //     userData.countryFlag = countryFlag
+    //     console.log({
+    //         message: "country flag added!"
+    //     })
     // }
 ```
 

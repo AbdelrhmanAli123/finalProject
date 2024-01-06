@@ -96,9 +96,10 @@ const touristSchema = new Schema({
     // }
 })
 
+// TODO :
 // 1. tourist (include chatbot)
 // 2. tourguide (include ocr)
-// 3. address (location , google maps)
+// 3. addresses (location , google maps)
 // 4. real time chat
 
 // pagination
