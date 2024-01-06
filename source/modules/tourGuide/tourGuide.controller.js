@@ -589,7 +589,7 @@ export const TG_login = async (req, res, next) => {
             _id: getUser._id,
             email: getUser.email,
             userName: getUser.userName,
-            role: systemRoles.tourist
+            role: systemRoles.tourGuide
         }
     })
 

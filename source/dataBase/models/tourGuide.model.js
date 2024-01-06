@@ -115,6 +115,23 @@ const schema = new Schema({
         enum: [systemRoles.tourGuide],
         default: systemRoles.tourGuide
     },
+    contact_info: {
+        whatsApp: {
+            type: String
+        },
+        facebook: {
+            type: String
+        },
+        instagram: {
+            type: String
+        },
+        twitter: {
+            type: String
+        },
+        linkedIn: {
+            type: String
+        }
+    }
     // generatedTrips: {
 
     // }
