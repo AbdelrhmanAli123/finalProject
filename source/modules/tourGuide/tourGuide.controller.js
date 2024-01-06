@@ -13,6 +13,8 @@ const nanoid = customAlphabet('asdfghjkl123456789_#$%!', 5)
 // for password reset :
 const nanoid2 = customAlphabet('1234567890', 6)
 
+// TODO : MAKE cv optional
+
 export const TG_signUp = async (req, res, next) => {
     console.log("\nTOUR GUIDE SIGNUP\n")
 
@@ -122,25 +124,15 @@ export const TG_signUp = async (req, res, next) => {
             syndicateLiscenceArray: req.files['syndicateID']
         })
         return next(new Error('syndicate liscence must be sent', { cause: 400 }))
-    } else if (!req.files['CV']) {
-        console.log({
-            user_API_message: "tour guide didn't send the CV file",
-            syndicateLiscenceArray: req.files['CV']
-        })
-        return next(new Error('the CV file must be sent', { cause: 400 }))
     }
+    // else if (!req.files['CV']) {
+    //     console.log({
+    //         user_API_message: "tour guide didn't send the CV file",
+    //         syndicateLiscenceArray: req.files['CV']
+    //     })
+    //     return next(new Error('the CV file must be sent', { cause: 400 }))
+    // }
 
-    const profile_array = req.files['profilePicture']
-    console.log({
-        message: "profile array is found!",
-        profilePicture_array: profile_array
-    })
-
-    const profile_image = profile_array[0]
-    console.log({
-        message: "profile image is found!",
-        profile_picture_image: profile_image
-    })
 
     const ministry_array = req.files['ministryID']
     console.log({
@@ -166,17 +158,6 @@ export const TG_signUp = async (req, res, next) => {
         syndicate_liscence_image: syndicate_image
     })
 
-    const CV_array = req.files['CV']
-    console.log({
-        message: "CV file array is found!",
-        CVfile_Array: CV_array
-    })
-
-    const CV_file = CV_array[0]
-    console.log({
-        message: "CV file is found!",
-        CV_file: CV_file
-    })
 
     console.log({
         phase: "OCR request",
@@ -336,68 +317,100 @@ export const TG_signUp = async (req, res, next) => {
         secure_url: syndicateLiscencePic.secure_url,
         public_id: syndicateLiscencePic.public_id
     }
-
-    // profile image uploading
     console.log({
-        phase: "profile picture uploading!",
-        state: "starting!"
-    })
-    try {
-        profilePic = await cloudinary.uploader.upload(profile_image.path, {
-            folder: profileUploadPath
-        })
-        console.log({
-            profile_image_after_uploading: profilePic
-        })
-    } catch (error) {
-        console.log({
-            message: "error regarding uploading a file",
-            error: error
-        })
-    }
-    if (!profilePic?.secure_url || !profilePic?.public_id) {
-        console.log({ api_error_message: "failed to correctly upload the image" })
-        return next(new Error('failed to upload the profile image correctly', { cause: 500 }))
-    }
-    userData.profilePicture = {
-        secure_url: profilePic.secure_url,
-        public_id: profilePic.public_id
-    }
-    console.log({
-        phase: "profile picture uploading!",
+        phase: "syndicate liscence uploading!",
         state: "successfull!"
     })
 
-    // CV file uploading
-    console.log({
-        phase: "CV file uploading!",
-        state: "starting!"
-    })
-    try {
-        CVfile = await cloudinary.uploader.upload(CV_file.path, {
-            folder: CVuploadPath
-        })
+    let profile_array, profile_image
+    if (req.files['profilePicture']) {
+        profile_array = req.files['profilePicture']
         console.log({
-            CVfile_after_uploading: CVfile
+            message: "profile array is found!",
+            profilePicture_array: profile_array
         })
-    } catch (error) {
+
+        profile_image = profile_array[0]
         console.log({
-            message: "error regarding uploading a file",
-            error: error
+            message: "profile image is found!",
+            profile_picture_image: profile_image
+        })
+        // profile image uploading
+        console.log({
+            phase: "profile picture uploading!",
+            state: "starting!"
+        })
+        try {
+            profilePic = await cloudinary.uploader.upload(profile_image.path, {
+                folder: profileUploadPath
+            })
+            console.log({
+                profile_image_after_uploading: profilePic
+            })
+        } catch (error) {
+            console.log({
+                message: "error regarding uploading a file",
+                error: error
+            })
+        }
+        if (!profilePic?.secure_url || !profilePic?.public_id) {
+            console.log({ api_error_message: "failed to correctly upload the image" })
+            return next(new Error('failed to upload the profile image correctly', { cause: 500 }))
+        }
+        userData.profilePicture = {
+            secure_url: profilePic.secure_url,
+            public_id: profilePic.public_id
+        }
+        console.log({
+            phase: "profile picture uploading!",
+            state: "successfull!"
         })
     }
-    if (!CVfile?.secure_url || !CVfile?.public_id) {
-        console.log({ api_error_message: "failed to correctly upload the CV file" })
-        return next(new Error('failed to upload the CV file correctly', { cause: 500 }))
+
+    let CV_array, CV_file
+    if (req.files['CV']) {
+        CV_array = req.files['CV']
+        console.log({
+            message: "CV file array is found!",
+            CVfile_Array: CV_array
+        })
+
+        CV_file = CV_array[0]
+        console.log({
+            message: "CV file is found!",
+            CV_file: CV_file
+        })
+        // CV file uploading
+        console.log({
+            phase: "CV file uploading!",
+            state: "starting!"
+        })
+        try {
+            CVfile = await cloudinary.uploader.upload(CV_file.path, {
+                folder: CVuploadPath
+            })
+            console.log({
+                CVfile_after_uploading: CVfile
+            })
+        } catch (error) {
+            console.log({
+                message: "error regarding uploading a file",
+                error: error
+            })
+        }
+        if (!CVfile?.secure_url || !CVfile?.public_id) {
+            console.log({ api_error_message: "failed to correctly upload the CV file" })
+            return next(new Error('failed to upload the CV file correctly', { cause: 500 }))
+        }
+        userData.CV = {
+            secure_url: CVfile.secure_url,
+            public_id: CVfile.public_id
+        }
+        console.log({
+            phase: "CV file uploading!",
+            state: "successfull!"
+        })
     }
-    userData.CV = {
-        secure_url: CVfile.secure_url,
-        public_id: CVfile.public_id
-    }
-    console.log({
-        phase: "CV file uploading!",
-        state: "successfull!"
-    })
 
     // NOTE : we need to delete every saved image in the folder after we upload the files on cloudinary because we need the same path for cloudinary not only the AI request with axios
     try {

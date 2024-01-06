@@ -2,6 +2,8 @@ import { Schema, model } from "mongoose"
 import { systemRoles } from "../../utilities/systemRoles.js"
 import { statuses } from "../../utilities/activityStatuses.js"
 
+// TODO : add contact info
+
 const schema = new Schema({
     firstName: {
         type: String,
@@ -113,9 +115,15 @@ const schema = new Schema({
         enum: [systemRoles.tourGuide],
         default: systemRoles.tourGuide
     },
+    // generatedTrips: {
+
+    // }
 })
+
 // another image , contact info , additional CV or liscences
 
 // generate trips model
+
+// generate trip by the tourguide 
 
 export const tourGuideModel = model('TourGuide', schema)

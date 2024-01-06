@@ -57,7 +57,7 @@ export const signUpSchema = {
             filename: joi.string(),
             path: joi.string(),
             size: joi.number()
-        })).required()
+        })).optional()
     })
 }
 
