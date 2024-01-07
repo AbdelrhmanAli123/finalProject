@@ -115,7 +115,7 @@ const schema = new Schema({
         enum: [systemRoles.tourGuide],
         default: systemRoles.tourGuide
     },
-    contact_info: {
+    contact_info: { // in edit profile not sign up
         whatsApp: {
             type: String
         },
