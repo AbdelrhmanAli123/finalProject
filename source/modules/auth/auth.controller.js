@@ -493,3 +493,8 @@ export const changeOldPass = async (req, res, next) => {
         message: "changing password is successfull!"
     })
 }
+
+export const new_deleteUser = async (req, res, next) => {
+    const { _id } = req.body
+
+}

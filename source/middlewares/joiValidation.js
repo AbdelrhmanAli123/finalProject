@@ -38,6 +38,7 @@ export const validationCoreFunction = (schema) => {
             //     Errors: validationErrors
             // })
             req.validationErrors = validationErrors
+            console.log({ request_validation_errors: req.validationErrors })
             return next(new Error({ ...validationErrors }, { cause: 400 }))
         }
         console.log("\nVALIDATION IS SUCCESSFULL\n")
