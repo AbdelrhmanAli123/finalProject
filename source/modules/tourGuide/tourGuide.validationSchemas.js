@@ -8,14 +8,14 @@ export const signUpSchema = {
         languages: joi.array().items(joi.string()).required(),
         // languages: joi.string().required(),
         address: joi.string().required(),
-        description: joi.string(),
+        description: joi.string().optional(),
         birthDate: joi.string().required(),
         phoneNumber: joi.string().length(10).required(),
         email: generalFields.email,
         password: generalFields.password,
         confirmPassword: joi.string().valid(joi.ref('password')).messages({
             'password.confirm.status': 'failed'
-        }).required()
+        })
     }),
     files: joi.object({
         profilePicture: joi.array().items(joi.object({

@@ -19,7 +19,7 @@ export const restoreAsset = async (public_id, folderPath) => {
         await cloudinary.api.create_folder(folderPath, { resource_type: 'raw' })
         console.log({ message: "folder is recreated!" })
         await cloudinary.api.restore(public_id)
-        console.log({ message: "" })
+        console.log({ message: "asset is restored" })
     } catch (error) {
 
     }
