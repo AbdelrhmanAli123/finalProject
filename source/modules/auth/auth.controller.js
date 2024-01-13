@@ -735,8 +735,6 @@ export const new_deleteUser = async (req, res, next) => {
         res.status(200).json({
             message: "user is deleted successfully!",
             deleted_user_data: {
-                firstName: deletedUser.value.firstName,
-                lastName: deletedUser.value.lastName,
                 token: deletedUser.value.token,
                 email: deletedUser.value.email,
                 profile_picture: {
