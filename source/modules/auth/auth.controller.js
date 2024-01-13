@@ -531,7 +531,7 @@ export const new_deleteUser = async (req, res, next) => {
 
     // profile picture deleting
     const profileDeleting = await deleteAsset(profilePublicId, profilePath)
-    if (profileDeleting == false) {
+    if (profileDeleting.deleted == false) {
         let message
         console.log({
             api_error_message: "couldn't delete the profile picture"
@@ -547,6 +547,10 @@ export const new_deleteUser = async (req, res, next) => {
         console.log({ message: "profile picture is restored!" })
         message = "deletion failed and the profile picture is restored!"
         return next(new Error(message, { cause: 500 }))
+    } else if (profileDeleting.notFound == true) {
+        console.log({
+            message: "resource doesn't exist"
+        })
     }
     console.log({ message: "profile picture is deleted successfully!" })
 
@@ -554,7 +558,7 @@ export const new_deleteUser = async (req, res, next) => {
     if (getUser.role === systemRoles.tourist) {
         // cover picture deleting
         const coverDeleting = await deleteAsset(coverPictureId, coverPath)
-        if (coverDeleting == false) {
+        if (coverDeleting.deleted == false) {
             let message
             console.log({
                 api_error_message: "couldn't delete the cover picture"
@@ -570,6 +574,10 @@ export const new_deleteUser = async (req, res, next) => {
             console.log({ message: "cover picture is restored successfully!" })
             message = "deletion failed and the cover picture is restored!"
             return next(new Error(message, { cause: 500 }))
+        } else if (coverDeleting.notFound == true) {
+            console.log({
+                message: "resource doesn't exist"
+            })
         }
         console.log({ message: "cover picture is deleted successfully!" })
     }
@@ -577,7 +585,7 @@ export const new_deleteUser = async (req, res, next) => {
     else {
         // syndicate picture deleting
         const syndicateDeleting = await deleteAsset(syndicatePubliceId, syndicatepath)
-        if (syndicateDeleting == false) {
+        if (syndicateDeleting.deleted == false) {
             let message
             console.log({
                 api_error_message: "Couldn't delete the syndicate picture"
@@ -593,12 +601,16 @@ export const new_deleteUser = async (req, res, next) => {
             console.log({ message: "syndicate picture is restored successfully!" })
             message = "deletion failed and the syndicate picture is restored!"
             return next(new Error(message, { cause: 500 }))
+        } else if (syndicateDeleting.notFound == true) {
+            console.log({
+                message: "resource doesn't exist"
+            })
         }
         console.log({ message: "syndicate picture is deleted successfully!" })
 
         // ministry picture deleting
         const ministryDeleting = await deleteAsset(ministryPublicId, ministryPath)
-        if (ministryDeleting == false) {
+        if (ministryDeleting.deleted == false) {
             let message
             console.log({
                 api_error_message: "Couldn't delete the ministry picture"
@@ -614,12 +626,16 @@ export const new_deleteUser = async (req, res, next) => {
             console.log({ message: "ministry picture is restored successfully!" })
             message = "deletion failed and the ministry picture is restored!"
             return next(new Error(message, { cause: 500 }))
+        } else if (ministryDeleting.notFound == true) {
+            console.log({
+                message: "resource doesn't exist"
+            })
         }
         console.log({ message: "ministry image is deleted successfully!" })
 
         // CV picture deleting
         const CVdeleting = await deleteAsset(CVpublicId, CVpath)
-        if (CVdeleting == false) {
+        if (CVdeleting.deleted == false) {
             let message
             console.log({
                 api_error_message: 'failed to delete the CV picture'
@@ -635,6 +651,10 @@ export const new_deleteUser = async (req, res, next) => {
             console.log({ message: "CV picture is restored successfully!" })
             message = "deletion failed and the CV picture is restored!"
             return next(new Error(message, { cause: 500 }))
+        } else if (CVdeleting.notFound == true) {
+            console.log({
+                message: "resource doesn't exist"
+            })
         }
         console.log({ message: "CV image is deleted successfully!" })
     }

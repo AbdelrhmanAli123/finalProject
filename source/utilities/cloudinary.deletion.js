@@ -1,17 +1,27 @@
 import cloudinary from "../services/cloudinary.js"
 
 export const deleteAsset = async (public_id, folderPath) => {
+    const signs = {
+        deleted: false,
+        notFound: false
+    }
     try {
-        await cloudinary.api.resource(public_id)
-        console.log({ message: "asset is found!" })
-        await cloudinary.api.delete_resources_by_prefix(public_id)
-        console.log({ message: "asset is deleted" })
+        try {
+            await cloudinary.api.resource(public_id)
+            console.log({ message: "asset is found!" })
+            await cloudinary.api.delete_resources_by_prefix(public_id)
+            console.log({ message: "asset is deleted" })
+        } catch (error) {
+            signs.notFound = true
+        }
         await cloudinary.api.delete_folder(folderPath)
         console.log({ message: "asset folder is deleted" })
-        return true
+        signs.deleted = true
+        return signs
     } catch (error) {
         console.log({ message: "failed to delete the asset", error: error })
-        return false
+        signs.deleted = false
+        return signs
     }
 }
 
