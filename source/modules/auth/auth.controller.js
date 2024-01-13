@@ -721,27 +721,13 @@ export const new_deleteUser = async (req, res, next) => {
         message: "user is deleted successfully",
         deletedUser: deletedUser
     })
-    if (deletedUser.value?.role === systemRoles.tourist) {
-        res.status(200).json({
-            message: "user is deleted successfully!",
-            deleted_user_data: {
-                name: deletedUser.value.userName,
-                email: deletedUser.value.email,
-                token: deletedUser.value.token,
-                profilePicture: deletedUser.value.profilePicture.secure_url
-            }
-        })
-    } else if (deletedUser.value?.role === systemRoles.tourGuide) {
-        res.status(200).json({
-            message: "user is deleted successfully!",
-            deleted_user_data: {
-                token: deletedUser.value.token,
-                email: deletedUser.value.email,
-                profile_picture: {
-                    secure_url: deletedUser.value.profilePicture?.secure_url,
-                    public_id: deletedUser.value.profilePicture?.public_id
-                }
-            }
-        })
-    }
+    res.status(200).json({
+        message: "user is deleted successfully!",
+        deleted_user_data: {
+            name: deletedUser.value.userName,
+            email: deletedUser.value.email,
+            token: deletedUser.value.token,
+            profilePicture: deletedUser.value.profilePicture.secure_url
+        }
+    })
 }
