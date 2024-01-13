@@ -731,7 +731,7 @@ export const new_deleteUser = async (req, res, next) => {
                 profilePicture: deletedUser.value.profilePicture.secure_url
             }
         })
-    } else {
+    } else if (deletedUser.value?.role === systemRoles.tourGuide) {
         res.status(200).json({
             message: "user is deleted successfully!",
             deleted_user_data: {
