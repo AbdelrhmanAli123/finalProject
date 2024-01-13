@@ -691,7 +691,7 @@ export const new_deleteUser = async (req, res, next) => {
             return next(new Error("failed to delete the user !", { cause: 500 }))
         }
     } else if (getUser.role === systemRoles.tourGuide) {
-        deletedUser = await tourGuideModel.findByIdAndDelete(getUser.id)
+        deletedUser = await tourGuideModel.findByIdAndDelete(getUser.id, { new: true })
         if (!deletedUser) {
             console.log({
                 api_error_message: "failed to delete the user from the data base!"
