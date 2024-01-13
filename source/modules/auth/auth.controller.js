@@ -665,7 +665,7 @@ export const new_deleteUser = async (req, res, next) => {
 
     let deletedUser
     if (getUser.role === systemRoles.tourist) {
-        deletedUser = await touristModel.findByIdAndDelete(getUser.id)
+        deletedUser = await touristModel.findByIdAndDelete(getUser.id, { new: true })
         if (!deletedUser) {
             console.log({
                 api_error_message: "failed to delete the user from the data base!"
@@ -724,10 +724,10 @@ export const new_deleteUser = async (req, res, next) => {
     res.status(200).json({
         message: "user is deleted successfully!",
         deleted_user_data: {
-            name: deletedUser.value.userName,
-            email: deletedUser.value.email,
-            token: deletedUser.value.token,
-            profilePicture: deletedUser.value.profilePicture.secure_url
+            name: deletedUser.userName,
+            email: deletedUser.email,
+            token: deletedUser.token,
+            profilePicture: deletedUser.profilePicture.secure_url
         }
     })
 }
