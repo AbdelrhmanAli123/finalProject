@@ -39,7 +39,7 @@ router.delete(
     '/deleteUser',
     isAuth(authAPIroles.deleteUser),
     validationCoreFunction(auth_vs.deleteUser),
-    asyncHandler(auth_cont.deleteUser)
+    asyncHandler(auth_cont.new_deleteUser)
 )
 
 export default router

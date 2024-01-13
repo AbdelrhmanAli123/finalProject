@@ -352,4 +352,60 @@ export const axios_request2 = async (req, res, next) => {
 }
 // 80st ismailia gam3a
 
+export const classRequest = async (req, res, next) => {
+    let AI_result;
+
+    console.log({
+        message: "request temp file name check",
+        classImage: req.classImage
+    })
+    const formData = new FormData();
+    formData.append('image', fs.createReadStream(path.resolve(`${process.env.LOCAL_TEMP_UPLOADS_PATH}/${req.classImage}`)))
+
+    console.log({
+        message: 'form data is created!',
+        created_form_data: formData
+    });
+
+    try {
+        const AI_response = await axios.post('http://18.207.187.181:8081/process_image', formData, {
+            headers: formData.getHeaders()
+        })
+
+        console.log({
+            message: 'response came from the AI model!',
+            response_status: AI_response.status,
+            response: AI_response.data,
+        });
+
+        AI_result = AI_response
+        fs.unlink(`${process.env.LOCAL_TEMP_UPLOADS_PATH}/${req.classImage}`, (error) => {
+            if (error) {
+                console.log({
+                    message: "error regarading deleting the temp image again",
+                    error: error.message
+                })
+            }
+            else {
+                console.log({
+                    message: ``
+                })
+            }
+        })
+
+    } catch (error) {
+        console.log({
+            message: 'failed to send the request to the AI model!',
+            error_message: error.message,
+            error: error,
+        });
+
+        return next(new Error('failed to send the request to the AI model', { cause: 400 }));
+    }
+
+    res.status(200).json({
+        message: 'AI test is successful!',
+        AI_response_data: AI_result.data.languages,
+    });
+}
 // r'/usr/bin/tesseract' sad

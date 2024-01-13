@@ -68,6 +68,13 @@ export const multertempFunction = (extensions = []) => {
                     unique_file_name: unique_name,
                     added_request_field: req.profilePictureFileName
                 })
+            } else {
+                req.classImage = tempFileName
+                console.log({
+                    message: "class image unique name and request field added!",
+                    unique_file_name: unique_name,
+                    added_request_field: req.classImage
+                })
             }
             cb(null, unique_name + '_' + file.originalname)
         }
@@ -78,6 +85,40 @@ export const multertempFunction = (extensions = []) => {
     console.log("\nMULTER IS FINISHED!\n")
     return fileUplaod
 }
+
+// export const multertempFunction2 = (extensions = []) => {
+//     console.log("\nMULTER MIDDLEWARE\n")
+//     if (!extensions) {
+//         extensions = allowedExtensions.image
+//     }
+//     let tempFileName
+//     const multerStorage = multer.diskStorage({
+//         destination: function (req, file, cb) {
+//             cb(null, 'temp_images')
+//             console.log({ message: "destination created successfully!" })
+//         },
+//         filename: function (req, file, cb) {
+//             console.log({
+//                 message: "file",
+//                 file: file
+//             })
+//             const unique_name = nanoid()
+//             tempFileName = unique_name + '_' + file.originalname
+//             req.classImage = tempFileName
+//             console.log({
+//                 message: "class image unique name and request field added!",
+//                 unique_file_name: unique_name,
+//                 added_request_field: req.classImage
+//             })
+//             cb(null, unique_name + '_' + file.originalname)
+//         }
+//     })
+//     const fileUplaod = multer({
+//         storage: multerStorage,
+//     })
+//     console.log("\nMULTER IS FINISHED!\n")
+//     return fileUplaod
+// }
 
 // ,
 // fileFilter: (req, file, cb) => {
