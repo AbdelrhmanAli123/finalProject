@@ -497,34 +497,12 @@ export const changeOldPass = async (req, res, next) => {
 
 export const new_deleteUser = async (req, res, next) => {
     console.log("\nAUTH DELETE USER API\n")
-    const { _id } = req.body
+
+    const getUser = req.authUser
+
     console.log({
-        passed_auth_user: req.authUser
+        passed_auth_user: getUser
     })
-
-    let getUser
-    if (req.userRole === systemRoles.tourist) {
-        getUser = await touristModel.findById(_id)
-        if (!getUser) {
-            console.log({ api_error_message: "user id not found!" })
-            return next(new Error('user not found!', { cause: 400 }))
-        }
-        console.log({
-            message: "user is found!",
-            user_found: getUser
-        })
-    } else if (req.userRole === systemRoles.tourGuide) {
-        getUser = await tourGuideModel.findById(_id)
-        if (!getUser) {
-            console.log({ api_error_message: "user id not found!" })
-            return next(new Error('user not found!', { cause: 400 }))
-        }
-        console.log({
-            message: "user is found!",
-            user_found: getUser
-        })
-    }
-
     // perparing variables :
     // user custom id :
     const customId = getUser.customId
