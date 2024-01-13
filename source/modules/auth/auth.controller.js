@@ -496,7 +496,11 @@ export const changeOldPass = async (req, res, next) => {
 }
 
 export const new_deleteUser = async (req, res, next) => {
+    console.log("\nAUTH DELETE USER API\n")
     const { _id } = req.body
+    console.log({
+        passed_auth_user: req.authUser
+    })
 
     let getUser
     if (req.userRole === systemRoles.tourist) {
