@@ -581,6 +581,20 @@ if name == 'main':
     //         message: "country flag added!"
     //     })
     // }
+
+    // fs.unlink(`${process.env.LOCAL_TEMP_UPLOADS_PATH}/${req.syndicateFileName}`, (error) => {
+        //     if (error) {
+        //         console.log({
+        //             message: "error regarading deleting the temp image again",
+        //             error: error.message
+        //         })
+        //     }
+        //     else {
+        //         console.log({
+        //             message: `the file ${req.syndicateFileName} is deleted!`
+        //         })
+        //     }
+        // })
 ```
 
 ### req.file code (.single())

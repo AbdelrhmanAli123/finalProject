@@ -721,9 +721,12 @@ export const new_deleteUser = async (req, res, next) => {
         message: "user is deleted successfully",
         deletedUser: deletedUser
     })
+    // emptying the variables
     coverPictureId = null; profilePublicId = null; CVpublicId = null; syndicatePubliceId = null
     ministryPublicId = null; userFolderPath = null; CVpath = null; syndicatepath = null;
     ministryPath = null; coverPath = null; profilePath = null
+
+    console.log("\nAUTH DELETE USER DONE!\n")
     res.status(200).json({
         message: "user is deleted successfully!",
         deleted_user_data: {
