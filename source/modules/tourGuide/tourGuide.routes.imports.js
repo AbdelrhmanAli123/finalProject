@@ -6,8 +6,9 @@ import { multerHostFunction, multertempFunction } from '../../services/multerHos
 import { allowedExtensions } from '../../utilities/allowedUploadExtensions.js'
 import * as TG_cont from './tourGuide.controller.js'
 import * as TG_vs from './tourGuide.validationSchemas.js'
+import { TG_API_roles } from './tourGuide.endPoints.js'
 
 export {
     Router, allowedExtensions, asyncHandler, isAuth, multerHostFunction,
-    validationCoreFunction, TG_cont, TG_vs, multertempFunction
+    validationCoreFunction, TG_cont, TG_vs, multertempFunction, TG_API_roles
 }

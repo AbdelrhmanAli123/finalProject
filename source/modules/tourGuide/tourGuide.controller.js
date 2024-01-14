@@ -791,13 +791,13 @@ export const TG_resetPassword = async (req, res, next) => {
     })
 }
 // TODO : update profile
-export const updateProfile = async (req, res, next) => {
+export const TG_updateProfile = async (req, res, next) => {
     console.log("\nTOURGUIDE UPDATE PROFILE API\n")
 
     const { _id } = req.authUser
     const {
         firstName, lastName, address, birthDate, phoneNumber, description,
-        whatsapp, facebook, instagram, twitter, linkedIn
+        contactInfo
     } = req.body
 
     // get the user
@@ -900,50 +900,57 @@ export const updateProfile = async (req, res, next) => {
         console.log({ message: "description updated!" })
     }
 
-    if (facebook) {
+    if (contactInfo) {
         console.log({
-            message: "facebook contact is found!",
-            found_facebook: facebook
+            message: "contact info is found!",
+            contact_info: contactInfo
         })
-        getUser.contact_info.facebook = facebook
-        console.log({ message: "facebook contact updated!" })
+        if (contactInfo.facebook) {
+            console.log({
+                message: "facebook contact is found!",
+                found_facebook: contactInfo.facebook
+            })
+            getUser.contact_info.facebook = contactInfo.facebook
+            console.log({ message: "facebook contact updated!" })
+        }
+
+        if (contactInfo.instagram) {
+            console.log({
+                message: "instagram contact is found!",
+                found_instagram: contactInfo.instagram
+            })
+            getUser.contact_info.instagram = contactInfo.instagram
+            console.log({ message: "instagram contact updated!" })
+        }
+
+        if (contactInfo.twitter) {
+            console.log({
+                message: "twitter contact is found!",
+                found_twitter: contactInfo.twitter
+            })
+            getUser.contact_info.twitter = contactInfo.twitter
+            console.log({ message: "twitter contact updated!" })
+        }
+
+        if (contactInfo.whatsapp) {
+            console.log({
+                message: "whatsapp contact is found!",
+                found_whatsapp: contactInfo.whatsapp
+            })
+            getUser.contact_info.whatsApp = contactInfo.whatsapp
+            console.log({ message: "whatsapp contact updated!" })
+        }
+
+        if (contactInfo.linkedIn) {
+            console.log({
+                message: "linkedIn contact is found!",
+                found_linkedIn: contactInfo.linkedIn
+            })
+            getUser.contact_info.linkedIn = contactInfo.linkedIn
+            console.log({ message: "linkedIn contact updated!" })
+        }
     }
 
-    if (instagram) {
-        console.log({
-            message: "instagram contact is found!",
-            found_instagram: instagram
-        })
-        getUser.contact_info.instagram = instagram
-        console.log({ message: "instagram contact updated!" })
-    }
-
-    if (twitter) {
-        console.log({
-            message: "twitter contact is found!",
-            found_twitter: twitter
-        })
-        getUser.contact_info.twitter = twitter
-        console.log({ message: "twitter contact updated!" })
-    }
-
-    if (whatsapp) {
-        console.log({
-            message: "whatsapp contact is found!",
-            found_whatsapp: whatsapp
-        })
-        getUser.contact_info.whatsApp = whatsapp
-        console.log({ message: "whatsapp contact updated!" })
-    }
-
-    if (linkedIn) {
-        console.log({
-            message: "linkedIn contact is found!",
-            found_linkedIn: linkedIn
-        })
-        getUser.contact_info.linkedIn = linkedIn
-        console.log({ message: "linkedIn contact updated!" })
-    }
 
     if (req.files) {
         console.log({
