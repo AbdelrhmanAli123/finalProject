@@ -1,0 +1,167 @@
+,Name,type,information
+0,Giza Pyramids,landmarks,"Burial sites for pharaohs, including the Great Pyramid of Khufu"
+1,Sphinx,landmarks,Guardian of the Giza Pyramids
+2,Karnak Temple Complex,landmarks,Largest religious complex in ancient Egypt
+3,Valley of the Kings,landmarks,Tombs of pharaohs and high-ranking officials
+4,Abu Simbel Temples,landmarks,"Built by Ramses II, relocated in the 1960s"
+5,Luxor Temple,landmarks,Dedicated to the Theban Triad
+6,Egyptian Museum,landmarks,Houses an extensive collection of ancient Egyptian artifacts
+7,Citadel of Salah ad-Din,landmarks,Medieval Islamic fortification
+8,Mosque of Ibn Tulun,landmarks,One of the oldest and largest mosques in Egypt
+9,Qaitbay Citadel,landmarks,Defensive fortress on the Mediterranean coast
+10,Philae Temple,landmarks,Dedicated to the goddess Isis
+11,Temple of Edfu,landmarks,Dedicated to the god Horus
+12,Al-Azhar Mosque,landmarks,One of the oldest universities and mosques in the world
+13,Colossi of Memnon,landmarks,Massive stone statues of Amenhotep III
+14,Temple of Kom Ombo,landmarks,"Dedicated to Sobek and Horus, known for its symmetrical design"
+15,Mosque of Muhammad Ali,landmarks,"Located in the Citadel of Cairo, also known as the Alabaster Mosque"
+16,Step Pyramid of Djoser,landmarks,"Oldest known pyramid, part of the Saqqara Necropolis"
+17,Red Pyramid,landmarks,Third-largest Egyptian pyramid
+18,White Desert,landmarks,Unique landscape with white chalk rock formations
+19,Siwa Oasis,landmarks,Ancient oasis with historical significance
+20,El-Muizz Street,landmarks,"Historic street with numerous mosques, palaces, and markets"
+21,Alexandria Library,landmarks,Modern library and cultural center
+22,Aswan High Dam,landmarks,Hydroelectric dam on the Nile River
+23,Wadi Rum,landmarks,Scenic desert valley known for its sandstone mountains
+24,Coptic Cairo,landmarks,Historic area with ancient Christian churches and landmarks
+25,Dahab,landmarks,Popular diving destination with vibrant coral reefs
+26,Hurghada,landmarks,Resort town known for its beaches and diving opportunities
+27,Mount Sinai,landmarks,Mountain with religious significance and panoramic views
+28,Bahariya Oasis,landmarks,Lush oasis with hot springs and historical sites
+29,Dendera Temple Complex,landmarks,Ancient temple dedicated to Hathor
+30,Medinet Madi,landmarks,Ruins of an ancient city with a Greco-Roman temple
+31,Ras Muhammad National Park,landmarks,Marine protected area with diverse underwater life
+32,Qasr Ibrim,landmarks,Ancient archaeological site with Nubian history
+33,Lake Nasser,landmarks,Artificial lake created by the Aswan High Dam
+34,Shali Fortress,landmarks,Ancient fortress made of salt and mudbrick
+35,Temple of Montu,landmarks,Ancient Egyptian temple dedicated to the god Montu
+36,Qasr Kharana,landmarks,Well-preserved desert castle from the Umayyad period
+37,Farafra White Desert,landmarks,Unique white chalk rock formations in the desert
+38,Kom el Shoqafa Catacombs,landmarks,Roman burial site with rock-cut tombs and statues
+39,Bent Pyramid,landmarks,Ancient pyramid with a distinctive double-slope
+40,Abydos Temple,landmarks,Ancient temple dedicated to Osiris
+41,Siwa Salt Lakes,landmarks,Salt flats with unique patterns and colors
+42,El Alamein War Museum,landmarks,Museum commemorating the Battle of El Alamein in World War II
+43,Wadi Al-Hitan,landmarks,"Valley of the Whales, a UNESCO World Heritage Site with fossilized whale skeletons"
+44,Felucca Ride on the Nile,landmarks,Traditional sailboat ride on the Nile River
+45,Sharm El Sheikh,landmarks,Popular resort destination with beaches and coral reefs
+46,Khan El Khalili Bazaar,landmarks,Historic market with traditional shops and cafes
+47,Fayoum Oasis,landmarks,Landscape of agricultural land and ancient sites
+48,Saint Catherine's Monastery,landmarks,Greek Orthodox monastery at the foot of Mount Sinai
+49,Cave Church of Saint Simon,landmarks,Coptic Christian church carved into the Mokattam hills
+50,Wadi Degla Protectorate,landmarks,Protected area with diverse flora and fauna
+51,Al-Azhar Park,landmarks,Urban park with historic significance and gardens
+52,Heliopolis Basilica,landmarks,Coptic Christian basilica in the Heliopolis district
+53,Cairo Tower,landmarks,Landmark tower with panoramic views of the city
+54,Nile Corniche,landmarks,Promenade along the Nile River with scenic views
+55,Wadi El Rayan,landmarks,Protected area with waterfalls and lakes in the desert
+56,Mohammed Ali Mosque,landmarks,"Located in the Citadel of Cairo, also known as the Alabaster Mosque"
+57,Coptic Museum,landmarks,Museum showcasing Coptic Christian artifacts and art
+58,Manial Palace and Museum,landmarks,Historic palace and museum on Rhoda Island
+59,Sultan Hassan Mosque,landmarks,Historic mosque and mausoleum from the Mamluk era
+60,Gezira Island,landmarks,Island in the Nile River with cultural venues and gardens
+61,Egyptian Opera House,landmarks,Cultural and performing arts venue in downtown Cairo
+62,Aqua Magic Water Park,landmarks,Water park with slides and attractions
+63,Ain Sokhna,landmarks,Coastal town with beaches and resorts
+64,Dahab Blue Hole,landmarks,Famous diving site with a deep underwater sinkhole
+65,Felucca Ride on the Nile,landmarks,Traditional sailboat ride on the Nile River
+66,Sharm El Sheikh,landmarks,Popular resort destination with beaches and coral reefs
+67,Khan El Khalili Bazaar,landmarks,Historic market with traditional shops and cafes
+68,Fayoum Oasis,landmarks,Landscape of agricultural land and ancient sites
+69,Saint Catherine's Monastery,landmarks,Greek Orthodox monastery at the foot of Mount Sinai
+70,Cave Church of Saint Simon,landmarks,Coptic Christian church carved into the Mokattam hills
+71,Wadi Degla Protectorate,landmarks,Protected area with diverse flora and fauna
+72,Al-Azhar Park,landmarks,Urban park with historic significance and gardens
+73,Heliopolis Basilica,landmarks,Coptic Christian basilica in the Heliopolis district
+74,Cairo Tower,landmarks,Landmark tower with panoramic views of the city
+75,Nile Corniche,landmarks,Promenade along the Nile River with scenic views
+76,Wadi El Rayan,landmarks,Protected area with waterfalls and lakes in the desert
+77,Mohammed Ali Mosque,landmarks,"Located in the Citadel of Cairo, also known as the Alabaster Mosque"
+78,Coptic Museum,landmarks,Museum showcasing Coptic Christian artifacts and art
+79,Manial Palace and Museum,landmarks,Historic palace and museum on Rhoda Island
+80,Sultan Hassan Mosque,landmarks,Historic mosque and mausoleum from the Mamluk era
+81,Gezira Island,landmarks,Island in the Nile River with cultural venues and gardens
+82,Egyptian Opera House,landmarks,Cultural and performing arts venue in downtown Cairo
+83,Aqua Magic Water Park,landmarks,Water park with slides and attractions
+84,Ain Sokhna,landmarks,Coastal town with beaches and resorts
+type,landmarks,landmarks,landmarks
+86,Narmer,statues,"Believed to have unified Upper and Lower Egypt, marking the beginning of the First Dynasty"
+87,Menes,statues,Also credited with unifying Upper and Lower Egypt
+88,Djoser,statues,"Known for building the Step Pyramid, the first true pyramid in Egypt"
+89,Sneferu,statues,"Father of Khufu, the builder of the Great Pyramid of Giza. Built two pyramids himself, the Bent Pyramid and the Red Pyramid"
+90,Khufu,statues,"Best known for building the Great Pyramid of Giza, one of the Seven Wonders of the Ancient World"
+91,Khafre,statues,"Son of Khufu and believed to have built the second largest pyramid at Giza, the Pyramid of Khafre"
+92,Menkaure,statues,"Son of Khafre and believed to have built the third largest pyramid at Giza, the Pyramid of Menkaure"
+93,Pepi I,statues,"One of the longest-reigning pharaohs in Egyptian history, ruling for over 50 years"
+94,Mentuhotep II,statues,Credited with reunifying Egypt after a period of division and civil war
+95,Ahmose I,statues,"Founder of the Eighteenth Dynasty, which is considered one of the most powerful and prosperous dynasties in Egyptian history"
+96,Hatshepsut,statues,One of the few female pharaohs in Egyptian history. She was a successful ruler who expanded trade and built many monuments
+97,Thutmose III,statues,Considered one of the greatest military pharaohs in Egyptian history. He expanded the Egyptian empire to its greatest extent
+98,Akhenaten,statues,One of the most controversial pharaohs in Egyptian history. He introduced a new religion that centered on the worship of the sun god Aten
+99,Tutankhamun,statues,One of the most famous pharaohs in Egyptian history. His tomb was discovered in 1922 and is filled with incredible treasures
+100,Ramesses II,statues,Considered one of the greatest pharaohs in Egyptian history. He was a successful military leader who built many monuments
+101,Sesostris III,statues,"Great military leader and builder. Expanded Egypt's territory and built many monuments, including the Sesostris III Pyramid"
+102,Amenemhat III,statues,"Powerful ruler who maintained Egypt's prosperity and stability. Built many monuments, including the Black Pyramid"
+103,Amenemhat IV,statues,"Short-lived reign, son of Amenemhat III"
+104,Sobekneferu,statues,First known female pharaoh
+105,Ahmose II,statues,Last great pharaoh of the New Kingdom. Successful military leader who briefly restored Egypt's power
+106,Nectanebo II,statues,"Last native Egyptian pharaoh. Skilled military leader who briefly revived Egypt's independence, but was eventually defeated by the Persians"
+107,Ptolemy I Soter,statues,"One of Alexander the Great's generals who became the ruler of Egypt after Alexander's death. Founded the Ptolemaic Dynasty, which ruled Egypt for over 300 years"
+108,Cleopatra VII Philopator,statues,Last active pharaoh of ancient Egypt. Charismatic and intelligent ruler who allied herself with Julius Caesar and Mark Antony in an attempt to maintain Egypt's independence from Rome
+109,Sebekhotep III,statues,"Sebekhotep III was a powerful ruler who maintained Egypt's prosperity and stability during a time of political turmoil. He built many monuments, including the pyramid at Dahshur."
+110,Merneptah,statues,"Merneptah was a successful military leader who defeated the Libyans and the Sea Peoples. He built many monuments, including the Temple of Karnak."
+111,Ramsesses III,statues,"Ramsesses III was a successful military leader who defeated the Sea Peoples and maintained Egypt's power. He built many monuments, including the Temple of Medinet Habu."
+112,Psamtik I,statues,"Psamtik I was a successful ruler who restored Egypt's independence from the Assyrians. He built many monuments, including the Temple of Saqqara."
+113,Osorkon I,statues,"Osorkon I was the son of Shoshenq I and continued his father's policies of expansion and building. He built many monuments, including the Temple of Bubastis."
+114,Takelot II,statues,"Takelot II was a powerful ruler who maintained Egypt's prosperity and stability. He built many monuments, including the Temple of Karnak."
+115,Sheshonk IV,statues,"Sheshonk IV was a successful military leader who defeated the Libyans. He built many monuments, including the Temple of Amun at Karnak."
+116,Psusennes II,statues,"Psusennes II was the son of Psusennes I and continued his father's policies of maintaining order and building monuments. He built many monuments, including the Temple of Amun at Karnak."
+117,Shoshenq V,statues,Shoshenq V was the son of Osorkon II and ruled during a time of political instability. He is known for his military campaigns against the Libyans.
+118,Pedubast III,statues,Pedubast III was the last pharaoh of the Twenty-third Dynasty. He ruled for only two years and is known for his efforts to restore order to Egypt.
+119,Hetepheres I,statues,"Wife of Djoser, known for her tomb adorned with fine artwork and jewelry"
+120,Khentkaus I,statues,"Wife of Khufu and mother of Khafre, played a significant role in court and religious affairs"
+121,Meresankh III,statues,"Wife of Menkaure and mother of Shepseskaf, known for her elegant statues and contributions to temple construction"
+122,Nitocris,statues,"Last pharaoh of the Sixth Dynasty, possibly a daughter of Pepi II, known for her architectural projects and potential role in ending the dynasty"
+123,Nefertiti,statues,"Wife of Akhenaten and a powerful figure in his court, known for her beauty and role in promoting the new religion of Atenism"
+124,Horemheb,statues,"Military leader who became pharaoh after Tutankhamun's death, restored order to Egypt and built many monuments"
+125,Seti I,statues,"Great military leader and builder, expanded Egypt's territory and built many monuments, including the Temple of Abydos"
+126,Nefertari,statues,"Wife of Seti I and a prominent figure in her own right, known for her tomb in the Valley of the Queens and her influence on Egyptian art"
+127,Tausert,statues,"Widower of Seti II and last pharaoh of the Nineteenth Dynasty, known for her role in maintaining stability during a period of political turmoil"
+128,Shabaka,statues,"Nubian pharaoh who founded the Twenty-fifth Dynasty, revived Egyptian culture, and initiated a period of prosperity"
+129,Amenemhat IV,statues,"Son of Amenemhat III, short-lived reign, known for his efforts to maintain stability during a time of political turmoil"
+130,Sobekneferu,statues,"First known female pharaoh, last ruler of the Twelfth Dynasty, known for her tomb complex at Hawara and her role in maintaining stability during a time of political turmoil"
+131,Wadjetkhethor,statues,"Possible successor of Sobekneferu, short-lived reign, known for her tomb complex at Saqqara"
+132,Seneferka,statues,"First pharaoh of the Thirteenth Dynasty, known for his tomb complex at Dahshur"
+133,Sekhemre Khutowy,statues,"Notable for his construction projects, including the temple at Abydos"
+134,Neferhotep I,statues,Known for his military campaigns and efforts to maintain control over Egypt during a time of political instability
+135,Sobekhotep I,statues,"Powerful pharaoh who restored order to Egypt and initiated a period of prosperity, known for his military campaigns and construction projects, including the White Pyramid at Dahshur"
+136,Sekhemkare Amenemhat V,statues,"Son of Sobekhotep I, known for his construction projects, including the temple at Karnak"
+137,Khendjer,statues,Known for his military campaigns and efforts to expand Egypt's territory
+138,Iyan,statues,"Known for his construction projects, including the temple at Heliopolis"
+139,Ay,statues,"Military leader and adviser to Tutankhamun, became pharaoh after Tutankhamun's death, known for his role in restoring stability and order to Egypt"
+140,Horemheb,statues,"Military leader who became pharaoh after Ay's death, known for his efforts to restore order to Egypt and his construction projects, including the temple at Karnak"
+141,Seti I,statues,"Great military leader and builder, expanded Egypt's territory and built many monuments, including the Temple of Abydos"
+142,Ramesses I,statues,"Son of Seti I, short-lived reign, known for his construction projects, including his tomb at Abydos"
+143,Seti II,statues,"Son of Ramesses I, short-lived reign, known for his construction projects, including the temple at Memphis"
+144,Amenmesse,statues,"Possible usurper of the throne, short-lived reign, known for his construction projects, including the temple at Karnak"
+145,Siptah,statues,"Child pharaoh, known for his marriage to Queen Tausert, who played a significant role in his reign"
+146,Tausert,statues,"Widower of Seti II and last pharaoh of the Nineteenth Dynasty, known for her role in maintaining stability during a period of political turmoil"
+147,Userkaf,statues,"Founded the Fifth Dynasty, known for his pyramid at Saqqara and the first mention of the sun god Ra in the Pyramid Texts"
+148,Sahure,statues,"Son of Userkaf, built his pyramid at Saqqara and expanded trade with Nubia"
+149,Neferirkare Kakai,statues,"Known for his unfinished pyramid at Saqqara, the largest pyramid complex of the Fifth Dynasty after that of his father, Userkaf"
+150,Shepseskaf,statues,"Son of Menkaure, built his pyramid at Saqqara and continued the construction of the Pyramid of Menkaure"
+151,Niuserre,statues,Known for his pyramid at Saqqara and his role in promoting the cult of the sun god Ra
+152,Menkauhor,statues,Known for his pyramid at Saqqara and his role in expanding trade with the Levant
+153,Djedkare Isesi,statues,Known for his pyramid at Saqqara and his role in developing the cult of Osiris
+154,Unas,statues,"Known for the Pyramid Texts, the earliest religious texts in Ancient Egypt, inscribed on the walls of his pyramid at Saqqara"
+155,Qeni,statues,"Nobleman and official who served under several pharaohs of the Fifth Dynasty, known for his tomb at Abydos depicting his administrative and military achievements"
+156,Hekaib,statues,"Last pharaoh of the Fifth Dynasty, known for his pyramid complex at Saqqara and his role in maintaining stability during a time of political turmoil"
+157,Intef II,statues,"Ruled over Upper Egypt during the First Intermediate Period, known for his efforts to reunify Egypt"
+158,Mentuhotep I,statues,"Son of Intef II, completed the reunification of Egypt and founded the Middle Kingdom, known for his construction projects at Thebes"
+159,Mentuhotep II,statues,"Son of Mentuhotep I, continued the consolidation of power and expansion of the Middle Kingdom, known for his construction projects at Thebes and his role in promoting literature and art"
+160,Mentuhotep III,statues,"Son of Mentuhotep II, known for his role in maintaining stability and prosperity during the Middle Kingdom"
+161,Senusret I,statues,"Founder of the Twelfth Dynasty, known for his military campaigns, construction projects, and development of the administrative system"
+162,Senusret II,statues,"Son of Senusret I, continued his father's policies of expansion and construction, known for his mining expeditions and expansion of trade with Nubia"
+163,Amenemhat II,statues,"Son of Senusret I, known for his construction projects, including the Labyrinth, an extensive mortuary complex at Hawara"
+164,Senusret III,statues,"Son of Amenemhat II, continued the architectural and mining projects of his predecessors, known for his military campaigns and expansion of Egypt's territory"
+165,Amenemhat III,statues,"Son of Senusret III, known for his construction projects, including the Black Pyramid at Dahshur, agricultural and irrigation projects, and the expansion of trade networks"

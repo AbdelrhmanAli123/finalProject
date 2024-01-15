@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Q&A</title>
+</head>
+<body>
+    <h1>Chatbot Q&A 🌱</h1>
+
+    <form id="knowledgebaseForm">
+        <button type="button" onclick="createKnowledgebase()">Create Knowledgebase</button>
+    </form>
+
+    <form id="questionForm">
+        <label for="question">Question:</label>
+        <input type="text" id="question" name="question">
+        <button type="button" onclick="askQuestion()">Ask Question</button>
+    </form>
+
+    <div id="answerContainer">
+        <h2>Answer</h2>
+        <p id="answer"></p>
+    </div>
+
+    <script>
+        function createKnowledgebase() {
+            fetch('/create_knowledgebase', {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(message => alert(message));
+        }
+
+        function askQuestion() {
+            const question = document.getElementById('question').value;
+
+            fetch('/api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('answer').innerText = data.answer;
+            });
+        }
+    </script>
+</body>
+</html>
