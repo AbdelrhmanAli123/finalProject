@@ -98,10 +98,10 @@ export const updateProfileSchema = {
         birthDate: joi.string(),
         phoneNumber: joi.string(),
         description: joi.string(),
-        contacts: joi.object({
-            whatsApp: joi.string(),
+        contactInfo: joi.object({
+            whatsapp: joi.string(),
             facebook: joi.string(),
-            instagram: joi.object(),
+            instagram: joi.string(),
             linkedIn: joi.string(),
             twitter: joi.string()
         }).presence('optional')

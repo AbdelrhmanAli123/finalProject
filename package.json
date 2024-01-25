@@ -16,6 +16,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "airlabs": "^7.0.4",
     "axios": "^1.6.2",
     "bcrypt": "^5.1.1",
     "cloudinary": "^1.41.0",

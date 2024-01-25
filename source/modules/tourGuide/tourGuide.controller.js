@@ -731,7 +731,7 @@ export const TG_resetPassword = async (req, res, next) => {
         })
         return next(new Error("user not found", { cause: 400 }))
     }
-    if (!decodedToken.resetCode !== getUser.resetCode) {
+    if (decodedToken.resetCode !== getUser.resetCode) {
         console.log({
             api_error_message: "invalid reset code !"
         })
