@@ -8,6 +8,7 @@ import { systemRoles } from '../../utilities/systemRoles.js'
 import { statuses, TGtripStatuses } from '../../utilities/activityStatuses.js'
 import { emailService } from '../../services/mailService.js'
 import { ReasonPhrases, StatusCodes } from 'http-status-codes'
+import { deleteAsset, deleteFolder, restoreAsset, restoreAssetPromise } from '../../utilities/cloudinary.deletion.js'
 import cloudinary from '../../services/cloudinary.js'
 import slugify from 'slugify'
 import bcrypt from 'bcrypt'
@@ -18,5 +19,6 @@ export {
     FormData, TourGuideTripsModel, axios, cloudinary, customAlphabet,
     emailService, generateToken, statuses, systemRoles, tourGuideModel,
     touristModel, tripDaysModel, verifyToken, ReasonPhrases, StatusCodes,
-    TGtripStatuses, bcrypt, slugify
+    TGtripStatuses, bcrypt, slugify, deleteAsset, deleteFolder,
+    restoreAsset, restoreAssetPromise
 }

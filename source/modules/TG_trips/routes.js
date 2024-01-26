@@ -21,4 +21,18 @@ router.patch(
     asyncHandler(TG_trip_cont.editTrip)
 )
 
+router.delete(
+    '/deleteTrip',
+    isAuth(tripAPIroles.deleteTrip),
+    validationCoreFunction(TG_trip_vs.deleteTripSchema),
+    asyncHandler(TG_trip_cont.deleteTrip)
+)
+
+router.get(
+    '/getAllTrips',
+    isAuth(tripAPIroles.getAllTrips),
+    validationCoreFunction(TG_trip_vs.getAllTripsSchema),
+    asyncHandler(TG_trip_cont.getAllTrips)
+)
+
 export default router

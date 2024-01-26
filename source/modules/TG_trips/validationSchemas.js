@@ -12,8 +12,8 @@ export const createTripSchema = {
             dayPlaces: joi.array().items(joi.object({
                 placeName: joi.string(),
                 placeType: joi.string(),
-                latitude: joi.string(),
-                longitude: joi.string(),
+                latitude: joi.string().optional(),
+                longitude: joi.string().optional(),
                 activity: joi.string().optional()
             }))
         }))
@@ -35,11 +35,23 @@ export const createTripSchema = {
 
 export const editTripSchema = {
     body: joi.object({
+        trip_id: generalFields._id.required(),
         title: joi.string().optional(),
         brief: joi.string().optional(),
         ticketPerPerson: joi.number().min(0).optional(),
-        minimumNumber: joi.number().min(1).optional(),
-        tripDetails: joi.array().items(joi.object({
+        minimumNumber: joi.number().min(1).optional(), // [{day1},{day2},{day3},{day4}]
+        newDay: joi.object({
+            dayName: joi.string().optional(),
+            dayPlaces: joi.array().items(joi.object({
+                placeName: joi.string().optional(),
+                placeType: joi.string().optional(),
+                latitude: joi.string().optional(),
+                longitude: joi.string().optional(),
+                activity: joi.string().optional()
+            })).presence('optional')
+        }).optional(true), // {day4}
+        removeDay: generalFields._id.optional(),
+        newTripDetails: joi.array().items(joi.object({
             dayName: joi.string().optional(),
             dayPlaces: joi.array().items(joi.object({
                 placeName: joi.string().optional(),
@@ -60,6 +72,21 @@ export const editTripSchema = {
         path: joi.string(),
         size: joi.number()
     }).presence('optional'),
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
+}
+
+export const deleteTripSchema = {
+    body: joi.object({
+        trip_id: generalFields._id.required()
+    }).presence('required'),
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
+}
+
+export const getAllTripsSchema = {
     headers: joi.object({
         authorization: generalFields.jwtToken
     }).presence('required').unknown(true)

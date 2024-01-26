@@ -1,30 +1,11 @@
 pipeline {
   agent {label 'ubuntu'}
-
-    stages {
-        // stage('Maven Build') {
-        //     steps {
-        //         sh 'mvn clean install'
-        //    }
-        //          // Post building archive Java application
-
-        //     post {
-        //         success {
-        //             archiveArtifacts artifacts: '**/target/*.jar'
-        //         }
-        //     }
-        
-        // }
-        // stage('Maven test'){
-        //     steps {
-        //         sh 'mvn test'
-        //     }
-        // }
+      stages{
         stage('Build Docker Image') {
             steps {
-                    // withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
                 sh """ 
                     docker build . -t  projectimage
+                    docker tag projectimage projectimage:${BUILD_NUMBER}
                     """
             }
         }
@@ -32,8 +13,15 @@ pipeline {
             steps{
                 sh """
                     docker stop projectcontainer || true && docker rm projectcontainer || true
-                    docker run --name  projectcontainer -d -p 8081:4000 projectimage
-                    docker rmi --force projectimage:latest || true
+                    docker run --name  projectcontainer -d -p 8081:4000 projectimage:${BUILD_NUMBER}
+                """
+            }
+        }
+        stage('Clean Up Docker Images') {
+            steps {
+                sh """
+                    docker rmi --force \$(docker images -f "dangling=true" -q) || true
+                    docker rmi --force projectimage:${BUILD_NUMBER} || true
                 """
             }
         }

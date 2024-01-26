@@ -1,4 +1,5 @@
 import cloudinary from "../services/cloudinary.js"
+import { TourGuideTripsModel } from '../dataBase/models/tourGuideTrips.model.js'
 
 export const asyncHandler = (API) => { // API -> api controller 
     return (req, res, next) => {
@@ -10,6 +11,21 @@ export const asyncHandler = (API) => { // API -> api controller
                     async_handler_err: err,
                     async_handler_message: err?.message
                 })
+                // if (req.deletedTrip) { // NOTE : it is not good at all to pass a database document here in my opinion
+                //     try {
+                //         let retrievedTrip = await TourGuideTripsModel.create(req.deletedTrip)
+                //         console.log({
+                //             async_handler_message: `Deleted Trip was successfully retrieved`,
+                //             retrievedTrip
+                //         })
+                //         retrievedTrip = null
+                //     } catch (error) {
+                //         console.log({
+                //             async_handler_message: "failed to retrieve the deleted trip!",
+                //             error: error
+                //         })
+                //     }
+                // }
                 if (req?.coverImgPath) {
                     console.log({
                         async_handler_message: "cover image path is passed here!",

@@ -607,6 +607,20 @@ if name == 'main':
     //     }
     //     tripDaysData.push(data._id)
     // }
+
+     // save the new trip days in the trip days model
+        // method 1
+        // for (const day of newTripDetails) {
+        //     const data = await tripDaysModel.create(day)
+        //     if (data.errors) {
+        //         console.log({
+        //             api_error_message: "error in saving the new trip details!",
+        //             error_info: data.errors
+        //         })
+        //         return next(new Error('failure in saving the new trip details!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+        //     }
+        //     newDaysIds.push(data._id)
+        // }
 ```
 
 ### req.file code (.single())
