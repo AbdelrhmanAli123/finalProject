@@ -1,5 +1,5 @@
 pipeline {
-  agent {label 'admin'}
+  agent {label 'ubuntu'}
 
     stages {
         // stage('Maven Build') {
@@ -33,7 +33,7 @@ pipeline {
                 sh """
                     docker stop projectcontainer || true && docker rm projectcontainer || true
                     docker run --name  projectcontainer -d -p 8081:4000 projectimage
-                    docker rmi --force projectimage || true
+                    docker rmi --force projectimage:latest || true
                 """
             }
         }
