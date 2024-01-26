@@ -595,6 +595,18 @@ if name == 'main':
         //         })
         //     }
         // })
+
+        // for (let i = 0; i < tripDetails.length; i++) {
+    //     const data = await tripDaysModel.create(tripDetails[i])
+    //     if (data.errors) {
+    //         console.log({
+    //             api_error_message: "error in saving the trip details!",
+    //             error_info: data.errors
+    //         })
+    //         return next(new Error('failure in saving the trip details!', { cause: 500 }))
+    //     }
+    //     tripDaysData.push(data._id)
+    // }
 ```
 
 ### req.file code (.single())

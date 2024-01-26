@@ -2,7 +2,6 @@ import { Schema, model } from "mongoose"
 import { systemRoles } from "../../utilities/systemRoles.js"
 import { statuses } from "../../utilities/activityStatuses.js"
 
-// TODO : add contact info
 
 const schema = new Schema({
     firstName: {
@@ -36,7 +35,7 @@ const schema = new Schema({
         type: String,
         required: true
     },
-    birthDate: { // TODO : later in the project , create a format to it , untill now it is a string
+    birthDate: {
         type: String,
         required: true
     },
@@ -131,16 +130,17 @@ const schema = new Schema({
         linkedIn: {
             type: String
         }
-    }
-    // generatedTrips: {
-
-    // }
+    },
+    createdTrips: [{
+        type: Schema.Types.ObjectId,
+        ref: 'TourGuideTrip'
+    }]
+}, {
+    timestamps: true
 })
-
-// another image , contact info , additional CV or liscences
 
 // generate trips model
 
-// generate trip by the tourguide 
+// generate trip by the tourguide
 
 export const tourGuideModel = model('TourGuide', schema)

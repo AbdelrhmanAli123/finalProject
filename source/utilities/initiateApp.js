@@ -9,7 +9,7 @@ const initiateApp = (app, express) => {
     const port = +process.env.PORT || 5000
     DBconnection()
 
-    app.use(express.json())
+    app.use(express.json()) // for parsing
     app.use(cors())
     // app.use(timeout('15s'))
     // app.use((req, res, next) => {
@@ -32,6 +32,7 @@ const initiateApp = (app, express) => {
     app.use('/tourist', routers.touristRouter)
     app.use('/tourGuide', routers.tourGuideRouter)
     app.use('/auth', routers.authRouter)
+    app.use('/trip', routers.tourGuideTripRouter)
 
     app.all('*', (req, res, next) => {
         res.status(StatusCodes.NOT_FOUND).json({

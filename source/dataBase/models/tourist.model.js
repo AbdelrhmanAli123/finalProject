@@ -87,7 +87,11 @@ const touristSchema = new Schema({
     countryFlag: { // will be sent in : edit profile 
         // will be get in view profile
         type: String
-    }
+    },
+    trips: [{
+        type: Schema.Types.ObjectId,
+        ref: 'TourGuideTrip'
+    }]
     // address: { (real time -> socket.io)
     // }
     // refreshCounter : {
