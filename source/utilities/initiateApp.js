@@ -33,6 +33,7 @@ const initiateApp = (app, express) => {
     app.use('/tourGuide', routers.tourGuideRouter)
     app.use('/auth', routers.authRouter)
     app.use('/trip', routers.tourGuideTripRouter)
+    app.use('/home', routers.historyMP_router)
 
     app.all('*', (req, res, next) => {
         res.status(StatusCodes.NOT_FOUND).json({

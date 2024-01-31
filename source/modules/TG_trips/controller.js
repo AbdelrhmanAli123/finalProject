@@ -54,10 +54,10 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     for (const day of tripDetails) {
         console.log({ message: "about to save day data" })
         const data = await tripDaysModel.create(day)
-        if (data.errors) {
+        if (data?.errors) {
             console.log({
                 api_error_message: "error in saving the trip details!",
-                error_info: data.errors
+                error_info: data?.errors
             })
             return next(new Error('failure in saving the trip details!', { cause: 500 }))
         }
@@ -96,10 +96,10 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     }
 
     const newTrip = await TourGuideTripsModel.create(tripData)
-    if (newTrip.errors) {
+    if (newTrip?.errors) {
         console.log({
             api_error_message: "failed to create the trip",
-            errors: newTrip.errors
+            errors: newTrip?.errors
         })
         return next(new Error('failure in saving the trip!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
@@ -110,7 +110,7 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     console.log({ message: "tourGuide has been added this trip creation!" })
 
     console.log("\nTG GENERATE API DONE!\n")
-    res.status(StatusCodes.OK).json({
+    res.status(StatusCodes.CREATED).json({
         message: "trip saving is successfull!",
         trip_created: newTrip
     })
@@ -134,10 +134,10 @@ export const editTrip = async (req, res, next) => {
             { createdBy: _id }
         ]
     })
-    if (getTrip.errors) {
+    if (getTrip?.errors) {
         console.log({
             user_error_message: "failed to find the trip , invalid _id",
-            errors: getTrip.errors
+            errors: getTrip?.errors
         })
         return next(new Error('trip not found!', { cause: StatusCodes.BAD_REQUEST }))
     }
@@ -204,7 +204,6 @@ export const editTrip = async (req, res, next) => {
         if (!newTripDays.length) {
             console.log({
                 api_error_message: "error in saving the new trip details!",
-                error_info: data.errors
             })
             return next(new Error('failure in saving the new trip details!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
         }
@@ -228,10 +227,10 @@ export const editTrip = async (req, res, next) => {
             trip_details_before_pushing: getTrip.tripDetails
         })
         const data = await tripDaysModel.create(newDay)
-        if (data.errors) {
+        if (data?.errors) {
             console.log({
                 message: "error regarding the new day inserting",
-                errors: data.errors,
+                errors: data?.errors,
             })
             return next(new Error('failure in saving the new day!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
         }
@@ -422,10 +421,10 @@ export const getAllTrips = async (req, res, next) => {
             path: 'tripDetails' // we here populate all the tripDetails of each trip
         }
     ])
-    if (getTrip.errors) {
+    if (getTrip?.errors) {
         console.log({
             user_error_message: "failed to find the trip , either user didn't create that trip or the trip doesn't exist",
-            errors: getTrip.errors
+            errors: getTrip?.errors
         })
     }
     console.log({

@@ -8,6 +8,41 @@
 
 - <https://www.figma.com/file/nHx2JHTZHGIioOccX7oCC2/Graduation-project?type=design&node-id=0%3A1&mode=design&t=zoIaIQAaGZjfgpCo-1>
 
+======================================================================================================================================
+
+## coding upgrades
+
+1. you can use the following method to update an existing asset in cloudinary instead of doing it manually :
+
+```js
+  const updateExistingImage = await cloudinary.uploader.upload(req.file.path , {
+    folder:`path to the existing asset`,
+    overwrite: 'public_id of the asset you want to overwrite'
+  })
+```
+
+2. you can use the following code `for better updating of the fields in an existing mongoDB database document` using mongoose :
+
+```js
+  const getData = await dataBaseModel.find({conditions})
+
+  getData.set('fieldName','new_value')
+  getData.save()
+```
+
+3. use this joi method to allow a field to be either something or another , `ex : field "name" is wanted to be either string or an array` :
+
+```js
+  export const deletePlaceSchema = {
+    body: joi.object({
+        name: joi.alternatives().try(
+            joi.string().required,
+            joi.array().items(joi.string()).required()
+        )
+    }).presence('required')
+}
+```
+
 ========================================
 
 ## geoSpatial queries

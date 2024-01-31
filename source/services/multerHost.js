@@ -11,16 +11,29 @@ export const multerHostFunction = (extensions = []) => {
     const multerStorage = multer.diskStorage({})
     const fileUplaod = multer({
         storage: multerStorage,
-        // ,
-        // fileFilter: (req, file, cb) => {
-        //     if (extensions.includes(file?.mimetype) !== true) {
-        //         cb(null, false)
-        //     }
-        //     cb(null, true)
-        // }
     })
     return fileUplaod
 }
+
+export const multerCallBackVersion = (extensions = []) => {
+    return (req, res, next) => {
+        if (!extensions) {
+            extensions = allowedExtensions.image
+        }
+        const multerStorage = multer.diskStorage({})
+        const fileUplaod = multer({
+            storage: multerStorage,
+        })
+        return fileUplaod
+    }
+}
+// ,
+// fileFilter: (req, file, cb) => {
+//     if (extensions.includes(file?.mimetype) !== true) {
+//         cb(null, false)
+//     }
+//     cb(null, true)
+// }
 
 export const multertempFunction = (extensions = []) => {
     console.log("\nMULTER MIDDLEWARE\n")

@@ -471,7 +471,7 @@ export const TG_signUp = async (req, res, next) => {
     }
 
     console.log("\nTOUR GUIDE SIGN UP IS DONE!\n")
-    res.status(200).json({
+    res.status(StatusCodes.CREATED).json({
         message: "user added!",
         user: {
             firstName: saveUser.firstName,
@@ -808,10 +808,10 @@ export const TG_updateProfile = async (req, res, next) => {
         })
         return next(new Error("tour guide not found , invalid tourguide id!", { cause: 400 }))
     }
-    if (getUser.errors) {
+    if (getUser?.errors) {
         console.log({
             api_error_message: "failure in database query!",
-            db_error_details: getUser.errors
+            db_error_details: getUser?.errors
         })
         return next(new Error("failure in tour guide search!", { cause: 500 }))
     }

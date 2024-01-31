@@ -117,7 +117,7 @@ export const TouristSignUp = async (req, res, next) => {
     }
 
     console.log("\nTOURIST SIGN UP IS DONE!\n")
-    res.status(200).json({
+    res.status(StatusCodes.CREATED).json({
         message: "user added!",
         user: saveUser
     })

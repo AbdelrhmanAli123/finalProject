@@ -91,6 +91,10 @@ const touristSchema = new Schema({
     trips: [{
         type: Schema.Types.ObjectId,
         ref: 'TourGuideTrip'
+    }],
+    favouritePlaces: [{
+        type: Schema.Types.ObjectId,
+        ref: 'historicMP_place'
     }]
     // address: { (real time -> socket.io)
     // }
@@ -99,13 +103,5 @@ const touristSchema = new Schema({
     //     max:4
     // }
 })
-
-// TODO :
-// 1. tourist (include chatbot)
-// 2. tourguide (include ocr)
-// 3. addresses (location , google maps)
-// 4. real time chat
-
-// pagination
 
 export const touristModel = model('Tourist', touristSchema)
