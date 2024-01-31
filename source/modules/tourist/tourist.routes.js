@@ -65,6 +65,20 @@ router.patch(
     asyncHandler(touristCont.changePassword)
 )
 
+router.patch(
+    '/changeoldPass',
+    isAuth(touristAPIroles.changePassword),
+    validationCoreFunction(touristVS.changeOldPassSchema),
+    asyncHandler(touristCont.changeOldPass)
+)
+
+router.put(
+    '/placeToggleFav',
+    isAuth(touristAPIroles.toggleToFavs),
+    validationCoreFunction(touristVS.toggleToFavsSchema),
+    asyncHandler(touristCont.placeToggleFav)
+)
+
 router.get(
     '/confirmOldPassword',
     isAuth(touristAPIroles.changePassword),
@@ -72,12 +86,6 @@ router.get(
     asyncHandler(touristCont.confrirmOldPass)
 )
 
-router.patch(
-    '/changeoldPass',
-    isAuth(touristAPIroles.changePassword),
-    validationCoreFunction(touristVS.changeOldPassSchema),
-    asyncHandler(touristCont.changeOldPass)
-)
 
 router.get(
     '/viewProfile',

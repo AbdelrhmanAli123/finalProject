@@ -3,7 +3,7 @@ import fs from 'fs'
 import {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
     ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses,
-    languagesCodes, countries, countriesCodes, axios
+    languagesCodes, countries, countriesCodes, axios, historicMP_Model
 } from './tourist.controller.imports.js'
 // for tourist sign up :
 const nanoid = customAlphabet('asdfghjkl123456789_#$%!', 5)
@@ -1020,6 +1020,68 @@ export const changeOldPass = async (req, res, next) => {
     console.log("\nTOURIST CHANGE PASSWORD IS DONE!\n")
     res.status(200).json({
         message: "changing password is successfull!"
+    })
+}
+
+export const placeToggleFav = async (req, res, next) => {
+    console.log("\nTOURIST TOGGLE TO FAVs API\n")
+    // this API will either add the place to the favourites or remove it from it
+    const { placeName } = req.body
+
+    // check if the place is in the model or not
+    const getPlace = await historicMP_Model.findOne({ name: placeName })
+    if (!getPlace) {
+        console.log({ user_error_message: "place doesn't exist" })
+        return next(new Error("place doesn't exist", { cause: StatusCodes.BAD_REQUEST }))
+    }
+    if (getPlace.errors) {
+        console.log({ api_error_message: "internal error finding the place" })
+        return next(new Error("internal error finding the place", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+    console.log({
+        message: "place is found!",
+        place_data: getPlace
+    })
+
+    // if the user has a favouritePlaces from the first place :
+    if (req.authUser.favouritePlaces) {
+        // if the place was already in the tourist's favourits -> remove it
+        if (req.authUser.favouritePlaces.includes(getPlace._id)) {
+            console.log({ message: "place is in user favs, removing it..." })
+            for (let i = l; i < req.authUser.favouritePlaces.length; i++) {
+                if (req.authUser.favouritePlaces[i] === getPlace._id) {
+                    req.authUser.favouritePlaces.splice(i, 1)
+                    console.log({ message: "place is removed from the favourites" })
+                }
+            }
+        }
+        // if the place is not in the user favs -> add it
+        else if (!req.authUser.favouritePlaces.includes(getPlace._id)) {
+            console.log({ message: "place is not in the user favs , adding it..." })
+            req.authUser.favouritePlaces.push(getPlace._id)
+            console.log({ message: "place added to the user favs successfully" })
+        }
+    } else { // if the user had no favouritePlaces field -> add one in it
+        console.log({ message: "user had no place in his favs , adding one..." })
+        req.authUser.favouritePlaces.push(getPlace._id)
+        console.log({ message: "place added to the user favs successfully" })
+    }
+
+    try {
+        await req.authUser.save()
+        console.log({ message: "user updates are saved successfully!" })
+    } catch (error) {
+        console.log({
+            error_message: "failed to save user updates!",
+            error: error
+        })
+        return next(new Error(`failed to save user updates! , ${error}`, { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+
+    console.log("\n\nTOURIST TOGGLE TO FAVs API DONE\n")
+    res.status(StatusCodes.OK).json({
+        message: "place is added to favourites!",
+        favourites: req.authUser.favouritePlaces
     })
 }
 

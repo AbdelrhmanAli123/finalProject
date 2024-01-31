@@ -163,6 +163,15 @@ export const logout = {
     }).presence('required').unknown(true)
 }
 
+export const toggleToFavsSchema = {
+    body: joi.object({
+        placeName: joi.string().required()
+    }).presence('required'),
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
+}
+
 export const testSchema = {
     headers: joi.object({
         authorization: generalFields.jwtToken

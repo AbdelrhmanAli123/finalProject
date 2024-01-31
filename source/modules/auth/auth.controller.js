@@ -350,7 +350,7 @@ export const getUserInfo = async (req, res, next) => {
         })
     } else if (req.userRole === systemRoles.tourGuide) {
         getUser = getUser = await tourGuideModel.findById(_id)
-            .select('firstName lastName email birthDate description phoneNumber languages profilePicture.secure_url status confirmed CV.secure_url')
+            .select('firstName lastName email birthDate description phoneNumber languages address contact_info profilePicture.secure_url status confirmed CV.secure_url')
         if (!getUser) {
             console.log({ api_error_message: "user id not found!" })
             return next(new Error('user not found!', { cause: 400 }))

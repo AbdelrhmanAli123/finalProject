@@ -9,7 +9,7 @@ export const addPlaceSchema = {
             longitude: joi.string().optional(),
             latitude: joi.string().optional(),
         }).optional(true),
-        details: joi.string().min(200).required(),
+        details: joi.string().min(300).required(),
         ticket_price: joi.number().min(0).required()
     }).presence('required'),
     file: joi.object({
@@ -34,7 +34,7 @@ export const editPlaceSchema = {
             longitude: joi.string().optional(),
             latitude: joi.string().optional(),
         }).optional(true),
-        details: joi.string().min(200).optional(),
+        details: joi.string().min(300).optional(),
         ticket_price: joi.number().min(0).optional()
     }).presence('required'),
     file: joi.object({

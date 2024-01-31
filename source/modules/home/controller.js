@@ -198,6 +198,7 @@ export const editData = async (req, res, next) => {
     })
 }
 
+// deprecated
 export const getPlaceData = async (req, res, next) => {
     console.log("\nSTATIC GET HISTORIC PLACE API!\n")
 
@@ -223,12 +224,39 @@ export const getPlaceData = async (req, res, next) => {
     })
 }
 
+// deprecated
 export const getAllPlaces = async (req, res, next) => {
     console.log("\nSTATIC GET ALL HISTORIC PLACES API\n")
 
     let getData
     try {
         getData = await historicMP_Model.find().select('name image.secure_url')
+        console.log({
+            message: "data is found!",
+            data: getData
+        })
+    } catch (error) {
+        console.log({
+            error_message: "failed to find the data!",
+            error: error
+        })
+        return next(new Error("data is not found!", { cause: StatusCodes.BAD_REQUEST }))
+    }
+
+    console.log("\nSTATIC GET ALL HISTORIC PLACES API DONE\n")
+    res.status(StatusCodes.OK).json({
+        message: "data is found!",
+        data: getData,
+        data_length: getData.length
+    })
+}
+
+export const getAllPlacesData = async (req, res, next) => {
+    console.log("\nSTATIC GET ALL HISTORIC PLACES API\n")
+
+    let getData
+    try {
+        getData = await historicMP_Model.find()
         console.log({
             message: "data is found!",
             data: getData

@@ -7,5 +7,6 @@ export const touristAPIroles = {
     logout: [systemRoles.tourist],
     getUserInfo: [systemRoles.tourist],
     addTrip: [],
-    generateTrip: []
+    generateTrip: [],
+    toggleToFavs: [systemRoles.tourist]
 }

@@ -20,16 +20,24 @@ router.patch(
     asyncHandler(historyMP_cont.editData)
 )
 
+// deprecated
 router.get(
     '/getPlaceInfo',
     validationCoreFunction(historyMP_vs.editPlaceSchema),
     asyncHandler(historyMP_cont.getPlaceData)
 )
 
+// deprecated
 router.get(
     '/getAllPlacesThumbs',
     validationCoreFunction(historyMP_vs.getAllPlacesSchema),
     asyncHandler(historyMP_cont.getAllPlaces)
+)
+
+router.get(
+    '/getAllPlaces',
+    validationCoreFunction(historyMP_vs.getAllPlacesSchema),
+    asyncHandler(historyMP_cont.getAllPlacesData)
 )
 
 router.delete(
