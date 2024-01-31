@@ -4,7 +4,7 @@ import { generalFields } from '../../middlewares/joiValidation.js'
 export const addPlaceSchema = {
     body: joi.object({
         name: joi.string().required(),
-        type: joi.string().required(),
+        type: joi.string().valid('monument', 'islamic', 'nearby').required(),
         location: joi.object({
             longitude: joi.string().optional(),
             latitude: joi.string().optional(),
@@ -24,10 +24,12 @@ export const addPlaceSchema = {
     }).presence('required')
 }
 
+const test = await addPlaceSchema.body.validate('value', { abortEarly: false }).error.message
+
 export const editPlaceSchema = {
     body: joi.object({
         name: joi.string().required(),
-        type: joi.string().optional(),
+        type: joi.string().valid('monument', 'islamic', 'nearby').optional(),
         location: joi.object({
             longitude: joi.string().optional(),
             latitude: joi.string().optional(),
@@ -54,7 +56,7 @@ export const getPlaceDataSchema = {
 }
 
 export const getAllPlacesSchema = {
-    body: joi.object().presence('forbidden'),
+    body: joi.object().presence('optional'),
     file: joi.object().presence('forbidden'),
     files: joi.object().presence('forbidden')
 }
@@ -62,7 +64,7 @@ export const getAllPlacesSchema = {
 export const deletePlaceSchema = {
     body: joi.object({
         name: joi.alternatives().try(
-            joi.string().required,
+            joi.string().required(),
             joi.array().items(joi.string()).required()
         )
     }).presence('required')

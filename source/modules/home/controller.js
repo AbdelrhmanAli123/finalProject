@@ -10,9 +10,6 @@ export const addData = async (req, res, next) => {
 
     const { name, type, location, details, ticket_price } = req.body
 
-    // process 1
-    // process 2
-
     const isUnique = await historicMP_Model.findOne({ name })
     if (isUnique) {
         console.log({
@@ -23,6 +20,11 @@ export const addData = async (req, res, next) => {
         return next(new Error('name already exists! , you must enter a unique name!', { cause: StatusCodes.BAD_REQUEST }))
     }
     console.log({ message: "name is valid!" })
+
+    if (type !== 'monument' && type !== 'islamic' && type !== 'nearby') {
+        console.log({ message: "place type isn't valid" })
+        return next(new Error(`the place type must be either : 'monument' , 'islamic' , 'nearby' ,  but got ${type}`, { cause: StatusCodes.BAD_REQUEST }))
+    }
 
     if (ticket_price < 0) {
         console.log({
@@ -43,7 +45,7 @@ export const addData = async (req, res, next) => {
     let image
     try {
         image = await cloudinary.uploader.upload(req.file.path, {
-            folder: `${process.env.GradProject}/${cloudMedia_subFolders.static_historicMP}/${customId}`
+            folder: `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_historicMP}/${customId}`
         })
         console.log({ message: 'asset is uploaded successfully!' })
     } catch (error) {
@@ -64,7 +66,8 @@ export const addData = async (req, res, next) => {
         image: {
             secure_url: image.secure_url,
             public_id: image.public_id
-        }
+        },
+        customId
     }
 
     let saveData
@@ -96,12 +99,18 @@ export const editData = async (req, res, next) => {
     const { name, type, location, details, ticket_price } = req.body
 
     const getData = await historicMP_Model.findOne({ name })
-    if (getData?.errors) {
+    if (!getData) {
         console.log({
-            error_message: "failed to find the place data!",
-            errors: getData?.errors
+            user_error_message: "place is not found!"
         })
         return next(new Error("place is not found!", { cause: StatusCodes.BAD_REQUEST }))
+    }
+    if (getData?.errors) {
+        console.log({
+            api_error_message: "error in finding the place data!",
+            errors: getData?.errors
+        })
+        return next(new Error("error in finding the place!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
     console.log({
         message: "place data is found!",
@@ -109,6 +118,10 @@ export const editData = async (req, res, next) => {
     })
 
     if (type) {
+        if (type !== 'monument' && type !== 'islamic' && type !== 'nearby') {
+            console.log({ message: "place type isn't valid" })
+            return next(new Error(`the place type must be either : 'monument' , 'islamic' , 'nearby' ,  but got ${type}`, { cause: StatusCodes.BAD_REQUEST }))
+        }
         getData.type = type
         console.log({ message: "place type is updated!" })
     }
@@ -138,14 +151,21 @@ export const editData = async (req, res, next) => {
         console.log({ message: "ticket price is updated!" })
     }
 
-    let imagePath = `${process.env.GradProject}/${cloudMedia_subFolders.static_historicMP}/${getData.customId}`
+    let imagePath
     if (req.file) {
+        // images must be there already wether you want to update them or not
         let updatedImage
+        imagePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_historicMP}/${getData.customId}`
+        console.log({ message: "place had an image!" })
         try {
             updatedImage = await cloudinary.uploader.upload(req.file.path, {
-                folder: imagePath,
-                overwrite: getData.image.public_id,
+                // don't use the folder parameter here as it will create another path inside the existing path as the parameter 'public_id' automatically navigates to the existing path
+                public_id: `${getData.image?.public_id}`, // no need for using "folder" field as this one navgate to it automatically
+                overwrite: true,
+                invalidate: true // this purges (delete) the existing old image 
             })
+            getData.image.secure_url = updatedImage.secure_url
+            getData.image.public_id = updatedImage.public_id
             console.log({
                 message: "image is updated!"
             })
@@ -208,7 +228,7 @@ export const getAllPlaces = async (req, res, next) => {
 
     let getData
     try {
-        getData = await historicMP_Model.find().select('name image.public_id')
+        getData = await historicMP_Model.find().select('name image.secure_url')
         console.log({
             message: "data is found!",
             data: getData
@@ -233,11 +253,15 @@ export const getAllPlaces = async (req, res, next) => {
 export const deletePlace = async (req, res, next) => {
     console.log("\nSTATIC DELETE HISTORIC PLACE API\n")
     const { name } = req.body
+    console.log({ type_of_name: typeof (name) })
     let deleteData
     if (typeof (name) === 'string') {
         console.log({ name_type: typeof (name) })
-        let imagePath = `${process.env.GradProject}/${cloudMedia_subFolders.static_historicMP}/${getData.customId}`
         const getData = await historicMP_Model.findOne({ name })
+        if (!getData) {
+            console.log({ message: "place is not found!" })
+            return next(new Error("place is not found!", { cause: StatusCodes.BAD_REQUEST }))
+        }
         if (getData?.errors) {
             console.log({ message: "failed to find the place!" })
             return next(new Error("the place does not exist!", { cause: StatusCodes.BAD_REQUEST }))
@@ -253,10 +277,11 @@ export const deletePlace = async (req, res, next) => {
             })
             return next(new Error("failed to delete the place!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
         }
+        let imagePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_historicMP}/${getData.customId}`
         const deletedImage = await deleteAsset(getData.image.public_id, imagePath)
         if (deletedImage.notFound === true) {
             console.log({ message: "image didn't exist!" })
-        } else if (deletedImage.deleted === false``) {
+        } else if (deletedImage.deleted === false) {
             console.log({ message: "failed to delete the image!" })
             return next(new Error("failed to delete the image!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
         }
@@ -265,13 +290,17 @@ export const deletePlace = async (req, res, next) => {
         const getData = await historicMP_Model.find({
             name: { $in: name }
         }).select('customId image')
+        if (!getData.length) {
+            console.log({ message: "none of the places entered was found!" })
+            return next(new Error("none of the places entered was found!", { cause: StatusCodes.BAD_REQUEST }))
+        }
         if (!getData) {
             console.log({ message: "failed to find the places!" })
             return next(new Error("the places does not exist!", { cause: StatusCodes.BAD_REQUEST }))
         }
         console.log({ message: "places are found!", places: getData })
         try {
-            deleteData = await historicMP_Model.deleteOne({
+            deleteData = await historicMP_Model.deleteMany({
                 name: { $in: name }
             })
             console.log({ message: "places are deleted!" })
@@ -284,7 +313,7 @@ export const deletePlace = async (req, res, next) => {
         }
         let imagePaths = [], public_ids = []
         for (const place of getData) {
-            imagePaths.push(`${process.env.GradProject}/${cloudMedia_subFolders.static_historicMP}/${place.customId}`)
+            imagePaths.push(`${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_historicMP}/${place.customId}`)
             public_ids.push(place.image.public_id)
         }
         try {

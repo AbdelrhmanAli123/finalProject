@@ -418,7 +418,8 @@ export const getAllTrips = async (req, res, next) => {
         createdBy: _id // untill here , we get all the trips that the tourGuide made
     }).populate([
         {
-            path: 'tripDetails' // we here populate all the tripDetails of each trip
+            path: 'tripDetails', // we here populate all the tripDetails of each trip
+
         }
     ])
     if (getTrip?.errors) {

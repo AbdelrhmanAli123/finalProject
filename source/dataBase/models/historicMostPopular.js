@@ -9,8 +9,10 @@ const schema = new Schema({
         unique: true
     },
     type: {
-        type: String,
-        required: true
+        type: String, // historical monument
+        required: true,
+        enum: ['monument', 'islamic', 'nearby'],
+        default: 'monument'
     },
     location: { // the location is not required untill later address understanding resources!
         longitude: {

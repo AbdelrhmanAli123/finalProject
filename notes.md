@@ -15,9 +15,11 @@
 1. you can use the following method to update an existing asset in cloudinary instead of doing it manually :
 
 ```js
-  const updateExistingImage = await cloudinary.uploader.upload(req.file.path , {
-    folder:`path to the existing asset`,
-    overwrite: 'public_id of the asset you want to overwrite'
+  updatedImage = await cloudinary.uploader.upload(req.file.path, {
+    // don't use the folder parameter here as it will create another path inside the existing path as the parameter 'public_id' automatically navigates to the existing path
+    public_id: `${existing image public_id you want to replace}`, // no need for using "folder" field as this one navgate to it automatically
+    overwrite: true,
+    invalidate: true // this purges (delete) the existing old image 
   })
 ```
 
