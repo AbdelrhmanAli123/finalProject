@@ -16,10 +16,10 @@ const schema = new Schema({
     },
     location: { // the location is not required untill later address understanding resources!
         longitude: {
-            type: String
+            type: Number
         },
         latitude: {
-            type: String
+            type: Number
         }
     },
     details: String,
