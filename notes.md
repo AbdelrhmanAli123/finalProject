@@ -45,6 +45,15 @@
 }
 ```
 
+4. use this method to filter an array instead of using a for loop manually : `note : filter takes a callback function like this : filter((element) => {logic})`
+  `what ever satisfies the filter callback's logic or condition will stay in the array and what doesn't will be removed from it`
+
+```js
+  req.authUser.favouritePlaces = req.authUser.favouritePlaces.filter(placeId => placeId.toString() !== getPlace._id.toString())
+```
+
+1. it's preferred to convert to Object._ids  when comparing ids because_id is not guaranteed to be string and could be any type
+
 ========================================
 
 ## geoSpatial queries

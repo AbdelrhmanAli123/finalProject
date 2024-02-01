@@ -94,6 +94,13 @@ router.get(
     asyncHandler(touristCont.getUserInfo)
 )
 
+router.get(
+    '/getAllFavPlaces',
+    isAuth(touristAPIroles.getAllFavPlaces),
+    validationCoreFunction(touristVS.getAllFavPlacesSchema),
+    asyncHandler(touristCont.getAllFavPlaces)
+)
+
 router.delete(
     '/deleteUser',
     isAuth(touristAPIroles.deleteUser),

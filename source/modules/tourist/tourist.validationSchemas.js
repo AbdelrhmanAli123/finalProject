@@ -172,6 +172,12 @@ export const toggleToFavsSchema = {
     }).presence('required').unknown(true)
 }
 
+export const getAllFavPlacesSchema = {
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).presence('required').unknown(true)
+}
+
 export const testSchema = {
     headers: joi.object({
         authorization: generalFields.jwtToken

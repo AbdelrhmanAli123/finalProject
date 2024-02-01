@@ -419,7 +419,6 @@ export const getAllTrips = async (req, res, next) => {
     }).populate([
         {
             path: 'tripDetails', // we here populate all the tripDetails of each trip
-
         }
     ])
     if (getTrip?.errors) {

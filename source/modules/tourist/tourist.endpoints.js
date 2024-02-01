@@ -8,5 +8,6 @@ export const touristAPIroles = {
     getUserInfo: [systemRoles.tourist],
     addTrip: [],
     generateTrip: [],
-    toggleToFavs: [systemRoles.tourist]
+    toggleToFavs: [systemRoles.tourist],
+    getAllFavPlaces: [systemRoles.tourist]
 }

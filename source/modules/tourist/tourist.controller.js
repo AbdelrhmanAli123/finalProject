@@ -1048,12 +1048,8 @@ export const placeToggleFav = async (req, res, next) => {
         // if the place was already in the tourist's favourits -> remove it
         if (req.authUser.favouritePlaces.includes(getPlace._id)) {
             console.log({ message: "place is in user favs, removing it..." })
-            for (let i = l; i < req.authUser.favouritePlaces.length; i++) {
-                if (req.authUser.favouritePlaces[i] === getPlace._id) {
-                    req.authUser.favouritePlaces.splice(i, 1)
-                    console.log({ message: "place is removed from the favourites" })
-                }
-            }
+            req.authUser.favouritePlaces = req.authUser.favouritePlaces.filter(placeId => placeId.toString() !== getPlace._id.toString())
+            console.log({ message: "place is removed from the favourites" })
         }
         // if the place is not in the user favs -> add it
         else if (!req.authUser.favouritePlaces.includes(getPlace._id)) {
@@ -1080,8 +1076,39 @@ export const placeToggleFav = async (req, res, next) => {
 
     console.log("\n\nTOURIST TOGGLE TO FAVs API DONE\n")
     res.status(StatusCodes.OK).json({
-        message: "place is added to favourites!",
+        message: "user favourites are updated!",
         favourites: req.authUser.favouritePlaces
+    })
+}
+
+export const getAllFavPlaces = async (req, res, next) => {
+    console.log("\nTOURIST GET ALL FAVOURITE PLACES API\n")
+
+    const { _id } = req.authUser
+
+    const getUser = await touristModel.findById(_id)
+        .populate([
+            {
+                path: 'favouritePlaces'
+            }
+        ]).select('favouritePlaces')
+    if (!getUser) {
+        console.log({ user_error_message: "user is not found!" })
+        return next(new Error("user is not found!", { cause: StatusCodes.BAD_REQUEST }))
+    }
+    if (getUser.errors) {
+        console.log({ api_error_message: "error finding the user!" })
+        return next(new Error("error finding the user!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+    console.log({
+        message: "user is found!",
+        user: getUser
+    })
+
+    console.log("\nTOURIST GET ALL FAVOURITE PLACES API DONE!\n")
+    res.status(StatusCodes.OK).json({
+        message: "favourite places are found!",
+        user_favouritePlaces: getUser
     })
 }
 
