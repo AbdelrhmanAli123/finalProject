@@ -6,8 +6,8 @@ export const addPlaceSchema = {
         name: joi.string().required(),
         type: joi.string().valid('cinema', 'restaurant', 'museum', 'bazar', 'medical').required(),
         location: joi.object({
-            longitude: joi.string().optional(),
-            latitude: joi.string().optional(),
+            longitude: joi.number().optional(),
+            latitude: joi.number().optional(),
         }).optional(true),
         details: joi.string().min(300).required(),
         ticket_price: joi.number().min(0).required()
@@ -29,8 +29,8 @@ export const editPlaceSchema = {
         name: joi.string().required(),
         type: joi.string().valid('cinema', 'restaurant', 'museum', 'bazar', 'medical').optional(),
         location: joi.object({
-            longitude: joi.string().optional(),
-            latitude: joi.string().optional(),
+            longitude: joi.number().optional(),
+            latitude: joi.number().optional(),
         }).optional(true),
         details: joi.string().min(300).optional(),
         ticket_price: joi.number().min(0).optional()
