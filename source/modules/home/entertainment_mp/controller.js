@@ -1,16 +1,16 @@
 import {
-    historicMP_Model, cloudinary, customAlphabet, deleteAsset, deleteFolder,
+    entertainmentMPmodel, cloudinary, customAlphabet, deleteAsset, deleteFolder,
     restoreAsset, restoreAssetPromise, ReasonPhrases, StatusCodes, cloudMedia_subFolders
 } from './controller.imports.js'
 
 const nanoid = customAlphabet('asdqwezxcbnmjkl_#$', 5)
 
 export const addData = async (req, res, next) => {
-    console.log("\nSTATIC ADD HISTORIC PLACE API!\n")
+    console.log("\nSTATIC ADD ENTERTAINMENT PLACE API\n")
 
     const { name, type, location, details, ticket_price } = req.body
 
-    const isUnique = await historicMP_Model.findOne({ name })
+    const isUnique = await entertainmentMPmodel.findOne({ name })
     if (isUnique) {
         console.log({
             user_error_message: "user entered an existing name",
@@ -21,7 +21,7 @@ export const addData = async (req, res, next) => {
     }
     console.log({ message: "name is valid!" })
 
-    if (type !== 'monument' && type !== 'islamic' && type !== 'nearby') {
+    if (type !== 'cinema' && type !== 'restaurant' && type !== 'museum' && type !== 'bazar' && type !== 'medical') {
         console.log({ message: "place type isn't valid" })
         return next(new Error(`the place type must be either : 'monument' , 'islamic' , 'nearby' ,  but got ${type}`, { cause: StatusCodes.BAD_REQUEST }))
     }
@@ -45,7 +45,7 @@ export const addData = async (req, res, next) => {
     let image
     try {
         image = await cloudinary.uploader.upload(req.file.path, {
-            folder: `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_historicMP}/${customId}`
+            folder: `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_entertainmentMP}/${customId}`
         })
         console.log({ message: 'asset is uploaded successfully!' })
     } catch (error) {
@@ -55,7 +55,7 @@ export const addData = async (req, res, next) => {
         })
         return next(new Error("failed to upload the asset!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
-    req.static_historic_publicId = image.public_id
+    req.static_entertainment_publicId = image.public_id
 
     const data = {
         name,
@@ -72,7 +72,7 @@ export const addData = async (req, res, next) => {
 
     let saveData
     try {
-        saveData = await historicMP_Model.create(data)
+        saveData = await entertainmentMPmodel.create(data)
         console.log({
             message: "data added successfully!",
             data: saveData
@@ -85,20 +85,19 @@ export const addData = async (req, res, next) => {
         return next(new Error("couldn't save the data in the database!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
 
-    console.log("\nSTATIC ADD HISTORIC PLACE API DONE!\n")
+    console.log("\nSTATIC ADD ENTERTAINMENT PLACE API DONE!\n")
     res.status(StatusCodes.CREATED).json({
-        message: 'the historic place has been created',
+        message: 'the entertainment place has been created',
         added_place: saveData
     })
 }
 
 export const editData = async (req, res, next) => {
-    console.log("\nSTATIC EDIT HISTORIC PLACE API!\n")
+    console.log("\nSTATIC EDIT ENTERTAINMENT PLACE API!\n")
 
-    // you can't change the name since it's unique and it's a monument!
     const { name, type, location, details, ticket_price } = req.body
 
-    const getData = await historicMP_Model.findOne({ name })
+    const getData = await entertainmentMPmodel.findOne({ name })
     if (!getData) {
         console.log({
             user_error_message: "place is not found!"
@@ -118,7 +117,7 @@ export const editData = async (req, res, next) => {
     })
 
     if (type) {
-        if (type !== 'monument' && type !== 'islamic' && type !== 'nearby') {
+        if (type !== 'cinema' && type !== 'restaurant' && type !== 'museum' && type !== 'bazar' && type !== 'medical') {
             console.log({ message: "place type isn't valid" })
             return next(new Error(`the place type must be either : 'monument' , 'islamic' , 'nearby' ,  but got ${type}`, { cause: StatusCodes.BAD_REQUEST }))
         }
@@ -155,7 +154,7 @@ export const editData = async (req, res, next) => {
     if (req.file) {
         // images must be there already wether you want to update them or not
         let updatedImage
-        imagePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_historicMP}/${getData.customId}`
+        imagePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_entertainmentMP}/${getData.customId}`
         console.log({ message: "place had an image!" })
         try {
             updatedImage = await cloudinary.uploader.upload(req.file.path, {
@@ -204,7 +203,7 @@ export const getPlaceData = async (req, res, next) => {
 
     const { name } = req.body
 
-    const getData = await historicMP_Model.findOne({ name })
+    const getData = await entertainmentMPmodel.findOne({ name })
     if (getData?.errors) {
         console.log({
             error_message: "failed to find the place data!",
@@ -230,7 +229,7 @@ export const getAllPlaces = async (req, res, next) => {
 
     let getData
     try {
-        getData = await historicMP_Model.find().select('name image.secure_url')
+        getData = await entertainmentMPmodel.find().select('name image.secure_url')
         console.log({
             message: "data is found!",
             data: getData
@@ -256,7 +255,7 @@ export const getAllPlacesData = async (req, res, next) => {
 
     let getData
     try {
-        getData = await historicMP_Model.find()
+        getData = await entertainmentMPmodel.find()
         console.log({
             message: "data is found!",
             data: getData
@@ -277,7 +276,6 @@ export const getAllPlacesData = async (req, res, next) => {
     })
 }
 
-// this API is for either single or bulk deletion
 export const deletePlace = async (req, res, next) => {
     console.log("\nSTATIC DELETE HISTORIC PLACE API\n")
     const { name } = req.body
@@ -285,7 +283,7 @@ export const deletePlace = async (req, res, next) => {
     let deleteData
     if (typeof (name) === 'string') {
         console.log({ name_type: typeof (name) })
-        const getData = await historicMP_Model.findOne({ name })
+        const getData = await entertainmentMPmodel.findOne({ name })
         if (!getData) {
             console.log({ message: "place is not found!" })
             return next(new Error("place is not found!", { cause: StatusCodes.BAD_REQUEST }))
@@ -296,7 +294,7 @@ export const deletePlace = async (req, res, next) => {
         }
         console.log({ message: "place is found!", place: getData })
         try {
-            deleteData = await historicMP_Model.deleteOne({ name })
+            deleteData = await entertainmentMPmodel.deleteOne({ name })
             console.log({ message: "place is deleted!" })
         } catch (error) {
             log({
@@ -305,7 +303,7 @@ export const deletePlace = async (req, res, next) => {
             })
             return next(new Error("failed to delete the place!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
         }
-        let imagePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_historicMP}/${getData.customId}`
+        let imagePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_entertainmentMP}/${getData.customId}`
         const deletedImage = await deleteAsset(getData.image.public_id, imagePath)
         if (deletedImage.notFound === true) {
             console.log({ message: "image didn't exist!" })
@@ -315,7 +313,7 @@ export const deletePlace = async (req, res, next) => {
         }
     } else if (Array.isArray(name) === true) {
         console.log({ name_is_array: Array.isArray(name) })
-        const getData = await historicMP_Model.find({
+        const getData = await entertainmentMPmodel.find({
             name: { $in: name }
         }).select('customId image')
         if (!getData.length) {
@@ -328,7 +326,7 @@ export const deletePlace = async (req, res, next) => {
         }
         console.log({ message: "places are found!", places: getData })
         try {
-            deleteData = await historicMP_Model.deleteMany({
+            deleteData = await entertainmentMPmodel.deleteMany({
                 name: { $in: name }
             })
             console.log({ message: "places are deleted!" })
@@ -341,7 +339,7 @@ export const deletePlace = async (req, res, next) => {
         }
         let imagePaths = [], public_ids = []
         for (const place of getData) {
-            imagePaths.push(`${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_historicMP}/${place.customId}`)
+            imagePaths.push(`${process.env.PROJECT_UPLOADS_FOLDER}/${cloudMedia_subFolders.static_entertainmentMP}/${place.customId}`)
             public_ids.push(place.image.public_id)
         }
         try {

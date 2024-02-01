@@ -11,8 +11,8 @@ const schema = new Schema({
     type: {
         type: String, // historical monument
         required: true,
-        enum: ['monument', 'islamic'],
-        default: 'monument'
+        enum: ['cinema', 'restaurant', 'museum', 'bazar', 'medical'],
+        default: 'restaurant'
     },
     location: { // the location is not required untill later address understanding resources!
         longitude: {
@@ -35,4 +35,4 @@ const schema = new Schema({
     customId: String
 })
 
-export const historicMP_Model = model('historicMP_place', schema)
+export const entertainmentMPmodel = model('entertainmentMP_place', schema)

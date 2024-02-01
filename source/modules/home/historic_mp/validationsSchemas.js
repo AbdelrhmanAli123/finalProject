@@ -1,5 +1,5 @@
 import joi from 'joi'
-import { generalFields } from '../../middlewares/joiValidation.js'
+import { generalFields } from '../../../middlewares/joiValidation.js'
 
 export const addPlaceSchema = {
     body: joi.object({
