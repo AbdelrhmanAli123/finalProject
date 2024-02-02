@@ -23,16 +23,18 @@ export const validationCoreFunction = (schema) => {
     const reqElements = ['body', 'params', 'query', 'headers', 'file', 'files'] // known parts of the request object (they are also objects)
     return async (req, res, next) => {
         const validationErrors = []
+        const validationErrorsMessages = []
         for (const key of reqElements) {
             if (schema[key]) {
                 const validation = await schema[key].validate(req[key], { abortEarly: false })
                 if (validation.error) {
                     validationErrors.push(validation.error.details)
+                    validationErrorsMessages.push(validation.error.message)
                 }
             }
         }
         if (validationErrors.length) {
-            console.log({ validation_errors: validationErrors })
+            console.log({ validation_errors: validationErrors, validation_messages: validationErrorsMessages })
             // return res.status(400).json({
             //     message: "validation error(s)!",
             //     Errors: validationErrors
