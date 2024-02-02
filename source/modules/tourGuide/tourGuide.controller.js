@@ -937,7 +937,7 @@ export const TG_updateProfile = async (req, res, next) => {
                 message: "whatsapp contact is found!",
                 found_whatsapp: contactInfo.whatsapp
             })
-            getUser.contact_info.whatsApp = contactInfo.whatsapp
+            getUser.contact_info.whatsapp = contactInfo.whatsapp // EDIT THE getUser whatsApp -> whatsApp
             console.log({ message: "whatsapp contact updated!" })
         }
 

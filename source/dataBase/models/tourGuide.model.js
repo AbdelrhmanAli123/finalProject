@@ -115,7 +115,7 @@ const schema = new Schema({
         default: systemRoles.tourGuide
     },
     contact_info: { // in edit profile not sign up
-        whatsApp: {
+        whatsapp: { // EDIT -> whatsapp
             type: String
         },
         facebook: {
