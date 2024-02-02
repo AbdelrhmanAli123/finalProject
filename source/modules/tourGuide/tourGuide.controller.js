@@ -6,14 +6,12 @@ import {
 
 // mininstryID -> direct to datat base
 // syndicateID -> OCR first
-// profile picture -> direct to datat base
+// profile picture -> direct to data base
 
 // for tourist sign up :
 const nanoid = customAlphabet('asdfghjkl123456789_#$%!', 5)
 // for password reset :
 const nanoid2 = customAlphabet('1234567890', 6)
-
-// TODO : MAKE cv optional
 
 export const TG_signUp = async (req, res, next) => {
     console.log("\nTOUR GUIDE SIGNUP\n")
