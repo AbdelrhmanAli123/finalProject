@@ -226,10 +226,18 @@ export const getPlaceData = async (req, res, next) => {
 // deprecated
 export const getAllPlaces = async (req, res, next) => {
     console.log("\nSTATIC GET ALL HISTORIC PLACES API\n")
+    const { type } = req.body
+
+    const allowedTypes = ['cinema', 'restaurant', 'museum', 'bazar', 'medical']
+    if (!allowedTypes.includes(type)) {
+        console.log({ user_error_message: "the user entered a wrong type" })
+        return next(new Error(`the user must enter one of the following : 'cinema', 'restaurant', 'museum', 'bazar', 'medical' \n 
+        the entered value was : ${type}`))
+    }
 
     let getData
     try {
-        getData = await entertainmentMPmodel.find().select('name image.secure_url')
+        getData = await entertainmentMPmodel.find({ type: type }).select('name image.secure_url')
         console.log({
             message: "data is found!",
             data: getData
@@ -252,10 +260,18 @@ export const getAllPlaces = async (req, res, next) => {
 
 export const getAllPlacesData = async (req, res, next) => {
     console.log("\nSTATIC GET ALL HISTORIC PLACES API\n")
+    const { type } = req.body
+
+    const allowedTypes = ['cinema', 'restaurant', 'museum', 'bazar', 'medical']
+    if (!allowedTypes.includes(type)) {
+        console.log({ user_error_message: "the user entered a wrong type" })
+        return next(new Error(`the user must enter one of the following : 'cinema', 'restaurant', 'museum', 'bazar', 'medical' \n 
+        the entered value was : ${type}`))
+    }
 
     let getData
     try {
-        getData = await entertainmentMPmodel.find()
+        getData = await entertainmentMPmodel.find({ type: type })
         console.log({
             message: "data is found!",
             data: getData

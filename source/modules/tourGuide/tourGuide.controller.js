@@ -973,6 +973,7 @@ export const TG_updateProfile = async (req, res, next) => {
             })
         }
 
+        // TODO : edit  the image uploading part to allow the update of an existing image
         let newProfilePic, newSyndicatePic, newMinistryPic, newCVfile
         if (req.files['profilePicture']) {
             console.log({
@@ -1061,6 +1062,7 @@ export const TG_updateProfile = async (req, res, next) => {
         //     }
         // }
 
+        // TODO : edit  the image uploading part to allow the update of an existing image
         if (req.files['CV']) {
             console.log({
                 message: "CV file is found!",

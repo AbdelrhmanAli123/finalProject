@@ -3,7 +3,7 @@ import historic_mp_router from './historic_mp/routes.js'
 import entertainment_mp_router from './entertainment_mp/routes.js'
 
 const router = Router()
-
+// /home/tourGuide
 router.use('/historic', historic_mp_router)
 router.use('/entertainment', entertainment_mp_router)
 
