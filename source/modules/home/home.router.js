@@ -1,10 +1,11 @@
 import { Router } from 'express'
-import historic_mp_router from './historic_mp/routes.js'
-import entertainment_mp_router from './entertainment_mp/routes.js'
+
+import touristHomeRouter from './tourist/touristHome.router.js'
+import tourGuideHomeRouter from './tourGuide/tourGuideHome.router.js'
 
 const router = Router()
-// /home/tourGuide
-router.use('/historic', historic_mp_router)
-router.use('/entertainment', entertainment_mp_router)
+
+router.use('/tourist', touristHomeRouter)
+router.use('/tourGuide', tourGuideHomeRouter)
 
 export default router

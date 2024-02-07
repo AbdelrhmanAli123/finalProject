@@ -8,7 +8,6 @@ const touristSchema = new Schema({
     userName: {
         type: String,
         required: true,
-        unique: true,
         trim: true
     },
     slug: {
@@ -37,7 +36,6 @@ const touristSchema = new Schema({
     },
     language: {
         type: String,
-        enum: languages,
         default: languagesCodes.eng
     },
     role: {
@@ -92,10 +90,14 @@ const touristSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'TourGuideTrip'
     }],
-    favouritePlaces: [{
+    favouriteHistoricPlaces: [{
         type: Schema.Types.ObjectId,
         ref: 'historicMP_place'
-    }]
+    }],
+    favouriteEntertainmentPlaces: [{
+        type: Schema.Types.ObjectId,
+        ref: 'entertainmentMP_place'
+    }],
     // address: { (real time -> socket.io)
     // }
     // refreshCounter : {

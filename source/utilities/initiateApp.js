@@ -29,10 +29,7 @@ const initiateApp = (app, express) => {
     //     })
     // })
 
-    app.use('/tourist', routers.touristRouter)
-    app.use('/tourGuide', routers.tourGuideRouter)
     app.use('/auth', routers.authRouter)
-    app.use('/trip', routers.tourGuideTripRouter)
     app.use('/home', routers.homeRouter)
 
     app.all('*', (req, res, next) => {

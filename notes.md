@@ -45,6 +45,12 @@
 }
 ```
 
+4. use this code to remove a single element from an array , always remember to assign the result back to the array itself :
+
+```js
+  req.authUser.createdTrips = req.authUser.createdTrips.filter(public_id => public_id.toString() !== trip_id)
+```
+
 4. use this method to filter an array instead of using a for loop manually : `note : filter takes a callback function like this : filter((element) => {logic})`
   `what ever satisfies the filter callback's logic or condition will stay in the array and what doesn't will be removed from it`
 

@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose"
 import { systemRoles } from "../../utilities/systemRoles.js"
 import { statuses } from "../../utilities/activityStatuses.js"
+import { TourGuideTripsModel } from './tourGuideTrips.model.js'
 
 
 const schema = new Schema({
@@ -139,6 +140,9 @@ const schema = new Schema({
     timestamps: true
 })
 
+// schema.pre('findOneAndDelete', async function (next) {
+//     const deleteRelatedTrips = await TourGuideTripsModel.deleteMany(this.createdTrips)
+// })
 // generate trips model
 
 // generate trip by the tourguide
