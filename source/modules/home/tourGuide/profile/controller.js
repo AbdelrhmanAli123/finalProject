@@ -268,10 +268,12 @@ export const TG_updateProfile = async (req, res, next) => {
                 console.log({ message: "user has a profile picture and will be updated!" })
                 // delete the previous picture first then upload the new one
                 try {
-                    await cloudinary.api.resource(getUser.profilePicture?.public_id)
-                    console.log({ message: "resource is found!" })
-                    await cloudinary.api.delete_resources_by_prefix(getUser.profilePicture?.public_id)
-                    console.log({ message: "profile picture is deleted!" })
+                    const isFound = await cloudinary.api.resource(getUser.profilePicture?.public_id)
+                    if (isFound !== null) {
+                        console.log({ message: "resource is found!" })
+                        await cloudinary.api.delete_resources_by_prefix(getUser.profilePicture?.public_id)
+                        console.log({ message: "profile picture is deleted!" })
+                    }
                     newProfilePic = await cloudinary.uploader.upload(file.path, { folder: profilePath })
                     console.log({ message: "new profile picture is uploaded!" })
                     getUser.profilePicture.secure_url = newProfilePic.secure_url
@@ -355,10 +357,12 @@ export const TG_updateProfile = async (req, res, next) => {
             if (getUser.CV) {
                 console.log({ message: "user has a CV file and will be updated!" })
                 try {
-                    await cloudinary.api.resource(getUser.CV.public_id)
-                    console.log({ message: "resource is found!" })
-                    await cloudinary.api.delete_resources_by_prefix(getUser.CV.public_id)
-                    console.log({ message: "CV file is deleted!" })
+                    const isFound = await cloudinary.api.resource(getUser.CV.public_id)
+                    if (isFound !== null) {
+                        console.log({ message: "resource is found!" })
+                        await cloudinary.api.delete_resources_by_prefix(getUser.CV.public_id)
+                        console.log({ message: "CV file is deleted!" })
+                    }
                     newCVfile = await cloudinary.uploader.upload(file.path, { folder: CVpath })
                     console.log({ message: "new CV file is uploaded!" })
                     getUser.CV.secure_url = newCVfile.secure_url
