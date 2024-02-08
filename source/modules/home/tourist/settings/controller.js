@@ -365,12 +365,6 @@ export const new_deleteUser = async (req, res, next) => {
 
     console.log("\nAUTH DELETE USER DONE!\n")
     res.status(200).json({
-        message: "user is deleted successfully!",
-        deleted_user_data: {
-            name: deletedUser.userName,
-            email: deletedUser.email,
-            token: deletedUser.token,
-            profilePicture: deletedUser.profilePicture.secure_url
-        }
+        message: "user is deleted successfully!"
     })
 }

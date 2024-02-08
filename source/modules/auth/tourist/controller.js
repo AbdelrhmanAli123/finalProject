@@ -97,8 +97,7 @@ export const TouristSignUp = async (req, res, next) => {
 
     console.log("\nTOURIST SIGN UP IS DONE!\n")
     res.status(StatusCodes.CREATED).json({
-        message: "user added!",
-        user: saveUser
+        message: "user added!"
     })
 }
 
@@ -150,8 +149,7 @@ export const confirmAccount = async (req, res, next) => {
 
     console.log("\nTOURIST ACCOUNT CONFIRMATION IS DONE\n")
     res.status(200).json({
-        message: "confirmation done!",
-        user: getUser
+        message: "confirmation done!"
     })
 }
 
@@ -220,7 +218,12 @@ export const touristLogIn = async (req, res, next) => {
     console.log("\nTOURIST LOGIN IS DONE!\n")
     res.status(200).json({
         message: "login is successfull!",
-        user: updateUser
+        user: {
+            confirmed: updateUser.confirmed,
+            userName: updateUser.userName,
+            email: updateUser.email,
+            token: updateUser.token
+        }
     })
 }
 

@@ -109,10 +109,20 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     await req.authUser.save()
     console.log({ message: "tourGuide has been added this trip creation!" })
 
+    const responseData = {
+        title: newTrip.title,
+        brief: newTrip.brief,
+        ticketPerPerson: newTrip.ticketPerPerson,
+        minimumNumber: newTrip.minimumNumber,
+        // tripDetails: newTrip.tripDetails,
+        tripDetails: tripDaysData,
+        status: newTrip.status,
+        _id: newTrip._id
+    }
     console.log("\nTG GENERATE API DONE!\n")
     res.status(StatusCodes.CREATED).json({
         message: "trip saving is successfull!",
-        trip_created: newTrip
+        trip_created: responseData
     })
 }
 
@@ -413,8 +423,7 @@ export const deleteTrip = async (req, res, next) => {
 
     console.log("\nDELETE TRIP API IS DONE!\n")
     res.status(StatusCodes.OK).json({
-        message: "trip is deleted successfully!",
-        deleted_trip: deletedTrip
+        message: "trip is deleted successfully!"
     })
 }
 
@@ -427,11 +436,20 @@ export const getAllTrips = async (req, res, next) => {
 
     const getTrip = await TourGuideTripsModel.find({
         createdBy: _id // untill here , we get all the trips that the tourGuide made
-    }).populate([
-        {
-            path: 'tripDetails', // we here populate all the tripDetails of each trip
-        }
-    ])
+    })
+        .select(
+            '_id title brief ticketperPerson minimumNumber tripDetails subscribers status image.secure_url'
+        )
+        .populate([
+            {
+                path: 'tripDetails', // we here populate all the tripDetails of each trip
+            },
+            {
+                path: 'subscribers',
+                select: 'userName phoneNumber profilePicture.secure_url -_id'
+            }
+        ])
+        .exec()
     if (getTrip?.errors) {
         console.log({
             user_error_message: "failed to find the trip , either user didn't create that trip or the trip doesn't exist",
@@ -448,5 +466,4 @@ export const getAllTrips = async (req, res, next) => {
         message: "trips are found!",
         trips: getTrip
     })
-
 }

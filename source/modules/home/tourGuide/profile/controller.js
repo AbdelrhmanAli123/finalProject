@@ -392,10 +392,34 @@ export const TG_updateProfile = async (req, res, next) => {
         console.log({ message: "failed to save the user updates" })
     }
 
+    const responseData = {
+        firstName: getUser.firstName,
+        lastName: getUser.lastName,
+        address: getUser.address,
+        birthData: getUser.birthDate,
+        description: getUser.description,
+        phoneNumber: getUser.phoneNumber,
+        contact_info: getUser.contact_info,
+        languages: getUser.languages,
+        status: getUser.status,
+        token: getUser.token,
+        profilePicture: {
+            secure_url: getUser.profilePicture?.secure_url
+        },
+        ministryLiscence: {
+            secure_url: getUser.ministyliscence?.secure_url
+        },
+        syndicateLiscence: {
+            secure_url: getUser.syndicateLiscence?.secure_url
+        },
+        CV: {
+            secure_url: getUser.CV?.secure_url
+        }
+    }
     console.log("\nTOURGUIDE API DONE!\n")
     res.status(200).json({
         message: "user updated successfully!",
-        updated_user: getUser
+        updated_user: responseData
     })
 
 }

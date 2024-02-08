@@ -61,7 +61,9 @@ export const getUserInfo = async (req, res, next) => {
     let getUser
 
     getUser = await touristModel.findById(_id)
-        .select('userName email gender age phoneNumber language profilePicture.secure_url coverPicture.secure_url status confirmed country countryFlag preferences -_id')
+        .select(
+            '-_id userName email gender age phoneNumber language status confirmed country countryFlag preferences profilePicture.secure_url coverPicture.secure_url -profilePicture.public_id -coverPicture.public_id'
+        )
     if (!getUser) {
         console.log({ api_error_message: "user id not found!" })
         return next(new Error('user not found!', { cause: 400 }))
@@ -382,9 +384,27 @@ export const profileSetUp = async (req, res, next) => {
     console.log({ message: "user updates saved!" })
     getUser.__v++
 
+    const responseData = {
+        userName: getUser.userName,
+        phoneNumber: getUser.phoneNumber,
+        gender: getUser.gender,
+        language: getUser.language,
+        status: getUser.status,
+        age: getUser.age,
+        preferences: getUser.preferences,
+        country: getUser.country,
+        countryFlag: getUser.countryFlag,
+        token: getUser.token,
+        profilePicture: {
+            secure_url: getUser.profilePicture?.secure_url
+        },
+        coverPicture: {
+            secure_url: getUser.coverPicture?.secure_url
+        }
+    }
     console.log("\nTOURIST PROFILE SETUP/UPDATE DONE!\n")
     res.status(200).json({
         message: "your profile updating is completed!",
-        user: getUser
+        user: responseData
     })
 }

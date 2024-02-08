@@ -673,6 +673,17 @@ if name == 'main':
         //     }
         //     newDaysIds.push(data._id)
         // }
+
+        // user: {
+        //     firstName: saveUser.firstName,
+        //     lastName: saveUser.lastName,
+        //     token: saveUser.token,
+        //     email: saveUser.email,
+        //     profile_picture: {
+        //         secure_url: saveUser.profilePicture?.secure_url,
+        //         public_id: saveUser.profilePicture?.public_id
+        //     }
+        // }
 ```
 
 ### req.file code (.single())

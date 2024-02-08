@@ -464,17 +464,7 @@ export const TG_signUp = async (req, res, next) => {
 
     console.log("\nTOUR GUIDE SIGN UP IS DONE!\n")
     res.status(StatusCodes.CREATED).json({
-        message: "user added!",
-        user: {
-            firstName: saveUser.firstName,
-            lastName: saveUser.lastName,
-            token: saveUser.token,
-            email: saveUser.email,
-            profile_picture: {
-                secure_url: saveUser.profilePicture?.secure_url,
-                public_id: saveUser.profilePicture?.public_id
-            }
-        }
+        message: "user added!"
     })
 }
 
@@ -526,8 +516,7 @@ export const TG_confirmAccount = async (req, res, next) => {
     console.log("\nTOUR GUIDE CONFRIM ACCOUNT IS DONE!\n")
 
     res.status(200).json({
-        message: "confirmation done!",
-        user: getUser
+        message: "confirmation done!"
     })
 }
 
@@ -599,7 +588,12 @@ export const TG_login = async (req, res, next) => {
     console.log("\nTOUR GUIDE LOGIN IS DONE!\n")
     res.status(200).json({
         message: "login is successfull!",
-        user: updateUser
+        user: {
+            confirmed: updateUser.confirmed,
+            userName: updateUser.firstName,
+            email: updateUser.email,
+            token: updateUser.token
+        }
     })
 }
 
