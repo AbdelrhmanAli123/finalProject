@@ -368,7 +368,7 @@ export const TG_updateProfile = async (req, res, next) => {
                 document_CV_id: getUser.CV?.public_id,
                 type_of_the_CV_id: typeof (getUser.CV?.public_id)
             })
-            if (getUser.CV && typeof (getUser.CV.public_id) !== 'string') {
+            if (getUser.CV && typeof (getUser.CV.public_id) == 'string') {
                 console.log({ message: "user has a CV file and will be updated!" })
                 try {
                     const isFound = await cloudinary.api.resource(getUser.CV.public_id)
