@@ -12,13 +12,6 @@ router.get(
     asyncHandler(profileCont.getUserInfo)
 )
 
-router.post(
-    '/logout',
-    isAuth(profileAPIroles.logout),
-    validationCoreFunction(profileVS.logout),
-    asyncHandler(profileCont.logOut)
-)
-
 router.get(
     '/getAllFavPlaces',
     isAuth(profileAPIroles.getAllFavPlaces),
