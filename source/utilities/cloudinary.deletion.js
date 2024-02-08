@@ -22,6 +22,7 @@ export const deleteAsset = async (public_id, folderPath) => {
         } else if (isFound == null) {
             signs.notFound = true
         }
+        console.log({ message: "about to delete the folder" })
         await cloudinary.api.delete_folder(folderPath)
         console.log({ message: "asset folder is deleted" })
         signs.deleted = true
