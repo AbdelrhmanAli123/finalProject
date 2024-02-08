@@ -348,6 +348,7 @@ export const deleteTrip = async (req, res, next) => {
         trip: getTrip
     })
 
+    let tripImage = getTrip.image
     // delete the associated tripDays , the image then the trip itself
     let deletedTrip
     try { // TODO : ADD SOFT DELETE if what's after this has failed , you must retrieve this document -> solved by soft delete
@@ -394,20 +395,24 @@ export const deleteTrip = async (req, res, next) => {
 
     let trip_publicId = getTrip.image.public_id
     let trip_path = `${process.env.PROJECT_UPLOADS_FOLDER}/trips/${getTrip.customId}`
-    const deleteImage = await deleteAsset(trip_publicId, trip_path)
-    console.log({ deletion_return: deleteImage })
-    if (deleteImage?.notFound === true) { // NOTE : always handle this condition first because there might be cases where the return has both but never notFound only to apply the condition
-        console.log({
-            api_error_message: "image didn't exist!"
-        })
+    // TODO : check if the trip has an image first: 
+    if (tripImage && typeof (tripImage.public_id) == 'string') {
+        const deleteImage = await deleteAsset(trip_publicId, trip_path)
+        console.log({ deletion_return: deleteImage })
+        if (deleteImage?.notFound === true) { // NOTE : always handle this condition first because there might be cases where the return has both but never notFound only to apply the condition
+            console.log({
+                api_error_message: "image didn't exist!"
+            })
+        }
+        else if (deleteImage?.deleted === false) {
+            console.log({
+                api_error_message: "failed to delete the image , requires manual deletion!"
+            })
+            return next(new Error('failed to delete the image , requires manual deletion!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+        }
+        console.log({ message: "trip image is deleted!" })
     }
-    else if (deleteImage?.deleted === false) {
-        console.log({
-            api_error_message: "failed to delete the image , requires manual deletion!"
-        })
-        return next(new Error('failed to delete the image , requires manual deletion!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
-    }
-    console.log({ message: "trip image is deleted!" })
+    else { console.log({ message: "trip had no image!" }) }
 
     console.log("\nDELETE TRIP API IS DONE!\n")
     res.status(StatusCodes.OK).json({
