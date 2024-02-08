@@ -264,6 +264,11 @@ export const TG_updateProfile = async (req, res, next) => {
             })
             const profilePath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/profile_picture`
             const file = req.files['profilePicture'][0]
+            console.log({
+                document_profile_picture: getUser.profilePicture,
+                document_profile_picture_id: getUser.profilePicture.public_id,
+                type_of_the_picture_id: typeof (getUser.profilePicture?.public_id)
+            })
             if (getUser.profilePicture && getUser.profilePicture.public_id !== null) {
                 console.log({ message: "user has a profile picture and will be updated!" })
                 // delete the previous picture first then upload the new one
@@ -358,6 +363,11 @@ export const TG_updateProfile = async (req, res, next) => {
             })
             const file = req.files['CV'][0]
             const CVpath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/CV`
+            console.log({
+                document_CV: getUser.CV,
+                document_CV_id: getUser.CV?.public_id,
+                type_of_the_CV_id: typeof (getUser.CV?.public_id)
+            })
             if (getUser.CV && getUser.CV.public_id !== null) {
                 console.log({ message: "user has a CV file and will be updated!" })
                 try {
