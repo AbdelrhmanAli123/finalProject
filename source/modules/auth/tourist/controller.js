@@ -219,10 +219,10 @@ export const touristLogIn = async (req, res, next) => {
     res.status(200).json({
         message: "login is successfull!",
         user: {
-            confirmed: updateUser.confirmed,
             userName: updateUser.userName,
             email: updateUser.email,
-            token: updateUser.token
+            token: updateUser.token,
+            confirmed: updateUser.confirmed
         }
     })
 }
