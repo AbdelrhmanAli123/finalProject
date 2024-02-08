@@ -572,7 +572,7 @@ export const TG_login = async (req, res, next) => {
     })
 
     const updateUser = await tourGuideModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true })
-        .select("firstName token email confirmed -_id")
+        .select("firstName lastName token email confirmed -_id")
     console.log({ user_updating_errors: updateUser?.errors })
     if (!updateUser) {
         console.log({
