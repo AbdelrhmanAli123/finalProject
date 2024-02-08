@@ -270,7 +270,7 @@ export const TG_updateProfile = async (req, res, next) => {
                 try {
                     const isFound = await cloudinary.api.resource(getUser.profilePicture?.public_id)
                     if (isFound !== null) {
-                        console.log({ message: "resource is found!" })
+                        console.log({ message: "resource is found!", found_asset: isFound })
                         await cloudinary.api.delete_resources_by_prefix(getUser.profilePicture?.public_id)
                         console.log({ message: "profile picture is deleted!" })
                     }
@@ -307,10 +307,12 @@ export const TG_updateProfile = async (req, res, next) => {
         //     const file = req.files['ministryID'][0]
         //     console.log({ message: "user has a ministry image and will be updated!" })
         //     try {
-        //         await cloudinary.api.resource(getUser.ministyliscence.public_id)
-        //         console.log({ message: "resource is found!" })
+        //         const isFound = await cloudinary.api.resource(getUser.ministyliscence.public_id)
+        //         if(isFound!==null) {
+        //         console.log({ message: "resource is found!" , found_asset:isFound })
         //         await cloudinary.api.delete_resources_by_prefix(getUser.ministyliscence.public_id)
         //         console.log({ message: "ministry image is deleted!" })
+        //         }
         //         newMinistryPic = await cloudinary.uploader.upload(file.path, { folder: ministryPath })
         //         console.log({ message: "new ministry image is uploaded!" })
         //         getUser.ministyliscence.secure_url = newMinistryPic.secure_url
@@ -331,10 +333,12 @@ export const TG_updateProfile = async (req, res, next) => {
         //     const file = req.files["syndicateID"][0]
         //     const syndicatePath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/syndicate_liscence`
         //     try {
-        //         await cloudinary.api.resource(getUser.syndicateLiscence.public_id)
-        //         console.log({ message: "resource is found!" })
+        //         const isFound = await cloudinary.api.resource(getUser.syndicateLiscence.public_id)
+        //         if(isFound!==null) {
+        //         console.log({ message: "resource is found!" , found_asset:isFound })
         //         await cloudinary.api.delete_resources_by_prefix(getUser.syndicateLiscence.public_id)
         //         console.log({ message: "syndicate image is deleted!" })
+        //         }
         //         newSyndicatePic = await cloudinary.uploader.upload(file.path, { folder: syndicatePath })
         //         console.log({ message: "new ministry image is uploaded!" })
         //         getUser.syndicateLiscence.secure_url = newSyndicatePic.secure_url
@@ -359,7 +363,7 @@ export const TG_updateProfile = async (req, res, next) => {
                 try {
                     const isFound = await cloudinary.api.resource(getUser.CV.public_id)
                     if (isFound !== null) {
-                        console.log({ message: "resource is found!" })
+                        console.log({ message: "resource is found!", found_asset: isFound })
                         await cloudinary.api.delete_resources_by_prefix(getUser.CV.public_id)
                         console.log({ message: "CV file is deleted!" })
                     }
