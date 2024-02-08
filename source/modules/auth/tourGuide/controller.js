@@ -588,12 +588,7 @@ export const TG_login = async (req, res, next) => {
     console.log("\nTOUR GUIDE LOGIN IS DONE!\n")
     res.status(200).json({
         message: "login is successfull!",
-        user: {
-            confirmed: updateUser.confirmed,
-            userName: updateUser.firstName,
-            email: updateUser.email,
-            token: updateUser.token
-        }
+        user: updateUser
     })
 }
 
