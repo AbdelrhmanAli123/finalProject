@@ -396,12 +396,12 @@ export const deleteTrip = async (req, res, next) => {
     let trip_path = `${process.env.PROJECT_UPLOADS_FOLDER}/trips/${getTrip.customId}`
     const deleteImage = await deleteAsset(trip_publicId, trip_path)
     console.log({ deletion_return: deleteImage })
-    if (deleteImage.notFound === true) { // NOTE : always handle this condition first because there might be cases where the return has both but never notFound only to apply the condition
+    if (deleteImage?.notFound === true) { // NOTE : always handle this condition first because there might be cases where the return has both but never notFound only to apply the condition
         console.log({
             api_error_message: "image didn't exist!"
         })
     }
-    else if (deleteImage.deleted === false) {
+    else if (deleteImage?.deleted === false) {
         console.log({
             api_error_message: "failed to delete the image , requires manual deletion!"
         })
