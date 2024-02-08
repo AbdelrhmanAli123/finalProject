@@ -14,10 +14,14 @@ export const deleteAsset = async (public_id, folderPath) => {
         } catch (error) {
             signs.notFound = true
         }
-        await cloudinary.api.delete_folder(folderPath)
-        console.log({ message: "asset folder is deleted" })
-        signs.deleted = true
-        return signs
+        try {
+            await cloudinary.api.delete_folder(folderPath)
+            console.log({ message: "asset folder is deleted" })
+            signs.deleted = true
+            return signs
+        } catch (error) {
+            console.log({ error })
+        }
     } catch (error) {
         console.log({ message: "failed to delete the asset", error: error })
         signs.deleted = false
