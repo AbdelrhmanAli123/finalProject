@@ -109,20 +109,9 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     await req.authUser.save()
     console.log({ message: "tourGuide has been added this trip creation!" })
 
-    const responseData = {
-        title: newTrip.title,
-        brief: newTrip.brief,
-        ticketPerPerson: newTrip.ticketPerPerson,
-        minimumNumber: newTrip.minimumNumber,
-        // tripDetails: newTrip.tripDetails,
-        tripDetails: tripDaysData,
-        status: newTrip.status,
-        _id: newTrip._id
-    }
     console.log("\nTG GENERATE API DONE!\n")
     res.status(StatusCodes.CREATED).json({
-        message: "trip saving is successfull!",
-        trip_created: responseData
+        message: "trip saving is successfull!"
     })
 }
 
@@ -332,8 +321,7 @@ export const editTrip = async (req, res, next) => {
 
     console.log("\nEDIT TRIP API DONE\n")
     res.status(StatusCodes.OK).json({
-        message: "trip editing is successfull!",
-        editedTrip: getTrip
+        message: "trip editing is successfull!"
     })
 }
 
