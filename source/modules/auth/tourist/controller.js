@@ -202,7 +202,7 @@ export const touristLogIn = async (req, res, next) => {
         message: "user token is generated!"
     })
 
-    const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true }).select('userName email token confirmed')
+    const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true }).select('userName email token confirmed -_id')
     console.log({ user_updating_errors: updateUser?.errors })
     if (!updateUser) {
         console.log({
