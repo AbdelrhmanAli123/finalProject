@@ -6,12 +6,20 @@ export const deleteAsset = async (public_id, folderPath) => {
         notFound: false
     }
     try {
-        try {
-            await cloudinary.api.resource(public_id)
-            console.log({ message: "asset is found!" })
+        // try {
+        //     await cloudinary.api.resource(public_id)
+        //     console.log({ message: "asset is found!" })
+        //     await cloudinary.api.delete_resources_by_prefix(public_id)
+        //     console.log({ message: "asset is deleted" })
+        // } catch (error) {
+        //     signs.notFound = true
+        // }
+        const isFound = await cloudinary.api.resource(public_id)
+        if (isFound !== null) {
+            console.log({ message: "asset is found", found_asset: isFound })
             await cloudinary.api.delete_resources_by_prefix(public_id)
             console.log({ message: "asset is deleted" })
-        } catch (error) {
+        } else if (isFound == null) {
             signs.notFound = true
         }
         await cloudinary.api.delete_folder(folderPath)
