@@ -269,7 +269,7 @@ export const TG_updateProfile = async (req, res, next) => {
                 document_profile_picture_id: getUser.profilePicture.public_id,
                 type_of_the_picture_id: typeof (getUser.profilePicture?.public_id)
             })
-            if (getUser.profilePicture && getUser.profilePicture.public_id !== null) {
+            if (getUser.profilePicture && typeof (getUser.profilePicture.public_id) == 'string') {
                 console.log({ message: "user has a profile picture and will be updated!" })
                 // delete the previous picture first then upload the new one
                 try {
@@ -368,7 +368,7 @@ export const TG_updateProfile = async (req, res, next) => {
                 document_CV_id: getUser.CV?.public_id,
                 type_of_the_CV_id: typeof (getUser.CV?.public_id)
             })
-            if (getUser.CV && getUser.CV.public_id !== null) {
+            if (getUser.CV && typeof (getUser.CV.public_id) !== 'string') {
                 console.log({ message: "user has a CV file and will be updated!" })
                 try {
                     const isFound = await cloudinary.api.resource(getUser.CV.public_id)
