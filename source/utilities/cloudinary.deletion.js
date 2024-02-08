@@ -6,23 +6,14 @@ export const deleteAsset = async (public_id, folderPath) => {
         notFound: false
     }
     try {
-        // try {
-        //     await cloudinary.api.resource(public_id)
-        //     console.log({ message: "asset is found!" })
-        //     await cloudinary.api.delete_resources_by_prefix(public_id)
-        //     console.log({ message: "asset is deleted" })
-        // } catch (error) {
-        //     signs.notFound = true
-        // }
-        const isFound = await cloudinary.api.resource(public_id)
-        if (isFound !== null) {
-            console.log({ message: "asset is found", found_asset: isFound })
-            await cloudinary.api.delete_resources_by_prefix(public_id)
+        try {
+            await cloudinary.api.resource(public_id)
+            console.log({ message: "asset is found!" })
+            await cloudinary.uploader.destroy(public_id)
             console.log({ message: "asset is deleted" })
-        } else if (isFound == null) {
+        } catch (error) {
             signs.notFound = true
         }
-        console.log({ message: "about to delete the folder" })
         await cloudinary.api.delete_folder(folderPath)
         console.log({ message: "asset folder is deleted" })
         signs.deleted = true
@@ -50,7 +41,7 @@ export const restoreAsset = async (public_id, folderPath) => {
     try {
         await cloudinary.api.create_folder(folderPath, { resource_type: 'raw' })
         console.log({ message: "folder is recreated!" })
-        await cloudinary.api.restore(public_id)
+        await cloudinary.api.restore([public_id])
         console.log({ message: "asset is restored" })
         return true
     } catch (error) {
@@ -62,6 +53,6 @@ export const restoreAsset = async (public_id, folderPath) => {
 export const restoreAssetPromise = async (public_id, folderPath) => {
     return new Promise((resolve, reject) => {
         cloudinary.api.create_folder(folderPath, { resource_type: 'raw' })
-        cloudinary.api.restore(public_id)
+        cloudinary.api.restore([public_id])
     })
 }
