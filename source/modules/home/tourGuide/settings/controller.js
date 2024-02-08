@@ -142,7 +142,7 @@ export const new_deleteUser = async (req, res, next) => {
     let coverPictureId = getUser.coverPicture?.public_id
 
 
-    if (getUser.profilePicture?.public_id !== null) {
+    if (getUser.profilePicture && typeof (getUser.profilePicture?.public_id) == 'string') {
         //profile picture deleting
         const profileDeleting = await deleteAsset(profilePublicId, profilePath)
         if (profileDeleting.notFound == true) {
@@ -169,7 +169,7 @@ export const new_deleteUser = async (req, res, next) => {
         console.log({ message: "profile picture is deleted successfully!" })
     }
 
-    if (getUser.syndicateLiscence?.public_id !== null) {
+    if (getUser.syndicateLiscence && typeof (getUser.syndicateLiscence?.public_id) == 'string') {
         // syndicate picture deleting
         const syndicateDeleting = await deleteAsset(syndicatePubliceId, syndicatepath)
         if (syndicateDeleting.notFound == true) {
@@ -196,7 +196,7 @@ export const new_deleteUser = async (req, res, next) => {
         console.log({ message: "syndicate picture is deleted successfully!" })
     }
 
-    if (getUser.ministryLiscence?.public_id !== null) {
+    if (getUser.ministryLiscence && typeof (getUser.ministryLiscence?.public_id) == 'string') {
         // ministry picture deleting
         const ministryDeleting = await deleteAsset(ministryPublicId, ministryPath)
         if (ministryDeleting.notFound == true) {
@@ -223,7 +223,7 @@ export const new_deleteUser = async (req, res, next) => {
         console.log({ message: "ministry image is deleted successfully!" })
     }
 
-    if (getUser.CV.public_id !== null) {
+    if (getUser.CV && typeof (getUser.CV.public_id) == 'string') {
         // CV picture deleting
         const CVdeleting = await deleteAsset(CVpublicId, CVpath)
         if (CVdeleting.notFound == true) {
