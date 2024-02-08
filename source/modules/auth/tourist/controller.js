@@ -202,7 +202,7 @@ export const touristLogIn = async (req, res, next) => {
         message: "user token is generated!"
     })
 
-    const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true }).select('userName email token')
+    const updateUser = await touristModel.findOneAndUpdate({ email }, { status: statuses.online, token }, { new: true }).select('userName email token confirmed')
     console.log({ user_updating_errors: updateUser?.errors })
     if (!updateUser) {
         console.log({
@@ -218,12 +218,7 @@ export const touristLogIn = async (req, res, next) => {
     console.log("\nTOURIST LOGIN IS DONE!\n")
     res.status(200).json({
         message: "login is successfull!",
-        user: {
-            userName: updateUser.userName,
-            email: updateUser.email,
-            token: updateUser.token,
-            confirmed: updateUser.confirmed
-        }
+        user: updateUser
     })
 }
 
