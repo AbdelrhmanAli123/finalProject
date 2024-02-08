@@ -141,7 +141,6 @@ export const new_deleteUser = async (req, res, next) => {
     let profilePublicId = getUser.profilePicture?.public_id
     let coverPictureId = getUser.coverPicture?.public_id
 
-
     if (getUser.profilePicture && typeof (getUser.profilePicture?.public_id) == 'string') {
         //profile picture deleting
         const profileDeleting = await deleteAsset(profilePublicId, profilePath)
