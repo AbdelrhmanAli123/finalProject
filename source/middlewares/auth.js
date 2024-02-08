@@ -109,32 +109,32 @@ export const isAuth = (roles = []) => {
 
                     // TODO : add the roles here as well (tourist and tourguide)
 
-                    // const user = await touristModel.findOne({
-                    //     token: splittedToken
-                    // })
-                    // // if the token sent is wrong along with being expired :
-                    // if (!user) {
-                    //     return next(new Error('invalid token', { cause: 400 }))
-                    // }
-                    // // generate a new token
-                    // const newToken = generateToken({
-                    //     signature: process.env.LOGIN_SECRET_KEY,
-                    //     expiresIn: '1d',
-                    //     payload: {
-                    //         email: user.email,
-                    //         _id: user._id,
-                    //         role: user.role
-                    //     }
-                    // })
-                    // console.log({ User_new_token: newToken })
-                    // user.token = newToken
-                    // await user.save()
-                    // req.authUser = user
-                    // console.log("\nTOKEN REFRESHING IS SUCCESSFULL\n")
-                    // return res.status(401).json({
-                    //     message: "token refreshed!",
-                    //     newToken
-                    // })
+                    const user = await touristModel.findOne({
+                        token: splittedToken
+                    })
+                    // if the token sent is wrong along with being expired :
+                    if (!user) {
+                        return next(new Error('invalid token', { cause: 400 }))
+                    }
+                    // generate a new token
+                    const newToken = generateToken({
+                        signature: process.env.LOGIN_SECRET_KEY,
+                        expiresIn: '1d',
+                        payload: {
+                            email: user.email,
+                            _id: user._id,
+                            role: user.role
+                        }
+                    })
+                    console.log({ User_new_token: newToken })
+                    user.token = newToken
+                    await user.save()
+                    req.authUser = user
+                    console.log("\nTOKEN REFRESHING IS SUCCESSFULL\n")
+                    return res.status(401).json({
+                        message: "token refreshed!",
+                        newToken
+                    })
                 }
             }
         } catch (error) {

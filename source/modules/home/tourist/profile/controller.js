@@ -62,7 +62,7 @@ export const getUserInfo = async (req, res, next) => {
 
     getUser = await touristModel.findById(_id)
         .select(
-            '-_id userName email gender age phoneNumber language status confirmed country countryFlag preferences profilePicture.secure_url coverPicture.secure_url'
+            '-_id userName gender age phoneNumber language status confirmed country countryFlag preferences profilePicture.secure_url coverPicture.secure_url'
         )
     if (!getUser) {
         console.log({ api_error_message: "user id not found!" })
