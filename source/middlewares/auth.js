@@ -105,8 +105,9 @@ export const isAuth = (roles = []) => {
                         token_error_message: "token is expired!",
                         token_error: error
                     })
-                    return next(new Error('token is expired , please sign in again!', { cause: 400 }))
+                    // return next(new Error('token is expired , please sign in again!', { cause: 400 }))
 
+                    // TODO : 
                     // TODO : add the roles here as well (tourist and tourguide)
 
                     const user = await touristModel.findOne({
