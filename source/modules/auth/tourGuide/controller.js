@@ -426,22 +426,21 @@ export const TG_signUp = async (req, res, next) => {
         message: "tour guide saved in data base!"
     })
 
-    const token = generateToken({
-        expiresIn: '3w',
-        signature: process.env.LOGIN_SECRET_KEY,
-        payload: {
-            _id: saveUser._id,
-            email: saveUser.email,
-            userName: saveUser.userName,
-            role: systemRoles.tourGuide
-        }
-    })
-    console.log({ message: "user token generated!" })
+    // const token = generateToken({
+    //     expiresIn: '1d',
+    //     signature: process.env.LOGIN_SECRET_KEY,
+    //     payload: {
+    //         email: saveUser.email,
+    //         userName: saveUser.userName,
+    //         role: systemRoles.tourGuide
+    //     }
+    // })
+    // console.log({ message: "user token generated!" })
 
-    saveUser.token = token
-    saveUser.status = statuses.online
-    await saveUser.save()
-    console.log({ message: "user saved and is online!" })
+    // saveUser.token = token
+    // saveUser.status = statuses.online
+    // await saveUser.save()
+    // console.log({ message: "user saved and is online!" })
 
     const confirmToken = generateToken({ payload: { email }, signature: process.env.CONFIRM_LINK_SECRETE_KEY, expiresIn: '1h' })
     console.log({ message: "account confirmation token generated!" })
@@ -551,10 +550,9 @@ export const TG_login = async (req, res, next) => {
     }
 
     const token = generateToken({
-        expiresIn: '3w',
+        expiresIn: '1d',
         signature: process.env.LOGIN_SECRET_KEY,
         payload: {
-            _id: getUser._id,
             email: getUser.email,
             userName: getUser.userName,
             role: systemRoles.tourGuide

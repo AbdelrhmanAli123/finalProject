@@ -32,7 +32,7 @@ export const isAuth = (roles = []) => {
                 if (!decodedToken) {
                     return next(new Error('invalid token', { cause: 400 }))
                 }
-                if (!decodedToken._id) {
+                if (!decodedToken.email) {
                     return next(new Error('critical token data is missing!', { cause: 400 }))
                 }
                 console.log("\nAUTHENTICATION IS SUCCESSFULL\n")
@@ -41,7 +41,6 @@ export const isAuth = (roles = []) => {
                 if (decodedToken.role === systemRoles.tourist) {
                     console.log({ message: "tourist authorization" })
                     getUser = await touristModel.findOne({
-                        _id: decodedToken._id,
                         email: decodedToken.email
                     })
                     console.log({ message: "user is fetched!", user: getUser })
@@ -67,7 +66,6 @@ export const isAuth = (roles = []) => {
                 else if (decodedToken.role === systemRoles.tourGuide) {
                     console.log({ message: "tourGuide authorization" })
                     getUser = await tourGuideModel.findOne({
-                        _id: decodedToken._id,
                         email: decodedToken.email
                     })
                     console.log({ message: "user is fetched!", user: getUser })
@@ -107,15 +105,24 @@ export const isAuth = (roles = []) => {
                     })
                     // return next(new Error('token is expired , please sign in again!', { cause: 400 }))
 
-                    // TODO : 
-                    // TODO : add the roles here as well (tourist and tourguide)
-
-                    const user = await touristModel.findOne({
-                        token: splittedToken
-                    })
-                    // if the token sent is wrong along with being expired :
-                    if (!user) {
-                        return next(new Error('invalid token', { cause: 400 }))
+                    // TODO : debugg
+                    let user
+                    if (decodedToken.role === systemRoles.tourist) {
+                        user = await touristModel.findOne({
+                            token: splittedToken
+                        })
+                        // if the token sent is wrong along with being expired :
+                        if (!user) {
+                            return next(new Error('invalid token', { cause: 400 }))
+                        }
+                    } else if (decodedToken.role === systemRoles.tourGuide) {
+                        user = await tourGuideModel.findOne({
+                            token: splittedToken
+                        })
+                        // if the token sent is wrong along with being expired :
+                        if (!user) {
+                            return next(new Error('invalid token', { cause: 400 }))
+                        }
                     }
                     // generate a new token
                     const newToken = generateToken({
@@ -123,7 +130,6 @@ export const isAuth = (roles = []) => {
                         expiresIn: '1d',
                         payload: {
                             email: user.email,
-                            _id: user._id,
                             role: user.role
                         }
                     })

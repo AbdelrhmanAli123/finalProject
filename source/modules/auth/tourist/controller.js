@@ -61,22 +61,21 @@ export const TouristSignUp = async (req, res, next) => {
         return next(new Error("couldn't save the user in the data base !", { cause: 500 }))
     }
 
-    const token = generateToken({
-        expiresIn: '3w',
-        signature: process.env.LOGIN_SECRET_KEY,
-        payload: {
-            _id: saveUser._id,
-            email: saveUser.email,
-            userName: saveUser.userName,
-            role: systemRoles.tourist
-        }
-    })
-    console.log({ message: "user token generated!" })
+    // const token = generateToken({
+    //     expiresIn: '1d',
+    //     signature: process.env.LOGIN_SECRET_KEY,
+    //     payload: {
+    //         email: saveUser.email,
+    //         userName: saveUser.userName,
+    //         role: systemRoles.tourist
+    //     }
+    // })
+    // console.log({ message: "user token generated!" })
 
-    saveUser.token = token
-    saveUser.status = statuses.online
-    await saveUser.save()
-    console.log({ message: "user saved and is online!" })
+    // saveUser.token = token
+    // saveUser.status = statuses.online
+    // await saveUser.save()
+    // console.log({ message: "user saved!" })
 
     const confirmToken = generateToken({ payload: { email }, signature: process.env.CONFIRM_LINK_SECRETE_KEY, expiresIn: '1h' })
     // `${req.protocol}://${req.headers.host}:${process.env.PORT}/user/confirmEmail/${EmailConfirmToken}`
@@ -183,10 +182,9 @@ export const touristLogIn = async (req, res, next) => {
     }
 
     const token = generateToken({
-        expiresIn: '3w',
+        expiresIn: '1d',
         signature: process.env.LOGIN_SECRET_KEY,
         payload: {
-            _id: getUser._id,
             email: getUser.email,
             userName: getUser.userName,
             role: systemRoles.tourist
