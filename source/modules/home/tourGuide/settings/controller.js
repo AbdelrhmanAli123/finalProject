@@ -369,7 +369,7 @@ export const new_deleteUser = async (req, res, next) => {
         deletedUser: deletedUser
     })
     // emptying the variables
-    coverPictureId = null; profilePublicId = null; CVpublicId = null; syndicatePubliceId = null
+    profilePublicId = null; CVpublicId = null; syndicatePubliceId = null
     ministryPublicId = null; userFolderPath = null; CVpath = null; syndicatepath = null;
     ministryPath = null; coverPath = null; profilePath = null
 
