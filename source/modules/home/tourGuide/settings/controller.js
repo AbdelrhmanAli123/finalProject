@@ -137,82 +137,82 @@ export const new_deleteUser = async (req, res, next) => {
     let CVpublicId = getUser.CV?.public_id // may get an error !
     let profilePublicId = getUser.profilePicture?.public_id
 
-    let error_messages = []
-    console.log({
-        user_profile_picture: getUser.profilePicture,
-        public_id_type: typeof (getUser.profilePicture?.public_id)
-    })
-    if (getUser.profilePicture && typeof (getUser.profilePicture?.public_id) === 'string') {
-        console.log({ message: "user had a profile image and will be deleted!" })
-        try {
-            await cloudinary.uploader.destroy(getUser.profilePicture?.public_id)
-            console.log({ message: "user profile picture is deleted" })
-        } catch (error) {
-            error_messages.push("failed to delete the user profile image")
-            console.log({ message: "failed to delete the user profile image", error })
-        }
-        // try {
-        //     await cloudinary.api.delete_folder(profilePath)
-        //     log({ message: "user picture folder is delted!" })
-        // } catch (error) {
-        //     error_messages.push("failed to delete the user profile folder")
-        //     console.log({ message: "failed to delete the user profile folder", error })
-        // }
-    } else console.log({ message: "user had no profile image!" })
+    // let error_messages = []
+    // console.log({
+    //     user_profile_picture: getUser.profilePicture,
+    //     public_id_type: typeof (getUser.profilePicture?.public_id)
+    // })
+    // if (getUser.profilePicture && typeof (getUser.profilePicture?.public_id) === 'string') {
+    //     console.log({ message: "user had a profile image and will be deleted!" })
+    //     try {
+    //         await cloudinary.uploader.destroy(getUser.profilePicture?.public_id)
+    //         console.log({ message: "user profile picture is deleted" })
+    //     } catch (error) {
+    //         error_messages.push("failed to delete the user profile image")
+    //         console.log({ message: "failed to delete the user profile image", error })
+    //     }
+    //     // try {
+    //     //     await cloudinary.api.delete_folder(profilePath)
+    //     //     log({ message: "user picture folder is delted!" })
+    //     // } catch (error) {
+    //     //     error_messages.push("failed to delete the user profile folder")
+    //     //     console.log({ message: "failed to delete the user profile folder", error })
+    //     // }
+    // } else console.log({ message: "user had no profile image!" })
 
-    if (getUser.syndicateLiscence && typeof (getUser.syndicateLiscence?.public_id) === 'string') {
-        console.log({ message: "user had a syndicate image and will be deleted!" })
-        try {
-            await cloudinary.uploader.destroy(getUser.syndicateLiscence?.public_id)
-            console.log({ message: "user syndicate image is deleted!" })
-        } catch (error) {
-            error_messages.push("failed to delete the user syndicate image")
-            console.log({ message: "failed to delete the user syndicate image", error })
-        }
-        try {
-            await cloudinary.api.delete_folder(syndicatepath)
-            console.log({ message: "user syndicate folder is delted!" })
-        } catch (error) {
-            error_messages.push("failed to delete the syndicate folder")
-            console.log({ message: "failed to delete the syndicate folder", error })
-        }
-    } else console.log({ message: "user had no syndicate image!" })
+    // if (getUser.syndicateLiscence && typeof (getUser.syndicateLiscence?.public_id) === 'string') {
+    //     console.log({ message: "user had a syndicate image and will be deleted!" })
+    //     try {
+    //         await cloudinary.uploader.destroy(getUser.syndicateLiscence?.public_id)
+    //         console.log({ message: "user syndicate image is deleted!" })
+    //     } catch (error) {
+    //         error_messages.push("failed to delete the user syndicate image")
+    //         console.log({ message: "failed to delete the user syndicate image", error })
+    //     }
+    //     try {
+    //         await cloudinary.api.delete_folder(syndicatepath)
+    //         console.log({ message: "user syndicate folder is delted!" })
+    //     } catch (error) {
+    //         error_messages.push("failed to delete the syndicate folder")
+    //         console.log({ message: "failed to delete the syndicate folder", error })
+    //     }
+    // } else console.log({ message: "user had no syndicate image!" })
 
-    if (getUser.ministyliscence && typeof (getUser.ministyliscence?.public_id) === 'string') {
-        console.log({ message: "user had a ministry image and will be deleted!" })
-        try {
-            await cloudinary.uploader.destroy(getUser.ministyliscence?.public_id)
-            console.log({ message: "user ministry image is deleted!" })
-        } catch (error) {
-            error_messages.push("failed to delete the user ministry image")
-            console.log({ message: "failed to delete the user ministry image", error })
-        }
-        try {
-            await cloudinary.api.delete_folder(ministryPath)
-            console.log({ message: "user ministry folder is deleted!" })
-        } catch (error) {
-            error_messages.push("failed to delete the ministry folder")
-            console.log({ message: "failed to delete the ministry folder", error })
-        }
-    } else console.log({ message: "user had no ministry image!" })
+    // if (getUser.ministyliscence && typeof (getUser.ministyliscence?.public_id) === 'string') {
+    //     console.log({ message: "user had a ministry image and will be deleted!" })
+    //     try {
+    //         await cloudinary.uploader.destroy(getUser.ministyliscence?.public_id)
+    //         console.log({ message: "user ministry image is deleted!" })
+    //     } catch (error) {
+    //         error_messages.push("failed to delete the user ministry image")
+    //         console.log({ message: "failed to delete the user ministry image", error })
+    //     }
+    //     try {
+    //         await cloudinary.api.delete_folder(ministryPath)
+    //         console.log({ message: "user ministry folder is deleted!" })
+    //     } catch (error) {
+    //         error_messages.push("failed to delete the ministry folder")
+    //         console.log({ message: "failed to delete the ministry folder", error })
+    //     }
+    // } else console.log({ message: "user had no ministry image!" })
 
-    if (getUser.CV && typeof (getUser.CV?.public_id) === 'string') {
-        console.log({ message: "user had a CV file and will be deleted!" })
-        try {
-            await cloudinary.uploader.destroy(getUser.CV?.public_id)
-            console.log({ message: "user CV file is deleted!" })
-        } catch (error) {
-            error_messages.push("failed to delete the user CV file")
-            console.log({ message: "failed to delete the user CV file", error })
-        }
-        try {
-            await cloudinary.api.delete_folder(CVpath)
-            console.log({ message: "user CV folder is deleted!" })
-        } catch (error) {
-            error_messages.push("failed to delete the CV folder")
-            console.log({ message: "failed to delete the CV folder", error })
-        }
-    } else console.log({ message: "user had no CV" })
+    // if (getUser.CV && typeof (getUser.CV?.public_id) === 'string') {
+    //     console.log({ message: "user had a CV file and will be deleted!" })
+    //     try {
+    //         await cloudinary.uploader.destroy(getUser.CV?.public_id)
+    //         console.log({ message: "user CV file is deleted!" })
+    //     } catch (error) {
+    //         error_messages.push("failed to delete the user CV file")
+    //         console.log({ message: "failed to delete the user CV file", error })
+    //     }
+    //     try {
+    //         await cloudinary.api.delete_folder(CVpath)
+    //         console.log({ message: "user CV folder is deleted!" })
+    //     } catch (error) {
+    //         error_messages.push("failed to delete the CV folder")
+    //         console.log({ message: "failed to delete the CV folder", error })
+    //     }
+    // } else console.log({ message: "user had no CV" })
 
     // if (getUser.profilePicture && typeof (getUser.profilePicture?.public_id) === 'string') {
     //     //profile picture deleting
