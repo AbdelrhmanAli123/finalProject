@@ -182,17 +182,17 @@ export const new_deleteUser = async (req, res, next) => {
         console.log({ message: "user had a ministry image and will be deleted!" })
         try {
             await cloudinary.uploader.destroy(getUser.ministyliscence?.public_id)
-            console.log({ message: "user syndicate image is deleted!" })
+            console.log({ message: "user ministry image is deleted!" })
         } catch (error) {
             error_messages.push("failed to delete the user ministry image")
             console.log({ message: "failed to delete the user ministry image", error })
         }
         try {
             await cloudinary.api.delete_folder(ministryPath)
-            console.log({ message: "user ministry image is deleted!" })
+            console.log({ message: "user ministry folder is deleted!" })
         } catch (error) {
-            error_messages.push("failed to delete the ministry image")
-            console.log({ message: "failed to delete the ministry image", error })
+            error_messages.push("failed to delete the ministry folder")
+            console.log({ message: "failed to delete the ministry folder", error })
         }
     } else console.log({ message: "user had no ministry image!" })
 
@@ -207,10 +207,10 @@ export const new_deleteUser = async (req, res, next) => {
         }
         try {
             await cloudinary.api.delete_folder(CVpath)
-            console.log({ message: "user CV file is deleted!" })
+            console.log({ message: "user CV folder is deleted!" })
         } catch (error) {
-            error_messages.push("failed to delete the CV file")
-            console.log({ message: "failed to delete the CV file", error })
+            error_messages.push("failed to delete the CV folder")
+            console.log({ message: "failed to delete the CV folder", error })
         }
     } else console.log({ message: "user had no CV" })
 
@@ -372,6 +372,6 @@ export const new_deleteUser = async (req, res, next) => {
 
     console.log("\nAUTH DELETE USER DONE!\n")
     res.status(200).json({
-        message: "user is deleted successfully!"
+        message: `user is deleted successfully! , cloudinary errors : ${error_messages}`
     })
 }
