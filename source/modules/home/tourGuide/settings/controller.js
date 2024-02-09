@@ -171,7 +171,7 @@ export const new_deleteUser = async (req, res, next) => {
         }
         try {
             await cloudinary.api.delete_folder(syndicatepath)
-            log({ message: "user syndicate folder is delted!" })
+            console.log({ message: "user syndicate folder is delted!" })
         } catch (error) {
             error_messages.push("failed to delete the syndicate folder")
             console.log({ message: "failed to delete the syndicate folder", error })
