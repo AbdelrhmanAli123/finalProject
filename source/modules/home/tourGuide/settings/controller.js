@@ -123,9 +123,6 @@ export const new_deleteUser = async (req, res, next) => {
     // for both tourists and tour guides
     let profilePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${getUser.role}s/${customId}/profilePicture`
 
-    // tourists only
-    let coverPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
-
     // tour guides only
     let ministryPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/ministry_liscence`
     let syndicatepath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/syndicate_liscence`
@@ -181,10 +178,10 @@ export const new_deleteUser = async (req, res, next) => {
         }
     } else console.log({ message: "user had no syndicate image!" })
 
-    if (getUser.ministryLiscence && typeof (getUser.ministryLiscence?.public_id) === 'string') {
+    if (getUser.ministyliscence && typeof (getUser.ministyliscence?.public_id) === 'string') {
         console.log({ message: "user had a ministry image and will be deleted!" })
         try {
-            await cloudinary.uploader.destroy(getUser.ministryLiscence?.public_id)
+            await cloudinary.uploader.destroy(getUser.ministyliscence?.public_id)
             console.log({ message: "user syndicate image is deleted!" })
         } catch (error) {
             error_messages.push("failed to delete the user ministry image")
@@ -202,14 +199,14 @@ export const new_deleteUser = async (req, res, next) => {
     if (getUser.CV && typeof (getUser.CV?.public_id) === 'string') {
         console.log({ message: "user had a CV file and will be deleted!" })
         try {
-            await cloudinary.uploader.destroy(getUser.ministryLiscence?.public_id)
+            await cloudinary.uploader.destroy(getUser.CV?.public_id)
             console.log({ message: "user CV file is deleted!" })
         } catch (error) {
             error_messages.push("failed to delete the user CV file")
             console.log({ message: "failed to delete the user CV file", error })
         }
         try {
-            await cloudinary.api.delete_folder(ministryPath)
+            await cloudinary.api.delete_folder(CVpath)
             console.log({ message: "user CV file is deleted!" })
         } catch (error) {
             error_messages.push("failed to delete the CV file")
@@ -371,7 +368,7 @@ export const new_deleteUser = async (req, res, next) => {
     // emptying the variables
     profilePublicId = null; CVpublicId = null; syndicatePubliceId = null
     ministryPublicId = null; userFolderPath = null; CVpath = null; syndicatepath = null;
-    ministryPath = null; coverPath = null; profilePath = null
+    ministryPath = null; profilePath = null
 
     console.log("\nAUTH DELETE USER DONE!\n")
     res.status(200).json({
