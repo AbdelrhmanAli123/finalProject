@@ -151,13 +151,13 @@ export const new_deleteUser = async (req, res, next) => {
             error_messages.push("failed to delete the user profile image")
             console.log({ message: "failed to delete the user profile image", error })
         }
-        try {
-            await cloudinary.api.delete_folder(profilePath)
-            log({ message: "user picture folder is delted!" })
-        } catch (error) {
-            error_messages.push("failed to delete the user profile folder")
-            console.log({ message: "failed to delete the user profile folder", error })
-        }
+        // try {
+        //     await cloudinary.api.delete_folder(profilePath)
+        //     log({ message: "user picture folder is delted!" })
+        // } catch (error) {
+        //     error_messages.push("failed to delete the user profile folder")
+        //     console.log({ message: "failed to delete the user profile folder", error })
+        // }
     } else console.log({ message: "user had no profile image!" })
 
     if (getUser.syndicateLiscence && typeof (getUser.syndicateLiscence?.public_id) === 'string') {

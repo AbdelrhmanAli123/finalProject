@@ -103,8 +103,37 @@ export const asyncHandler = (API) => { // API -> api controller
                     });
                     return res.status(400).json({ error: 'Email is required.' });
                 }
+                if (err === 'Invalid login: 454-4.7.0 Cannot authenticate due to temporary system problem. Try again later.') {
+                    console.log({
+                        async_handler_message: "email service failure!",
+                        async_handler_err: err
+                    })
+                }
                 console.log("\nASYNC HANDLER FINISHED!\n")
                 return next(new Error(`API failed to run !\nerror: ${err} \ncause: ${err.message}`, { cause: 500 }))
             })
     }
 }
+
+// unhandled errors
+
+// Error: Invalid login: 454-4.7.0 Cannot authenticate due to temporary system problem. Try again later.
+// 454-4.7.0 For more information, go to
+// 454 4.7.0  https://support.google.com/a/answer/3221692 oj15-20020a056214440f00b0068cbde0af0fsm1170841qvb.16 - gsmtp
+//     at SMTPConnection._formatError (/app/node_modules/nodemailer/lib/smtp-connection/index.js:790:19)
+//     at SMTPConnection._actionAUTHComplete (/app/node_modules/nodemailer/lib/smtp-connection/index.js:1564:34)
+//     at SMTPConnection.<anonymous> (/app/node_modules/nodemailer/lib/smtp-connection/index.js:546:26)
+//     at SMTPConnection._processResponse (/app/node_modules/nodemailer/lib/smtp-connection/index.js:969:20)
+//     at SMTPConnection._onData (/app/node_modules/nodemailer/lib/smtp-connection/index.js:755:14)
+//     at SMTPConnection._onSocketData (/app/node_modules/nodemailer/lib/smtp-connection/index.js:193:44)
+//     at TLSSocket.emit (node:events:519:28)
+//     at addChunk (node:internal/streams/readable:559:12)
+//     at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+//     at Readable.push (node:internal/streams/readable:390:5) {
+//   code: 'EAUTH',
+//   response: '454-4.7.0 Cannot authenticate due to temporary system problem. Try again later.\n' +
+//     '454-4.7.0 For more information, go to\n' +
+//     '454 4.7.0  https://support.google.com/a/answer/3221692 oj15-20020a056214440f00b0068cbde0af0fsm1170841qvb.16 - gsmtp',
+//   responseCode: 454,
+//   command: 'AUTH PLAIN'
+// }
