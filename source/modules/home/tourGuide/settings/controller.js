@@ -137,7 +137,7 @@ export const new_deleteUser = async (req, res, next) => {
     let CVpublicId = getUser.CV?.public_id // may get an error !
     let profilePublicId = getUser.profilePicture?.public_id
 
-    // let error_messages = []
+    let error_messages = []
     // console.log({
     //     user_profile_picture: getUser.profilePicture,
     //     public_id_type: typeof (getUser.profilePicture?.public_id)
