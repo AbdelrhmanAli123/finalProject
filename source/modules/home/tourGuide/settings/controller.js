@@ -333,7 +333,7 @@ export const new_deleteUser = async (req, res, next) => {
     // user folder deleting
     await deleteFolder(userFolderPath)
 
-    // delete associated trips first and their days first
+    // TODO : delete associated trips first and their days first
     // if (getUser.createdTrips.length !== 0) {
     //     let tripsIds = []
     //     for (const trip of getUser.createdTrips) {
