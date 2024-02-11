@@ -140,231 +140,101 @@ export const new_deleteUser = async (req, res, next) => {
     console.log({
         passed_auth_user: getUser
     })
+
     // perparing variables :
     // user custom id :
     const customId = getUser.customId
 
-    // assets paths : 
-    // for both tourists and tour guides
     let profilePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${getUser.role}s/${customId}/profilePicture`
-
-    // tourists only
     let coverPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourists/${customId}/coverPicture`
-
-    // tour guides only
-    let ministryPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/ministry_liscence`
-    let syndicatepath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/syndicate_liscence`
-    let CVpath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/CV`
-
     // user folder path : 
     let userFolderPath = `${process.env.PROJECT_UPLOADS_FOLDER}/${getUser.role}s/${customId}`
 
-    // public ids :
-    let ministryPublicId = getUser.ministyliscence?.public_id // may get an error !
-    let syndicatePubliceId = getUser.syndicateLiscence?.public_id // may get an error !
-    let CVpublicId = getUser.CV?.public_id // may get an error !
     let profilePublicId = getUser.profilePicture?.public_id
     let coverPictureId = getUser.coverPicture?.public_id
 
-    // profile picture deleting
-    const profileDeleting = await deleteAsset(profilePublicId, profilePath)
-    if (profileDeleting.notFound == true) {
-        console.log({
-            message: "resource doesn't exist"
-        })
-    } else if (profileDeleting.deleted == false) {
-        let message
-        console.log({
-            api_error_message: "couldn't delete the profile picture"
-        })
-        const profileRestoring = await restoreAsset(profilePublicId, profilePath)
-        if (profileRestoring == false) {
-            console.log({
-                api_error_message: "failed to restore the profile picture from the cloudinary server"
-            })
-            message = "API failed , profile picture is lost!" // means both deletion and the attempt to restoration failed!
-            return next(new Error(message, { cause: 500 }))
+    let error_messages = []
+    // profile image deleting
+    if (getUser.profilePicture && typeof (getUser.profilePicture?.public_id) === 'string') {
+        console.log({ message: "user had a profile image and will be deleted!" })
+        try {
+            await cloudinary.uploader.destroy(getUser.profilePicture?.public_id)
+            console.log({ message: "user profile picture is deleted" })
+        } catch (error) {
+            error_messages.push("failed to delete the user profile image")
+            console.log({ message: "failed to delete the user profile image", error })
         }
-        console.log({ message: "profile picture is restored!" })
-        message = "deletion failed and the profile picture is restored!"
-        return next(new Error(message, { cause: 500 }))
-    }
-    console.log({ message: "profile picture is deleted successfully!" })
+        // this is commented as it makes errors and an empty folder having an empty folder can be deleted
+        // try {
+        //     await cloudinary.api.delete_folder(profilePath)
+        //     log({ message: "user picture folder is delted!" })
+        // } catch (error) {
+        //     error_messages.push("failed to delete the user profile folder")
+        //     console.log({ message: "failed to delete the user profile folder", error })
+        // }
+    } else console.log({ message: "user had no profile image!" })
 
-    // tourist only deleting 
-    if (getUser.role === systemRoles.tourist) {
-        // cover picture deleting
-        const coverDeleting = await deleteAsset(coverPictureId, coverPath)
-        if (coverDeleting.notFound == true) {
-            console.log({
-                message: "resource doesn't exist"
-            })
-        } else if (coverDeleting.deleted == false) {
-            let message
-            console.log({
-                api_error_message: "couldn't delete the cover picture"
-            })
-            const coverRestoring = await restoreAsset(coverPictureId, coverPath)
-            if (coverRestoring == false) {
-                console.log({
-                    api_error_message: "Failed to restore the cover picture from the cloudinary server"
-                })
-                message = "API failed , cover picture is lost!"
-                return next(new Error(message, { cause: 500 }))
-            }
-            console.log({ message: "cover picture is restored successfully!" })
-            message = "deletion failed and the cover picture is restored!"
-            return next(new Error(message, { cause: 500 }))
+    // cover image deleting
+    if (getUser.coverPicture && typeof (getUser.coverPicture?.public_id) === 'string') {
+        console.log({ message: "user had a cover image and will be deleted!" })
+        try {
+            await cloudinary.uploader.destroy(getUser.coverPicture?.public_id)
+            console.log({ message: "user cover picture is deleted" })
+        } catch (error) {
+            error_messages.push("failed to delete the user cover image")
+            console.log({ message: "failed to delete the user cover image", error })
         }
-        console.log({ message: "cover picture is deleted successfully!" })
-    }
-    // tour guide only deleting
-    else {
-        // syndicate picture deleting
-        const syndicateDeleting = await deleteAsset(syndicatePubliceId, syndicatepath)
-        if (syndicateDeleting.notFound == true) {
-            console.log({
-                message: "resource doesn't exist"
-            })
-        } else if (syndicateDeleting.deleted == false) {
-            let message
-            console.log({
-                api_error_message: "Couldn't delete the syndicate picture"
-            })
-            const syndicateRestoring = await restoreAsset(syndicatePubliceId, syndicatepath)
-            if (syndicateRestoring == false) {
-                console.log({
-                    api_error_message: "Failed to restore the syndicate picture from the cloudinary server"
-                })
-                message = "API failed , syndicate picture is lost!"
-                return next(new Error(message, { cause: 500 }))
-            }
-            console.log({ message: "syndicate picture is restored successfully!" })
-            message = "deletion failed and the syndicate picture is restored!"
-            return next(new Error(message, { cause: 500 }))
-        }
-        console.log({ message: "syndicate picture is deleted successfully!" })
+        // this is commented as it makes errors and an empty folder having an empty folder can be deleted
+        // try {
+        //     await cloudinary.api.delete_folder(coverPath)
+        //     log({ message: "user picture folder is delted!" })
+        // } catch (error) {
+        //     error_messages.push("failed to delete the user cover folder")
+        //     console.log({ message: "failed to delete the user cover folder", error })
+        // }
+    } else console.log({ message: "user had no cover image!" })
 
-        // ministry picture deleting
-        const ministryDeleting = await deleteAsset(ministryPublicId, ministryPath)
-        if (ministryDeleting.notFound == true) {
-            console.log({
-                message: "resource doesn't exist"
-            })
-        } else if (ministryDeleting.deleted == false) {
-            let message
-            console.log({
-                api_error_message: "Couldn't delete the ministry picture"
-            })
-            const ministryRestoring = await restoreAsset(ministryPublicId, ministryPath)
-            if (ministryRestoring == false) {
-                console.log({
-                    api_error_message: "Failed to restore the ministry picture from the cloudinary server"
-                })
-                message = "API failed , ministry picture is lost!"
-                return next(new Error(message, { cause: 500 }))
-            }
-            console.log({ message: "ministry picture is restored successfully!" })
-            message = "deletion failed and the ministry picture is restored!"
-            return next(new Error(message, { cause: 500 }))
-        }
-        console.log({ message: "ministry image is deleted successfully!" })
-
-        // CV picture deleting
-        const CVdeleting = await deleteAsset(CVpublicId, CVpath)
-        if (CVdeleting.notFound == true) {
-            console.log({
-                message: "resource doesn't exist"
-            })
-        } else if (CVdeleting.deleted == false) {
-            let message
-            console.log({
-                api_error_message: 'failed to delete the CV picture'
-            })
-            const CVrestoring = await restoreAsset(CVpublicId, CVpath)
-            if (CVrestoring == false) {
-                console.log({
-                    api_error_message: 'Failed to restore the CV picture from the cloudinary server!'
-                })
-                message = "API failed , CV picture is lost!"
-                return next(new Error(message, { cause: 500 }))
-            }
-            console.log({ message: "CV picture is restored successfully!" })
-            message = "deletion failed and the CV picture is restored!"
-            return next(new Error(message, { cause: 500 }))
-        }
-        console.log({ message: "CV image is deleted successfully!" })
-    }
     console.log({ message: "user assets are deleted successfully" })
 
     // user folder deleting
     await deleteFolder(userFolderPath)
 
-    let deletedUser
-    if (getUser.role === systemRoles.tourist) {
-        deletedUser = await touristModel.findByIdAndDelete(getUser.id, { new: true })
-        if (!deletedUser) {
+    const deletedUser = await touristModel.findByIdAndDelete(getUser.id, { new: true })
+    if (!deletedUser) {
+        console.log({
+            api_error_message: "failed to delete the user from the data base!"
+        })
+        // restoring all assets again
+        const restoringPublicIDs = [profilePublicId, coverPictureId]
+        const restoringPaths = [profilePath, coverPath]
+        let i = 0
+        try {
+            const assetsRestoring = await Promise.all(restoringPublicIDs.map(async (public_id) => {
+                await restoreAssetPromise(public_id, restoringPaths[i])
+                i++
+            }))
             console.log({
-                api_error_message: "failed to delete the user from the data base!"
+                message: "user assets are restored successfully!"
             })
-            // restoring all assets again
-            const restoringPublicIDs = [profilePublicId, coverPictureId]
-            const restoringPaths = [profilePath, coverPath]
-            let i = 0
-            try {
-                const assetsRestoring = await Promise.all(restoringPublicIDs.map(async (public_id) => {
-                    await restoreAssetPromise(public_id, restoringPaths[i])
-                    i++
-                }))
-                console.log({
-                    message: "user assets are restored successfully!"
-                })
-            } catch (error) {
-                console.log({
-                    api_error_message: "An error occurred while trying to restore the user's assets",
-                    error: error
-                })
-            }
-            return next(new Error("failed to delete the user !", { cause: 500 }))
-        }
-    } else if (getUser.role === systemRoles.tourGuide) {
-        deletedUser = await tourGuideModel.findByIdAndDelete(getUser.id, { new: true })
-        if (!deletedUser) {
+        } catch (error) {
             console.log({
-                api_error_message: "failed to delete the user from the data base!"
+                api_error_message: "An error occurred while trying to restore the user's assets",
+                error: error
             })
-            // restoring all assets again
-            const restoringPublicIDs = [profilePublicId, syndicatePubliceId, ministryPublicId, CVpublicId]
-            const restoringPaths = [profilePath, syndicatepath, ministryPath, CVpath]
-            let i = 0
-            try {
-                const assetsRestoring = await Promise.all(restoringPublicIDs.map(async (public_id) => {
-                    await restoreAssetPromise(public_id, restoringPaths[i])
-                    i++
-                }))
-                console.log({
-                    message: "user assets are restored successfully!"
-                })
-            } catch (error) {
-                console.log({
-                    api_error_message: "An error occurred while trying to restore the user's assets",
-                    error: error
-                })
-            }
-            return next(new Error("failed to delete the user !", { cause: 500 }))
         }
+        return next(new Error("failed to delete the user !", { cause: 500 }))
     }
     console.log({
         message: "user is deleted successfully",
         deletedUser: deletedUser
     })
     // emptying the variables
-    coverPictureId = null; profilePublicId = null; CVpublicId = null; syndicatePubliceId = null
-    ministryPublicId = null; userFolderPath = null; CVpath = null; syndicatepath = null;
-    ministryPath = null; coverPath = null; profilePath = null
+    coverPictureId = null; profilePublicId = null;
+    userFolderPath = null;
+    coverPath = null; profilePath = null
 
     console.log("\nAUTH DELETE USER DONE!\n")
     res.status(200).json({
-        message: "user is deleted successfully!"
+        message: `user is deleted successfully! , cloudinary errors : ${error_messages}`
     })
 }

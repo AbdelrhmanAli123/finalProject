@@ -684,6 +684,55 @@ if name == 'main':
         //         public_id: saveUser.profilePicture?.public_id
         //     }
         // }
+
+        // // profile picture deleting
+    // const profileDeleting = await deleteAsset(profilePublicId, profilePath)
+    // if (profileDeleting.notFound == true) {
+    //     console.log({
+    //         message: "resource doesn't exist"
+    //     })
+    // } else if (profileDeleting.deleted == false) {
+    //     let message
+    //     console.log({
+    //         api_error_message: "couldn't delete the profile picture"
+    //     })
+    //     const profileRestoring = await restoreAsset(profilePublicId, profilePath)
+    //     if (profileRestoring == false) {
+    //         console.log({
+    //             api_error_message: "failed to restore the profile picture from the cloudinary server"
+    //         })
+    //         message = "API failed , profile picture is lost!" // means both deletion and the attempt to restoration failed!
+    //         return next(new Error(message, { cause: 500 }))
+    //     }
+    //     console.log({ message: "profile picture is restored!" })
+    //     message = "deletion failed and the profile picture is restored!"
+    //     return next(new Error(message, { cause: 500 }))
+    // }
+    // console.log({ message: "profile picture is deleted successfully!" })
+
+    // const coverDeleting = await deleteAsset(coverPictureId, coverPath)
+    // if (coverDeleting.notFound == true) {
+    //     console.log({
+    //         message: "resource doesn't exist"
+    //     })
+    // } else if (coverDeleting.deleted == false) {
+    //     let message
+    //     console.log({
+    //         api_error_message: "couldn't delete the cover picture"
+    //     })
+    //     const coverRestoring = await restoreAsset(coverPictureId, coverPath)
+    //     if (coverRestoring == false) {
+    //         console.log({
+    //             api_error_message: "Failed to restore the cover picture from the cloudinary server"
+    //         })
+    //         message = "API failed , cover picture is lost!"
+    //         return next(new Error(message, { cause: 500 }))
+    //     }
+    //     console.log({ message: "cover picture is restored successfully!" })
+    //     message = "deletion failed and the cover picture is restored!"
+    //     return next(new Error(message, { cause: 500 }))
+    // }
+    // console.log({ message: "cover picture is deleted successfully!" })
 ```
 
 ### req.file code (.single())
