@@ -733,6 +733,114 @@ if name == 'main':
     //     return next(new Error(message, { cause: 500 }))
     // }
     // console.log({ message: "cover picture is deleted successfully!" })
+
+        // if (getUser.profilePicture && typeof (getUser.profilePicture?.public_id) === 'string') {
+    //     //profile picture deleting
+    //     const profileDeleting = await deleteAsset(profilePublicId, profilePath)
+    //     if (profileDeleting.notFound == true) {
+    //         console.log({
+    //             message: "resource doesn't exist"
+    //         })
+    //     } else if (profileDeleting.deleted == false) {
+    //         let message
+    //         console.log({
+    //             api_error_message: "couldn't delete the profile picture"
+    //         })
+    //         const profileRestoring = await restoreAsset(profilePublicId, profilePath)
+    //         if (profileRestoring == false) {
+    //             console.log({
+    //                 api_error_message: "failed to restore the profile picture from the cloudinary server"
+    //             })
+    //             message = "API failed , profile picture is lost!" // means both deletion and the attempt to restoration failed!
+    //             return next(new Error(message, { cause: 500 }))
+    //         }
+    //         console.log({ message: "profile picture is restored!" })
+    //         message = "deletion failed and the profile picture is restored!"
+    //         return next(new Error(message, { cause: 500 }))
+    //     }
+    //     console.log({ message: "profile picture is deleted successfully!" })
+    // }
+
+    // if (getUser.syndicateLiscence && typeof (getUser.syndicateLiscence?.public_id) === 'string') {
+    //     // syndicate picture deleting
+    //     const syndicateDeleting = await deleteAsset(syndicatePubliceId, syndicatepath)
+    //     if (syndicateDeleting.notFound == true) {
+    //         console.log({
+    //             message: "resource doesn't exist"
+    //         })
+    //     } else if (syndicateDeleting.deleted == false) {
+    //         let message
+    //         console.log({
+    //             api_error_message: "Couldn't delete the syndicate picture"
+    //         })
+    //         const syndicateRestoring = await restoreAsset(syndicatePubliceId, syndicatepath)
+    //         if (syndicateRestoring == false) {
+    //             console.log({
+    //                 api_error_message: "Failed to restore the syndicate picture from the cloudinary server"
+    //             })
+    //             message = "API failed , syndicate picture is lost!"
+    //             return next(new Error(message, { cause: 500 }))
+    //         }
+    //         console.log({ message: "syndicate picture is restored successfully!" })
+    //         message = "deletion failed and the syndicate picture is restored!"
+    //         return next(new Error(message, { cause: 500 }))
+    //     }
+    //     console.log({ message: "syndicate picture is deleted successfully!" })
+    // }
+
+    // if (getUser.ministryLiscence && typeof (getUser.ministryLiscence?.public_id) ==='string') {
+    //     // ministry picture deleting
+    //     const ministryDeleting = await deleteAsset(ministryPublicId, ministryPath)
+    //     if (ministryDeleting.notFound == true) {
+    //         console.log({
+    //             message: "resource doesn't exist"
+    //         })
+    //     } else if (ministryDeleting.deleted == false) {
+    //         let message
+    //         console.log({
+    //             api_error_message: "Couldn't delete the ministry picture"
+    //         })
+    //         const ministryRestoring = await restoreAsset(ministryPublicId, ministryPath)
+    //         if (ministryRestoring == false) {
+    //             console.log({
+    //                 api_error_message: "Failed to restore the ministry picture from the cloudinary server"
+    //             })
+    //             message = "API failed , ministry picture is lost!"
+    //             return next(new Error(message, { cause: 500 }))
+    //         }
+    //         console.log({ message: "ministry picture is restored successfully!" })
+    //         message = "deletion failed and the ministry picture is restored!"
+    //         return next(new Error(message, { cause: 500 }))
+    //     }
+    //     console.log({ message: "ministry image is deleted successfully!" })
+    // }
+
+    // if (getUser.CV && typeof (getUser.CV.public_id) === 'string') {
+    //     // CV picture deleting
+    //     const CVdeleting = await deleteAsset(CVpublicId, CVpath)
+    //     if (CVdeleting.notFound == true) {
+    //         console.log({
+    //             message: "resource doesn't exist"
+    //         })
+    //     } else if (CVdeleting.deleted == false) {
+    //         let message
+    //         console.log({
+    //             api_error_message: 'failed to delete the CV picture'
+    //         })
+    //         const CVrestoring = await restoreAsset(CVpublicId, CVpath)
+    //         if (CVrestoring == false) {
+    //             console.log({
+    //                 api_error_message: 'Failed to restore the CV picture from the cloudinary server!'
+    //             })
+    //             message = "API failed , CV picture is lost!"
+    //             return next(new Error(message, { cause: 500 }))
+    //         }
+    //         console.log({ message: "CV picture is restored successfully!" })
+    //         message = "deletion failed and the CV picture is restored!"
+    //         return next(new Error(message, { cause: 500 }))
+    //     }
+    //     console.log({ message: "CV image is deleted successfully!" })
+    // }
 ```
 
 ### req.file code (.single())

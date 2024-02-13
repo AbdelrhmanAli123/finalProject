@@ -26,4 +26,11 @@ router.delete(
     asyncHandler(settingsCont.new_deleteUser)
 )
 
+router.delete(
+    '/deleteAssocTripsTest',
+    isAuth(settingsAPIroles.deleteUser),
+    validationCoreFunction(settingstVS.deleteUser),
+    asyncHandler(settingsCont.deleteAssocTrips_test)
+)
+
 export default router

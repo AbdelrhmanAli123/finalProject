@@ -2,7 +2,7 @@ import {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
     ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses, languagesCodes,
     countries, countriesCodes, axios, FormData, historicMP_Model, deleteAsset, deleteFolder,
-    restoreAsset, restoreAssetPromise, tourGuideModel
+    restoreAsset, restoreAssetPromise, tourGuideModel, deleteAssociatedTrips
 } from './controller.imports.js'
 
 export const confrirmOldPass = async (req, res, next) => {
@@ -115,15 +115,12 @@ export const new_deleteUser = async (req, res, next) => {
     console.log({
         passed_auth_user: getUser
     })
+
     // perparing variables :
     // user custom id :
     const customId = getUser.customId
 
-    // assets paths : 
-    // for both tourists and tour guides
     let profilePath = `${process.env.PROJECT_UPLOADS_FOLDER}/${getUser.role}s/${customId}/profilePicture`
-
-    // tour guides only
     let ministryPath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/ministry_liscence`
     let syndicatepath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/syndicate_liscence`
     let CVpath = `${process.env.PROJECT_UPLOADS_FOLDER}/tourGuides/${customId}/CV`
@@ -131,7 +128,6 @@ export const new_deleteUser = async (req, res, next) => {
     // user folder path : 
     let userFolderPath = `${process.env.PROJECT_UPLOADS_FOLDER}/${getUser.role}s/${customId}`
 
-    // public ids :
     let ministryPublicId = getUser.ministyliscence?.public_id // may get an error !
     let syndicatePubliceId = getUser.syndicateLiscence?.public_id // may get an error !
     let CVpublicId = getUser.CV?.public_id // may get an error !
@@ -220,127 +216,25 @@ export const new_deleteUser = async (req, res, next) => {
         }
     } else console.log({ message: "user had no CV" })
 
-    // if (getUser.profilePicture && typeof (getUser.profilePicture?.public_id) === 'string') {
-    //     //profile picture deleting
-    //     const profileDeleting = await deleteAsset(profilePublicId, profilePath)
-    //     if (profileDeleting.notFound == true) {
-    //         console.log({
-    //             message: "resource doesn't exist"
-    //         })
-    //     } else if (profileDeleting.deleted == false) {
-    //         let message
-    //         console.log({
-    //             api_error_message: "couldn't delete the profile picture"
-    //         })
-    //         const profileRestoring = await restoreAsset(profilePublicId, profilePath)
-    //         if (profileRestoring == false) {
-    //             console.log({
-    //                 api_error_message: "failed to restore the profile picture from the cloudinary server"
-    //             })
-    //             message = "API failed , profile picture is lost!" // means both deletion and the attempt to restoration failed!
-    //             return next(new Error(message, { cause: 500 }))
-    //         }
-    //         console.log({ message: "profile picture is restored!" })
-    //         message = "deletion failed and the profile picture is restored!"
-    //         return next(new Error(message, { cause: 500 }))
-    //     }
-    //     console.log({ message: "profile picture is deleted successfully!" })
-    // }
-
-    // if (getUser.syndicateLiscence && typeof (getUser.syndicateLiscence?.public_id) === 'string') {
-    //     // syndicate picture deleting
-    //     const syndicateDeleting = await deleteAsset(syndicatePubliceId, syndicatepath)
-    //     if (syndicateDeleting.notFound == true) {
-    //         console.log({
-    //             message: "resource doesn't exist"
-    //         })
-    //     } else if (syndicateDeleting.deleted == false) {
-    //         let message
-    //         console.log({
-    //             api_error_message: "Couldn't delete the syndicate picture"
-    //         })
-    //         const syndicateRestoring = await restoreAsset(syndicatePubliceId, syndicatepath)
-    //         if (syndicateRestoring == false) {
-    //             console.log({
-    //                 api_error_message: "Failed to restore the syndicate picture from the cloudinary server"
-    //             })
-    //             message = "API failed , syndicate picture is lost!"
-    //             return next(new Error(message, { cause: 500 }))
-    //         }
-    //         console.log({ message: "syndicate picture is restored successfully!" })
-    //         message = "deletion failed and the syndicate picture is restored!"
-    //         return next(new Error(message, { cause: 500 }))
-    //     }
-    //     console.log({ message: "syndicate picture is deleted successfully!" })
-    // }
-
-    // if (getUser.ministryLiscence && typeof (getUser.ministryLiscence?.public_id) ==='string') {
-    //     // ministry picture deleting
-    //     const ministryDeleting = await deleteAsset(ministryPublicId, ministryPath)
-    //     if (ministryDeleting.notFound == true) {
-    //         console.log({
-    //             message: "resource doesn't exist"
-    //         })
-    //     } else if (ministryDeleting.deleted == false) {
-    //         let message
-    //         console.log({
-    //             api_error_message: "Couldn't delete the ministry picture"
-    //         })
-    //         const ministryRestoring = await restoreAsset(ministryPublicId, ministryPath)
-    //         if (ministryRestoring == false) {
-    //             console.log({
-    //                 api_error_message: "Failed to restore the ministry picture from the cloudinary server"
-    //             })
-    //             message = "API failed , ministry picture is lost!"
-    //             return next(new Error(message, { cause: 500 }))
-    //         }
-    //         console.log({ message: "ministry picture is restored successfully!" })
-    //         message = "deletion failed and the ministry picture is restored!"
-    //         return next(new Error(message, { cause: 500 }))
-    //     }
-    //     console.log({ message: "ministry image is deleted successfully!" })
-    // }
-
-    // if (getUser.CV && typeof (getUser.CV.public_id) === 'string') {
-    //     // CV picture deleting
-    //     const CVdeleting = await deleteAsset(CVpublicId, CVpath)
-    //     if (CVdeleting.notFound == true) {
-    //         console.log({
-    //             message: "resource doesn't exist"
-    //         })
-    //     } else if (CVdeleting.deleted == false) {
-    //         let message
-    //         console.log({
-    //             api_error_message: 'failed to delete the CV picture'
-    //         })
-    //         const CVrestoring = await restoreAsset(CVpublicId, CVpath)
-    //         if (CVrestoring == false) {
-    //             console.log({
-    //                 api_error_message: 'Failed to restore the CV picture from the cloudinary server!'
-    //             })
-    //             message = "API failed , CV picture is lost!"
-    //             return next(new Error(message, { cause: 500 }))
-    //         }
-    //         console.log({ message: "CV picture is restored successfully!" })
-    //         message = "deletion failed and the CV picture is restored!"
-    //         return next(new Error(message, { cause: 500 }))
-    //     }
-    //     console.log({ message: "CV image is deleted successfully!" })
-    // }
-
     console.log({ message: "user assets are deleted successfully" })
 
     // user folder deleting
     await deleteFolder(userFolderPath)
 
     // TODO : delete associated trips first and their days first
-    // if (getUser.createdTrips.length !== 0) {
-    //     let tripsIds = []
-    //     for (const trip of getUser.createdTrips) {
-    //         tripsIds.push(trip._id)
-    //     }
-
-    // }
+    if (getUser.createdTrips.length !== 0) {
+        const deletedTrips = await deleteAssociatedTrips(getUser._id)
+        if (deletedTrips.query_errors.length) {
+            console.log({
+                message: "failed to delete the assoicated trips",
+                errors: deletedTrips.query_errors
+            })
+            return next(new Error("failed to delete the associated trips!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+        }
+        console.log({
+            message: "tourGuide trips are deleted successfully!"
+        })
+    }
     const deletedUser = await tourGuideModel.findOneAndDelete({ _id: getUser.id }, { new: true })
     if (!deletedUser) {
         console.log({
@@ -379,5 +273,19 @@ export const new_deleteUser = async (req, res, next) => {
     console.log("\nAUTH DELETE USER DONE!\n")
     res.status(200).json({
         message: `user is deleted successfully! , cloudinary errors : ${error_messages}`
+    })
+}
+
+export const deleteAssocTrips_test = async (req, res, next) => {
+    const deletedTrips = await deleteAssociatedTrips(getUser._id)
+    if (deletedTrips.query_errors.length) {
+        console.log({
+            message: "failed to delete the assoicated trips",
+            errors: deletedTrips.query_errors
+        })
+        return next(new Error("failed to delete the associated trips!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+    return res.status(StatusCodes.OK).json({
+        message: "tourGuide trips are deleted successfully!"
     })
 }
