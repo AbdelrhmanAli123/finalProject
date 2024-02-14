@@ -39,7 +39,7 @@ export const isAuth = (roles = []) => {
                 console.log("\nAUTHENTICATION IS SUCCESSFULL\n")
                 console.log("\nAUTHORIZATION\n")
                 let getUser // tourist or tourGuide or other 
-                if (decodedToken.role === systemRoles.tourist) {
+                if (decodedToken?.role === systemRoles.tourist) {
                     console.log({ message: "tourist authorization" })
                     getUser = await touristModel.findOne({
                         email: decodedToken.email
@@ -64,7 +64,7 @@ export const isAuth = (roles = []) => {
                     }
                     console.log({ message: "user is authorized!" })
                 }
-                else if (decodedToken.role === systemRoles.tourGuide) {
+                else if (decodedToken?.role === systemRoles.tourGuide) {
                     console.log({ message: "tourGuide authorization" })
                     getUser = await tourGuideModel.findOne({
                         email: decodedToken.email
