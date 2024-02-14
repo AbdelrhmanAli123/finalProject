@@ -21,10 +21,11 @@ export const isAuth = (roles = []) => {
             // tokenPrefix asvxcvcxvcxvxvx12eds#vcxcxvx
             const splittedToken = authorization.split(' ')[1]
             console.log({ splitted_Token: splittedToken })
+            let decodedToken
             // another try , catch is made so the variable "splitted token" is seen in a catch scope bcs it wont be seen in the first catch scope
             try {
                 // when a token expires , it doesn't get decoded
-                const decodedToken = verifyToken({
+                decodedToken = verifyToken({
                     token: splittedToken,
                     signature: process.env.LOGIN_SECRET_KEY
                 })
