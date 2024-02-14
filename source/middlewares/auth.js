@@ -21,11 +21,10 @@ export const isAuth = (roles = []) => {
             // tokenPrefix asvxcvcxvcxvxvx12eds#vcxcxvx
             const splittedToken = authorization.split(' ')[1]
             console.log({ splitted_Token: splittedToken })
-            let decodedToken
             // another try , catch is made so the variable "splitted token" is seen in a catch scope bcs it wont be seen in the first catch scope
             try {
                 // when a token expires , it doesn't get decoded
-                decodedToken = verifyToken({
+                const decodedToken = verifyToken({
                     token: splittedToken,
                     signature: process.env.LOGIN_SECRET_KEY
                 })
@@ -38,8 +37,8 @@ export const isAuth = (roles = []) => {
                 }
                 console.log("\nAUTHENTICATION IS SUCCESSFULL\n")
                 console.log("\nAUTHORIZATION\n")
-                let getUser // tourist or tourGuide or other 
-                if (decodedToken?.role === systemRoles.tourist) {
+                let getUser // tourist or tourGuide or other
+                if (decodedToken.role === systemRoles.tourist) {
                     console.log({ message: "tourist authorization" })
                     getUser = await touristModel.findOne({
                         email: decodedToken.email
@@ -64,7 +63,7 @@ export const isAuth = (roles = []) => {
                     }
                     console.log({ message: "user is authorized!" })
                 }
-                else if (decodedToken?.role === systemRoles.tourGuide) {
+                else if (decodedToken.role === systemRoles.tourGuide) {
                     console.log({ message: "tourGuide authorization" })
                     getUser = await tourGuideModel.findOne({
                         email: decodedToken.email
