@@ -841,6 +841,26 @@ if name == 'main':
     //     }
     //     console.log({ message: "CV image is deleted successfully!" })
     // }
+
+    // old refresh token code (not working now)
+                    // let user
+                    // if (decodedToken.role === systemRoles.tourist) {
+                    //     user = await touristModel.findOne({
+                    //         token: splittedToken
+                    //     })
+                    //     // if the token sent is wrong along with being expired :
+                    //     if (!user) {
+                    //         return next(new Error('invalid token', { cause: 400 }))
+                    //     }
+                    // } else if (decodedToken.role === systemRoles.tourGuide) {
+                    //     user = await tourGuideModel.findOne({
+                    //         token: splittedToken
+                    //     })
+                    //     // if the token sent is wrong along with being expired :
+                    //     if (!user) {
+                    //         return next(new Error('invalid token', { cause: 400 }))
+                    //     }
+                    // }
 ```
 
 ### req.file code (.single())
