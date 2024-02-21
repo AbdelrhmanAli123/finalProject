@@ -12,7 +12,7 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     console.log("\nTG GENERATE TRIP API\n")
     const { _id } = req.authUser // tourGuide _id
     // tripDetails -> array of objects + don't forget the image
-    const { title, brief, ticketPerPerson, minimumNumber, tripDetails } = req.body
+    const { title, brief, maximumNumber, tripDetails, plans, included, excluded } = req.body
     console.log({
         tripDetails
     })
@@ -24,30 +24,72 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
         })
     }
 
-    if (minimumNumber <= 0) {
+    if (maximumNumber <= 0) {
         console.log({
             user_error_message: "user entered a number less than or equal zero",
-            entered_minimum_number: minimumNumber
+            entered_maximum_number: maximumNumber
         })
-        return next(new Error('the minimum number of tourists must be at least 1', { cause: 400 }))
+        return next(new Error('the maximum number of tourists must be at least 1', { cause: 400 }))
     }
-    console.log({ message: "minimum number is valid" })
+    console.log({ message: "maximum number is valid" })
 
-    if (ticketPerPerson < 0) {
-        console.log({
-            user_error_message: "user entered a ticket price less than zero",
-            entered_ticket_price: ticketPerPerson
-        })
-        return next(new Error('the ticket price per person must be at least 0', { cause: 400 }))
+    if (plans) {
+        if (plans.standard) {
+            if (plans.standard < 0) {
+                console.log({
+                    user_error_message: "the entered standard ticket price is less than zero",
+                    entered_ticket_price: plans.standard
+                })
+                return next(new Error('the standard ticket price per person must be at least 0', { cause: 400 }))
+            } else {
+                console.log({ message: "standard ticket price is valid" })
+            }
+        }
+        if (plans.luxury) {
+            if (plans.luxury < 0) {
+                console.log({
+                    user_error_message: "the entered luxury ticket price is less than zero",
+                    entered_ticket_price: plans.luxury
+                })
+                return next(new Error('the luxury ticket price per person must be at least 0', { cause: 400 }))
+            } else {
+                console.log({ message: "luxury ticket price is valid" })
+            }
+        }
+        if (plans.VIP) {
+            if (plans.VIP < 0) {
+                console.log({
+                    user_error_message: "the entered VIP ticket price is less than zero",
+                    entered_ticket_price: plans.VIP
+                })
+                return next(new Error('the VIP ticket price per person must be at least 0', { cause: 400 }))
+            } else {
+                console.log({ message: "VIP ticket price is valid" })
+            }
+        }
     }
-    console.log({ message: "ticket price is valid" })
+    // if (ticketPerPerson < 0) {
+    //     console.log({
+    //         user_error_message: "user entered a ticket price less than zero",
+    //         entered_ticket_price: ticketPerPerson
+    //     })
+    //     return next(new Error('the ticket price per person must be at least 0', { cause: 400 }))
+    // }
+    // console.log({ message: "ticket price is valid" })
 
     const tripData = {
         title,
         brief,
-        ticketPerPerson,
-        minimumNumber,
+        plans,
+        maximumNumber,
         createdBy: _id,
+    }
+
+    if (included) {
+        tripData.included = included
+    }
+    if (excluded) {
+        tripData.excluded = excluded
     }
 
     let tripDaysData = [] // _id array
@@ -121,8 +163,8 @@ export const editTrip = async (req, res, next) => {
     const _id = req.authUser._id
     // TODO : make sure that this user is the one who made that trip
     const {
-        title, brief, ticketPerPerson, minimumNumber, newTripDetails, trip_id,
-        newDay, removeDay
+        title, brief, plans, maximumNumber, newTripDetails, trip_id,
+        newDay, removeDay, included, excluded
     } = req.body
     // newDay -> new day with it's data
     // removeDay -> _id of the day desired to be removed
@@ -155,31 +197,76 @@ export const editTrip = async (req, res, next) => {
         console.log({ message: "brief is found and updated!" })
     }
 
-    if (ticketPerPerson) {
-        if (ticketPerPerson < 0) {
-            console.log({
-                user_error_message: "user entered a ticket price less than zero",
-                entered_ticket_price: ticketPerPerson
-            })
-            return next(new Error('the ticket price per person must be at least 0', { cause: 400 }))
-        }
-        getTrip.ticketPerPerson = ticketPerPerson
-        console.log({ message: "ticket price is found and updated!" })
+    if (included) {
+        getTrip.included = included
+        console.log({ message: "included is found and updated!" })
     }
 
-    if (minimumNumber) {
-        if (minimumNumber <= 0) {
+    if (excluded) {
+        getTrip.excluded = excluded
+        console.log({ message: "excluded is found and updated!" })
+    }
+
+    // if (ticketPerPerson) {
+    //     if (ticketPerPerson < 0) {
+    //         console.log({
+    //             user_error_message: "user entered a ticket price less than zero",
+    //             entered_ticket_price: ticketPerPerson
+    //         })
+    //         return next(new Error('the ticket price per person must be at least 0', { cause: 400 }))
+    //     }
+    //     getTrip.ticketPerPerson = ticketPerPerson
+    //     console.log({ message: "ticket price is found and updated!" })
+    // }
+
+    if (plans) {
+        if (plans.standard) {
+            if (plans.standard < 0) {
+                console.log({
+                    user_error_message: "the entered standard ticket price is less than zero",
+                    entered_ticket_price: plans.standard
+                })
+                return next(new Error('the standard ticket price per person must be at least 0', { cause: 400 }))
+            }
+            getTrip.plans.standard = plans.standard
+            console.log({ message: "standard ticket price is found and updated!" })
+        }
+        if (plans.luxury) {
+            if (plans.luxury < 0) {
+                console.log({
+                    user_error_message: "the entered luxury ticket price is less than zero",
+                    entered_ticket_price: plans.luxury
+                })
+                return next(new Error('the luxury ticket price per person must be at least 0', { cause: 400 }))
+            }
+            getTrip.plans.luxury = plans.luxury
+            console.log({ message: "luxury ticket price is found and updated!" })
+        }
+        if (plans.VIP) {
+            if (plans.VIP < 0) {
+                console.log({
+                    user_error_message: "the entered VIP ticket price is less than zero",
+                    entered_ticket_price: plans.VIP
+                })
+                return next(new Error('the VIP ticket price per person must be at least 0', { cause: 400 }))
+            }
+            getTrip.plans.VIP = plans.VIP
+            console.log({ message: "VIP ticket price is found and updated!" })
+        }
+    }
+
+    if (maximumNumber) {
+        if (maximumNumber <= 0) {
             console.log({
                 user_error_message: "user entered a number less than or equal zero",
-                entered_minimum_number: minimumNumber
+                maximum_Number: maximumNumber
             })
-            return next(new Error('the minimum number of tourists must be at least 1', { cause: 400 }))
+            return next(new Error('the maximum number of tourists must be at least 1', { cause: 400 }))
         }
-        getTrip.minimumNumber = minimumNumber
-        console.log({ message: "minimum number is found and updated!" })
+        getTrip.maximumNumber = maximumNumber
+        console.log({ message: "maximum number is found and updated!" })
     }
 
-    // TODO : finish this part of the code !
     // case 1 : a new array will be inserted -> request shall have that new array of days
     if (newTripDetails) {
         // you need to first delete these tripDays from the tripDays model
@@ -187,7 +274,7 @@ export const editTrip = async (req, res, next) => {
         const oldTripDetails = getTrip.tripDetails // these are _ids , you need to delete them each
         const deletdTripDetails = await tripDaysModel.deleteMany({
             _id: { $in: oldTripDetails }
-        }) // TODO : edit the query
+        })
         if (!deletdTripDetails.acknowledged) {
             console.log({
                 message: "failed to delete the old trip details"

@@ -4,7 +4,7 @@ import { generalFields } from '../../../../../middlewares/joiValidation.js'
 export const addPlaceSchema = {
     body: joi.object({
         name: joi.string().required(),
-        type: joi.string().valid('monument', 'islamic', 'nearby').required(),
+        type: joi.string().valid('monument', 'islamic').required(),
         location: joi.object({
             longitude: joi.number().optional(),
             latitude: joi.number().optional(),
@@ -29,7 +29,7 @@ const test = await addPlaceSchema.body.validate('value', { abortEarly: false }).
 export const editPlaceSchema = {
     body: joi.object({
         name: joi.string().required(),
-        type: joi.string().valid('monument', 'islamic', 'nearby').optional(),
+        type: joi.string().valid('monument', 'islamic').optional(),
         location: joi.object({
             longitude: joi.number().optional(),
             latitude: joi.number().optional(),

@@ -11,11 +11,16 @@ const schema = new Schema({
         default: "",
         required: false
     },
-    ticketPerPerson: {
-        type: Number,
-        required: true
+    // ticketPerPerson: {
+    //     type: Number,
+    //     required: true
+    // },
+    plans: {
+        standard: Number,
+        luxury: Number,
+        VIP: Number
     },
-    minimumNumber: {
+    maximumNumber: {
         type: Number,
         min: 1,
         required: true
@@ -54,7 +59,9 @@ const schema = new Schema({
             TGtripStatuses.complete, TGtripStatuses.done, TGtripStatuses.empty,
             TGtripStatuses.pending, TGtripStatuses.started
         ]
-    }
+    },
+    included: [String],
+    excluded: [String]
 }, {
     timestamps: true,
     toObject: { virtuals: true },

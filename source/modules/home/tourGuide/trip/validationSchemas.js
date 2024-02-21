@@ -5,8 +5,13 @@ export const createTripSchema = {
     body: joi.object({
         title: joi.string(),
         brief: joi.string(),
-        ticketPerPerson: joi.number().min(0),
-        minimumNumber: joi.number().min(1),
+        // ticketPerPerson: joi.number().min(0),
+        plans: joi.object({
+            standard: joi.number().min(0).optional(),
+            luxury: joi.number().min(0).optional(),
+            VIP: joi.number().min(0).optional()
+        }).optional(),
+        maximumNumber: joi.number().min(1).required(),
         tripDetails: joi.array().items(joi.object({
             dayName: joi.string(),
             dayPlaces: joi.array().items(joi.object({
@@ -16,7 +21,9 @@ export const createTripSchema = {
                 longitude: joi.string().optional(),
                 activity: joi.string().optional()
             }))
-        }))
+        })),
+        included: joi.array().items(joi.string()).optional(),
+        excluded: joi.array().items(joi.string()).optional()
     }),
     file: joi.object({
         fieldname: joi.string(),
@@ -38,8 +45,13 @@ export const editTripSchema = {
         trip_id: generalFields._id.required(),
         title: joi.string().optional(),
         brief: joi.string().optional(),
-        ticketPerPerson: joi.number().min(0).optional(),
-        minimumNumber: joi.number().min(1).optional(), // [{day1},{day2},{day3},{day4}]
+        // ticketPerPerson: joi.number().min(0).optional(),
+        plans: joi.object({
+            standard: joi.number().min(0).optional(),
+            luxury: joi.number().min(0).optional(),
+            VIP: joi.number().min(0).optional()
+        }).optional(),
+        maximumNumber: joi.number().min(1).optional(), // [{day1},{day2},{day3},{day4}]
         newDay: joi.object({
             dayName: joi.string().optional(),
             dayPlaces: joi.array().items(joi.object({
@@ -60,7 +72,9 @@ export const editTripSchema = {
                 longitude: joi.string().optional(),
                 activity: joi.string().optional()
             })).presence('optional')
-        })).presence('optional')
+        })).presence('optional'),
+        included: joi.array().items(joi.string()).optional(),
+        excluded: joi.array().items(joi.string()).optional()
     }).presence('optional'),
     file: joi.object({
         fieldname: joi.string(),

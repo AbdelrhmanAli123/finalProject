@@ -2,6 +2,7 @@ import DBconnection from "../dataBase/connection.js"
 import * as routers from '../modules/index.router.js'
 import { GeneralResponse } from "./general.response.js"
 import { ReasonPhrases, StatusCodes } from "http-status-codes"
+import { getIo, initiateIo } from './ioGeneration.js'
 import timeout from 'connect-timeout'
 import cors from 'cors'
 
@@ -39,8 +40,12 @@ const initiateApp = (app, express) => {
         })
     })
     app.use(GeneralResponse)
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
         console.log(`server is running successfully on port ${port} !`)
+    })
+    const io = initiateIo(server)
+    io.on('connection', (socket) => {
+        console.log({ socketId: socket.id })
     })
 }
 
