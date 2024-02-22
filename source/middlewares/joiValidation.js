@@ -24,6 +24,7 @@ export const validationCoreFunction = (schema) => {
     return async (req, res, next) => {
         const validationErrors = []
         const validationErrorsMessages = []
+        console.log({ schema_configs: schema.describe() })
         for (const key of reqElements) {
             if (schema[key]) {
                 const validation = await schema[key].validate(req[key], { abortEarly: false })
