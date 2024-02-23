@@ -2,7 +2,7 @@ import {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
     ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses, languagesCodes,
     countries, countriesCodes, axios, FormData, historicMP_Model, deleteAsset, deleteFolder,
-    restoreAsset, restoreAssetPromise
+    restoreAsset, restoreAssetPromise, AItripModel
 } from './controller.imports.js'
 
 export const confrirmOldPass = async (req, res, next) => {
@@ -199,7 +199,19 @@ export const new_deleteUser = async (req, res, next) => {
     // user folder deleting
     await deleteFolder(userFolderPath)
 
-    const deletedUser = await touristModel.findByIdAndDelete(getUser.id, { new: true })
+    // DELETE THE AI trips of the tourist
+    const deleteAItrips = await AItripModel.deleteMany({ touristId: getUser._id })
+    if (!deleteAItrips.acknowledged) {
+        console.log({ query_error_message: "couldn't delete the associated tourist trips!", deleteAItrips })
+        // the below line is commented as untill now it shouldn't throw an error
+        // return next(new Error(`failed to perform the query , return data : ${deleteAItrips}`,{cause:StatusCodes.INTERNAL_SERVER_ERROR}))
+    }
+    if (deleteAItrips.deletedCount == 0) {
+        console.log({ info_message: 'there were no ai trips for this user!' })
+    }
+
+    // note : getUser.id was used instead of getUser._id in the below line , i don't prefer that
+    const deletedUser = await touristModel.findByIdAndDelete(getUser._id, { new: true })
     if (!deletedUser) {
         console.log({
             api_error_message: "failed to delete the user from the data base!"

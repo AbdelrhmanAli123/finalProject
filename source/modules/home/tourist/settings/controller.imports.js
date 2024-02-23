@@ -15,10 +15,11 @@ import { statuses } from '../../../../utilities/activityStatuses.js'
 import { languages, languagesCodes } from '../../../../utilities/languages.js'
 import { countries, countriesCodes } from "../../../../utilities/nationalities.js"
 import { deleteAsset, restoreAsset, deleteFolder, restoreAssetPromise } from '../../../../utilities/cloudinary.deletion.js'
+import { AItripModel } from '../../../../dataBase/models/AItrip.model.js'
 
 export {
     bcrypt, cloudinary, touristModel, slugify, generateToken, verifyToken, customAlphabet, emailService,
     ReasonPhrases, StatusCodes, systemRoles, EGphoneCodes, languages, statuses, languagesCodes,
     countries, countriesCodes, axios, FormData, historicMP_Model, deleteAsset, deleteFolder,
-    restoreAsset, restoreAssetPromise
+    restoreAsset, restoreAssetPromise, AItripModel
 }

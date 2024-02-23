@@ -104,6 +104,16 @@ const touristSchema = new Schema({
     //     type:Number,
     //     max:4
     // }
+}, {
+    timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+})
+
+touristSchema.virtual('AItrips', {
+    foreignField: 'touristId',
+    localField: '_id',
+    ref: 'AItrip'
 })
 
 export const touristModel = model('Tourist', touristSchema)
