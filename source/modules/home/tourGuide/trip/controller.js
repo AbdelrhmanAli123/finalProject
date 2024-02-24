@@ -518,7 +518,7 @@ export const getAllTrips = async (req, res, next) => {
         createdBy: _id // untill here , we get all the trips that the tourGuide made
     })
         .select(
-            '_id title brief ticketPerPerson minimumNumber tripDetails subscribers status image.secure_url'
+            '_id title brief plans maximumNumber tripDetails subscribers status image.secure_url'
         )
         .populate([
             {
