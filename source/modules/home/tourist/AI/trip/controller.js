@@ -4,17 +4,26 @@ import {
 
 export const createAItrip = async (req, res, next) => {
     console.log("\nAI SAVE TRIP API\n")
+    const { tripDetails, from, to, title } = req.body
     const getUser = req.authUser
+    let tripData = {
+        tripDetails,
+        title,
+        from,
+        to,
+        touristId: getUser._id
+    }
     // TODO : make a variable in the req.body that has the tripData of the AI generated trip
     // req.body has nothing but the result of the AI model
     let saveTrip
     try {
-        saveTrip = await AItripModel.create({ tripDetails: req.body, touristId: getUser._id })
+        saveTrip = await AItripModel.create(tripData)
         console.log({ message: "tripData is saved successfully!" })
     } catch (error) {
         console.log({ error })
         return next(new Error('error in savving the data in the data base!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
+    tripData = null
     console.log("\nAI SAVE TRIP API DONE\n")
     res.status(StatusCodes.OK).json({
         message: "AItrip is saved!", // ##
