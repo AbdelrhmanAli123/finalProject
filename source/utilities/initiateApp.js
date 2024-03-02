@@ -45,7 +45,10 @@ const initiateApp = (app, express) => {
     })
     const io = initiateIo(server)
     io.on('connection', (socket) => {
-        console.log({ socketId: socket.id })
+        console.log({
+            message: "socket connected!",
+            socketId: socket.id
+        })
     })
 }
 
