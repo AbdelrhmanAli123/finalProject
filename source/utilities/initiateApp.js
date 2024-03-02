@@ -69,7 +69,7 @@ const initiateApp = (app, express) => {
             if (userData.found == true) {
                 console.log({ message: "source user email is found!" })
                 if (clients[msg.source]) {
-                    console.log(message: "source user socket is found!")
+                    console.log({ message: "source user socket is found!" })
                     // the source exists and valid
                     const destUserData = await checkUserExists(msg.targetId)
                     if (destUserData.found == true) {
