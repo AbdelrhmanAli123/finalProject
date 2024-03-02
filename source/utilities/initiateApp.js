@@ -6,6 +6,10 @@ import { getIo, initiateIo } from './ioGeneration.js'
 import timeout from 'connect-timeout'
 import cors from 'cors'
 
+import { touristModel } from '../dataBase/models/tourist.model.js'
+import { tourGuideModel } from '../dataBase/models/tourGuide.model.js'
+import { checkUserExists } from '../utilities/signUpCheck.js'
+
 const initiateApp = (app, express) => {
     const port = +process.env.PORT || 5000
     DBconnection()
@@ -43,12 +47,38 @@ const initiateApp = (app, express) => {
     const server = app.listen(port, () => {
         console.log(`server is running successfully on port ${port} !`)
     })
+    let clients = {}
     const io = initiateIo(server)
     io.on('connection', (socket) => {
         console.log({
             message: "socket connected!",
             socketId: socket.id
         })
+        socket.on('signing', async (id) => {
+            console.log(id);
+            const userData = await checkUserExists(id)
+            if (userData.found == true) {
+                clients[id] = socket
+            }
+            clients[id] = socket;
+            console.log(clients);
+        });
+        socket.on("message", async (msg) => {
+            console.log(msg);
+            const userData = await checkUserExists(msg.source)
+            if (userData.found == true) {
+                if (clients[msg.source]) {
+                    // the source exists and valid
+                    if (clients[msg.targetId]) {
+                        clients[msg.targetId].emit("message", msg)
+                    }
+                }
+            }
+        });
+
+        socket.on("error", (error) => {
+            console.error("Socket error:", error);
+        });
     })
 }
 
