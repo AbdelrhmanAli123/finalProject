@@ -3,6 +3,7 @@ import { systemRoles } from "../../utilities/systemRoles.js"
 import { statuses } from "../../utilities/activityStatuses.js"
 import { TourGuideTripsModel } from './tourGuideTrips.model.js'
 
+// TODO : add "socketId" field here
 
 const schema = new Schema({
     firstName: {

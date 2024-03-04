@@ -3,6 +3,8 @@ import { systemRoles } from "../../utilities/systemRoles.js"
 import { statuses } from "../../utilities/activityStatuses.js"
 import { languages, languagesCodes } from "../../utilities/languages.js"
 
+// TODO : add "socketId" field here
+
 const touristSchema = new Schema({
     // userName , email , pass -> are the main data for request in sign Up , the rest should be not required
     userName: {

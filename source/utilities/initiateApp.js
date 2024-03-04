@@ -52,8 +52,10 @@ const initiateApp = (app, express) => {
     io.on('connection', (socket) => {
         console.log({
             message: "socket connected!",
-            socketId: socket.id
+            socketId: socket.id,
+            socketHeaders: socket
         })
+        // EDIT : take the email with the connection
         socket.on('signing', async (id) => {
             console.log(id);
             const userData = await checkUserExists(id)
