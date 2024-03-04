@@ -53,7 +53,8 @@ const initiateApp = (app, express) => {
         console.log({
             message: "socket connected!",
             socketId: socket.id,
-            socketHeaders: socket
+            socket: socket,
+            socket_handshake_headers: socket.handshake.headers
         })
         // EDIT : take the email with the connection
         socket.on('signing', async (id) => {
