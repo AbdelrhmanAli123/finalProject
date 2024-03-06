@@ -62,7 +62,7 @@ const schema = new Schema({
             type: String
         }
     },
-    // ministry ID (ministry liscence in backend) -> 1 image
+    // ministry ID (ministry license in backend) -> 1 image
     ministyliscence: { // not in the ocr
         // image
         secure_url: {

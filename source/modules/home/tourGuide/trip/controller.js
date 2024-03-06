@@ -515,7 +515,7 @@ export const getAllTrips = async (req, res, next) => {
     // const { trip_id } = req.body
 
     const getTrip = await TourGuideTripsModel.find({
-        createdBy: _id // untill here , we get all the trips that the tourGuide made
+        createdBy: _id // until here , we get all the trips that the tourGuide made
     })
         .select(
             '_id title brief plans maximumNumber tripDetails subscribers status image.secure_url included excluded'

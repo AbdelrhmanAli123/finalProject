@@ -9,6 +9,7 @@ import cors from 'cors'
 import { touristModel } from '../dataBase/models/tourist.model.js'
 import { tourGuideModel } from '../dataBase/models/tourGuide.model.js'
 import { checkUserExists } from '../utilities/signUpCheck.js'
+import axios from "axios"
 
 const initiateApp = (app, express) => {
     const port = +process.env.PORT || 5000
@@ -54,7 +55,7 @@ const initiateApp = (app, express) => {
             message: "socket connected!",
             socketId: socket.id,
             socket: socket,
-            socket_handshake_headers: socket.handshake.headers // use this to see "email" in the sockete and save the socket id in the data base
+            socket_handshake_headers: socket.handshake.headers // use this to see "email" in the socket and save the socket id in the data base
         })
         // EDIT : take the email with the connection
         socket.on('signing', async (id) => {

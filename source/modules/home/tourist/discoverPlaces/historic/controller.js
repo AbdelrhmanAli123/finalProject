@@ -7,6 +7,7 @@ const nanoid = customAlphabet('asdqwezxcbnmjkl_#$', 5)
 
 export const getAllPlacesData = async (req, res, next) => {
     console.log("\nSTATIC GET ALL HISTORIC PLACES API\n")
+    const { type } = req.body
 
     let getData
     try {
