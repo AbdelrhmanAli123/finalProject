@@ -130,7 +130,7 @@ export const isAuth = (roles = []) => {
                     // generate a new token
                     const newToken = generateToken({
                         signature: process.env.LOGIN_SECRET_KEY,
-                        expiresIn: '3m',
+                        expiresIn: '1d',
                         payload: {
                             email: userData.email,
                             role: userData.role

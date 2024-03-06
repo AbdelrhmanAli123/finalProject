@@ -182,7 +182,7 @@ export const touristLogIn = async (req, res, next) => {
     }
 
     const token = generateToken({
-        expiresIn: '3m',
+        expiresIn: '1d',
         signature: process.env.LOGIN_SECRET_KEY,
         payload: {
             email: getUser.email,
