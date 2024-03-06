@@ -13,15 +13,18 @@ export const getAllTrips = async (req, res, next) => {
         delete filterQuery[param]
     })
 
+
+    // HANDLE THE FILTERING if it didn't exist and if it got errors 
     const mongooseQuery = TourGuideTripsModel.find(
         JSON.parse(JSON.stringify(filterQuery).replace(/(gt|gte|lt|lte|in|nin|eq|neq)/g), match => `$${match}`)
-    )
+    ).populate()
 
+    // select the profile image , email
     if (req.query.sort) {
         mongooseQuery.sort(req.query.sort.replaceAll(",", " "))
     }
 
-    if (req.qeury.page && req.query.size) {
+    if (req.query.page && req.query.size) {
         const { skip, limit } = paginate(req.query.page, req.query.size)
         mongooseQuery.limit(limit).skip(skip)
     }

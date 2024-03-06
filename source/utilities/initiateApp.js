@@ -54,7 +54,7 @@ const initiateApp = (app, express) => {
             message: "socket connected!",
             socketId: socket.id,
             socket: socket,
-            socket_handshake_headers: socket.handshake.headers
+            socket_handshake_headers: socket.handshake.headers // use this to see "email" in the sockete and save the socket id in the data base
         })
         // EDIT : take the email with the connection
         socket.on('signing', async (id) => {

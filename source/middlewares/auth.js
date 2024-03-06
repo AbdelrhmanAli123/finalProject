@@ -93,7 +93,7 @@ export const isAuth = (roles = []) => {
                     }
                     console.log({ message: "user is authorized!" })
                 }
-                console.log("\nAUTHORIZATION IS SUCCESSFULL\n")
+                console.log("\nAUTHORIZATION IS SUCCESSFUL\n")
                 req.authUser = getUser
                 req.userRole = getUser.role
                 next()
@@ -130,7 +130,7 @@ export const isAuth = (roles = []) => {
                     // generate a new token
                     const newToken = generateToken({
                         signature: process.env.LOGIN_SECRET_KEY,
-                        expiresIn: '1d',
+                        expiresIn: '3m',
                         payload: {
                             email: userData.email,
                             role: userData.role

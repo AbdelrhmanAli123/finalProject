@@ -550,7 +550,7 @@ export const TG_login = async (req, res, next) => {
     }
 
     const token = generateToken({
-        expiresIn: '1d',
+        expiresIn: '3m',
         signature: process.env.LOGIN_SECRET_KEY,
         payload: {
             email: getUser.email,
