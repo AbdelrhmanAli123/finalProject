@@ -17,10 +17,15 @@ export const getAllTrips = async (req, res, next) => {
     // HANDLE THE FILTERING if it didn't exist and if it got errors 
     const mongooseQuery = TourGuideTripsModel.find()
     mongooseQuery.populate(
-        {
-            path: 'TourGuides',
-            select: 'profilePicture.secure_url email -createdTrips'
-        }
+        [
+            {
+                path: 'TourGuides',
+                select: 'profilePicture.secure_url email -createdTrips'
+            },
+            {
+                path: 'tripDetails'
+            }
+        ]
     )
 
     // JSON.parse(JSON.stringify(filterQuery).replace(/(gt|gte|lt|lte|in|nin|eq|neq)/g), match => `$${match}`)
