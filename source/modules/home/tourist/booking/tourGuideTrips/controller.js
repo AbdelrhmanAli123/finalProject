@@ -21,7 +21,7 @@ export const getAllTrips = async (req, res, next) => {
     mongooseQuery.populate(
         [
             {
-                path: 'TourGuides',
+                path: 'createdBy',
                 select: 'profilePicture.secure_url email -createdTrips'
             },
             {
