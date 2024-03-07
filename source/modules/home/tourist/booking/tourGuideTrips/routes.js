@@ -11,4 +11,10 @@ router.get(
     asyncHandler(BookingCont.getAllTrips)
 )
 
+router.get(
+    '/viewTourGuide',
+    isAuth(BookingRoles.viewTourGuide),
+    asyncHandler(BookingCont.getTheTourGuideProfile)
+)
+
 export default router

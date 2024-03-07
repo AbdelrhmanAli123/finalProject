@@ -5,8 +5,10 @@ import { tripDaysModel } from '../../../../../dataBase/models/TGtripDays.model.j
 import { paginate } from '../../../../../utilities/pagination.js'
 import cloudinary from '../../../../../services/cloudinary.js'
 import { emailService } from '../../../../../services/mailService.js'
+import { getIo } from '../../../../../utilities/ioGeneration.js'
+import { StatusCodes } from 'http-status-codes'
 
 export {
     TourGuideTripsModel, paginate, tourGuideModel, touristModel, tripDaysModel,
-    cloudinary, emailService
+    cloudinary, emailService, StatusCodes, getIo
 }
