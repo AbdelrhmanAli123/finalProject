@@ -22,7 +22,7 @@ export const getAllTrips = async (req, res, next) => {
         [
             {
                 path: 'createdBy',
-                select: 'profilePicture.secure_url email -createdTrips'
+                select: 'profilePicture.secure_url email'
             },
             {
                 path: 'tripDetails'
