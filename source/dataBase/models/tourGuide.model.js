@@ -136,7 +136,10 @@ const schema = new Schema({
     createdTrips: [{
         type: Schema.Types.ObjectId,
         ref: 'TourGuideTrip'
-    }]
+    }],
+    socketID: {
+        type: String,
+    }
 }, {
     timestamps: true
 })

@@ -100,6 +100,9 @@ const touristSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'entertainmentMP_place'
     }],
+    socketID: {
+        type: String,
+    }
     // address: { (real time -> socket.io)
     // }
     // refreshCounter : {

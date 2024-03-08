@@ -8,7 +8,7 @@ import cors from 'cors'
 
 import { touristModel } from '../dataBase/models/tourist.model.js'
 import { tourGuideModel } from '../dataBase/models/tourGuide.model.js'
-import { checkUserExists } from '../utilities/signUpCheck.js'
+import { checkUserExists, saveUserSocket } from '../utilities/signUpCheck.js'
 import axios from "axios"
 
 const initiateApp = (app, express) => {
@@ -50,13 +50,17 @@ const initiateApp = (app, express) => {
     })
     let clients = {}
     const io = initiateIo(server)
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
         console.log({
             message: "socket connected!",
             socketId: socket.id,
             socket: socket,
             socket_handshake_headers: socket.handshake.headers // use this to see "email" in the socket and save the socket id in the data base
         })
+
+        // TODO : discuss the error handling with front-end
+        const saveSocketID = await saveUserSocket(socket.handshake.headers.email, socket.id)
+
         // EDIT : take the email with the connection
         socket.on('signing', async (id) => {
             console.log(id);

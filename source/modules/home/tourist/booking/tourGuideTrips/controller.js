@@ -12,6 +12,10 @@ export const getAllTrips = async (req, res, next) => {
         delete filterQuery[param]
     })
 
+    console.log({
+        query_after_parsing: JSON.parse(JSON.stringify(filterQuery).replace(/(gt|gte|lt|lte|in|nin|eq|neq)/g, match => `$${match}`))
+    })
+
     // filter query params example :   stock[$lte]=50 -> stock: {'$lte':'50'}
 
     // HANDLE THE FILTERING if it didn't exist and if it got errors 

@@ -49,3 +49,38 @@ export const checkUserExists = async (email) => {
 //     })
 //     return next(new Error('userName already exists!', { cause: 400 }))
 // }
+
+export const saveUserSocket = async (email, socketID) => {
+    try {
+        const getUser = await Promise.all([
+            touristModel.findOneAndUpdate({ email }, { socketID }).select('userName email socketID'),
+            tourGuideModel.findOneAndUpdate({ email }, { socketID }).select('firstName email socketID')
+        ])
+
+        if (!getUser) {
+            console.log({ message: "user has not been found anywhere!" })
+            return false
+        }
+
+        if (getUser[0]) {
+            console.log({
+                message: "tourist found!",
+                found_tourist: getUser[0]
+            })
+            return true
+        } else if (getUser[1]) {
+            console.log({
+                message: "tour guide found!",
+                found_tour_guide: getUser[1]
+            })
+            return true
+        }
+        return false
+    } catch (error) {
+        console.log({
+            error_message: "failed to find the user and update the socketID",
+            error: error
+        })
+        return false
+    }
+}
