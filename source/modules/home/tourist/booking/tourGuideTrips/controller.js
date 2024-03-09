@@ -71,7 +71,10 @@ export const getTheTourGuideProfile = async (req, res, next) => {
         )
         .populate(
             {
-                path: 'createdTrips'
+                path: 'createdTrips',
+                populate: {
+                    path: 'tripDetails'
+                }
             }
         )
     if (!getTourGuide) {
