@@ -21,4 +21,10 @@ router.get(
     asyncHandler(ChatCont.getRecentChats)
 )
 
+router.get(
+    '/getChat',
+    isAuth(ChatRoles.getRecentChat),
+    asyncHandler(ChatCont.getChat)
+)
+
 export default router

@@ -3,6 +3,17 @@ import {
     cloudinary, emailService, StatusCodes, getIo
 } from './controller.imports.js'
 
+export const getTripsLength = async (req, res, next) => {
+    const AllTrips = await TourGuideTripsModel.find()
+    let length = 0
+    AllTrips.forEach((trip) => {
+        length++
+    })
+    res.json({
+        tripsLength: length
+    })
+}
+
 export const getAllTrips = async (req, res, next) => {
     const getUser = req.authUser
     console.log({ query: req.query })
@@ -33,7 +44,6 @@ export const getAllTrips = async (req, res, next) => {
             }
         ]
     )
-
     // JSON.parse(JSON.stringify(filterQuery).replace(/(gt|gte|lt|lte|in|nin|eq|neq)/g, match => `$${match}`))
     // select the profile image , email
     if (req.query.sort) {
@@ -45,9 +55,10 @@ export const getAllTrips = async (req, res, next) => {
         mongooseQuery.limit(limit).skip(skip)
     }
 
+
     const result = await mongooseQuery
     res.status(200).json({
-        tourGuideTrips: result
+        tourGuideTrips: result,
     })
 }
 

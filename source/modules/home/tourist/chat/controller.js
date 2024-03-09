@@ -96,5 +96,29 @@ export const getRecentChats = async (req, res, next) => {
 }
 
 export const getChat = async (req, res, next) => {
+    const user = req.authUser
+    const { chatID } = req.body
 
+    const getChat = await chatModel.findOne({
+        $and: [
+            { _id: chatID },
+            {
+                $or: [
+                    { 'POne.ID': user._id },
+                    { 'PTwo.ID': user._id }
+                ]
+            }
+        ]
+    })
+
+    if (!getChat) {
+        console.log({ error_message: "either the chat doesn't include the user or the chat doesn't exist" })
+        return next(new Error("either the chat doesn't include the user or the chat doesn't exist", { cause: StatusCodes.BAD_REQUEST }))
+    }
+    console.log({ message: "chat found", found_chat: getChat })
+
+    res.status(StatusCodes.OK).json({
+        message: "chat is found!",
+        chat: getChat
+    })
 }

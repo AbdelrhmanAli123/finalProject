@@ -6,6 +6,12 @@ import {
 const router = Router()
 
 router.get(
+    '/getTripsLength',
+    isAuth(BookingRoles.GetTG_trips),
+    asyncHandler(BookingCont.getTripsLength)
+)
+
+router.get(
     '/getAllTrips',
     isAuth(BookingRoles.GetTG_trips),
     asyncHandler(BookingCont.getAllTrips)
