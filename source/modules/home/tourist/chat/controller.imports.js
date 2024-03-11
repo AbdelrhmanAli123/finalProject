@@ -6,7 +6,8 @@ import momentTZ from 'moment-timezone'
 import moment from 'moment'
 import StatusCodes from 'http-status-codes'
 import { getIo } from '../../../../utilities/ioGeneration.js'
+import { statuses } from '../../../../utilities/activityStatuses.js'
 
 export {
-    bcrypt, chatModel, tourGuideModel, touristModel, moment, momentTZ, StatusCodes, getIo
+    bcrypt, chatModel, tourGuideModel, touristModel, moment, momentTZ, StatusCodes, getIo, statuses
 }

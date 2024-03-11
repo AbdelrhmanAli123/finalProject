@@ -17,20 +17,30 @@ router.post(
 
 router.get(
     '/getRecentChats',
+    validationCoreFunction(ChatVS.getRecentChatsSchema),
     isAuth(ChatRoles.getRecentChat),
     asyncHandler(ChatCont.getRecentChats)
 )
 
 router.get(
     '/getChat',
-    isAuth(ChatRoles.getRecentChat),
+    validationCoreFunction(ChatVS.getChatSchema),
+    isAuth(ChatRoles.getChat),
     asyncHandler(ChatCont.getChat)
 )
 
 router.get(
     '/getTGMeta',
-    isAuth(ChatRoles.getRecentChat),
+    validationCoreFunction(ChatVS.getTGMetaSchema),
+    isAuth(ChatRoles.getTGMeta),
     asyncHandler(ChatCont.getTGMeta)
+)
+
+router.post(
+    '/sendMessage',
+    validationCoreFunction(ChatVS.sendMessageSchema),
+    isAuth(ChatRoles.sendMessage),
+    asyncHandler(ChatCont.sendMessage)
 )
 
 export default router

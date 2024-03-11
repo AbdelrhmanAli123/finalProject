@@ -1,5 +1,5 @@
 import {
-    bcrypt, chatModel, tourGuideModel, touristModel, moment, momentTZ, StatusCodes, getIo
+    bcrypt, chatModel, tourGuideModel, touristModel, moment, momentTZ, StatusCodes, getIo, statuses
 } from './controller.imports.js'
 
 export const MomentTest = async (req, res, next) => {
@@ -41,10 +41,6 @@ export const MomentTest = async (req, res, next) => {
         fixed_time: DateFixedVariable
         // currentTime: nowTime
     })
-}
-
-export const getTourGuidesMeta = async (req, res, next) => {
-
 }
 
 export const AddChatManually = async (req, res, next) => {
@@ -95,7 +91,7 @@ export const getRecentChats = async (req, res, next) => {
 
 export const getChat = async (req, res, next) => {
     const user = req.authUser
-    const { chatID } = req.body
+    const { chatID } = req.body // database ID
 
     const getChat = await chatModel.findOne({
         $and: [
@@ -140,7 +136,7 @@ export const getTGMeta = async (req, res, next) => {
 export const sendMessage = async (req, res, next) => {
     // TODO : change later to Email instead of _id in the model and the get APIs
     const { _id } = req.authUser // sender
-    const { destID, message, destEmail } = req.body
+    const { destID, message } = req.body
     const getChat = await chatModel.findOne({
         $or: [
             {
@@ -168,9 +164,27 @@ export const sendMessage = async (req, res, next) => {
         chat: getChat
     })
 
-    // const getReceiver = await Promise.all([
-    //     touristModel
-    // ])
+    const getReceiver = await Promise.all([
+        touristModel.findById(destID),
+        tourGuideModel.findById(destID)
+    ])
+
+    let receiverSocket
+    if (getReceiver[0]) {
+        if (getReceiver[0].socketID !== null && getReceiver[0].status === statuses.online) {
+            receiverSocket = getReceiver[0].socketID
+        } else {
+            console.log({ error_message: "user either has no socketID or he is not online!" })
+            return next(new Error("user either has no socketID or he is not online!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+        }
+    } else if (getReceiver[1]) {
+        if (getReceiver[1].socketID !== null && getReceiver[1].status === statuses.online) {
+            receiverSocket = getReceiver[1].socketID
+        } else {
+            console.log({ error_message: "user either has no socketID or he is not online!" })
+            return next(new Error("user either has no socketID or he is not online!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+        }
+    }
 
     const messageData = {
         from: _id,
@@ -183,5 +197,11 @@ export const sendMessage = async (req, res, next) => {
     await getChat.save()
     console.log({ new_chat_messages: getChat.messages })
 
-    getIo.to()
+    messageData.date = Date.now()
+
+    getIo.to(receiverSocket).emit('sendMessage', messageData)
+
+    res.status(200).json({
+        message: "message sent"
+    })
 }
