@@ -1,5 +1,5 @@
 import {
-    bcrypt, chatModel, tourGuideModel, touristModel, moment, momentTZ, StatusCodes
+    bcrypt, chatModel, tourGuideModel, touristModel, moment, momentTZ, StatusCodes, getIo
 } from './controller.imports.js'
 
 export const MomentTest = async (req, res, next) => {
@@ -135,5 +135,53 @@ export const getTGMeta = async (req, res, next) => {
         message: "tour guides meta data found",
         tourGuides: getTGs
     })
+}
 
+export const sendMessage = async (req, res, next) => {
+    // TODO : change later to Email instead of _id in the model and the get APIs
+    const { _id } = req.authUser // sender
+    const { destID, message, destEmail } = req.body
+    const getChat = await chatModel.findOne({
+        $or: [
+            {
+                $and: [
+                    { 'POne.ID': _id },
+                    { 'PTwo.ID': destID }
+                ]
+            },
+            {
+                $and: [
+                    { 'POne.ID': destID },
+                    { 'PTwo.ID': _id }
+                ]
+            }
+        ]
+    })
+
+    if (!getChat) {
+        console.log({ message: "chat is not found!" })
+        return next(new Error('chat is not found!', { cause: StatusCodes.BAD_REQUEST }))
+    }
+
+    console.log({
+        message: "chat is found!",
+        chat: getChat
+    })
+
+    // const getReceiver = await Promise.all([
+    //     touristModel
+    // ])
+
+    const messageData = {
+        from: _id,
+        to: destID,
+        message: message,
+    }
+
+    getChat.messages.push(messageData)
+    console.log({ new_chat_messages: getChat.messages })
+    await getChat.save()
+    console.log({ new_chat_messages: getChat.messages })
+
+    getIo.to()
 }
