@@ -156,7 +156,25 @@ export const sendMessage = async (req, res, next) => {
 
     if (!getChat) {
         console.log({ message: "chat is not found!" })
-        return next(new Error('chat is not found!', { cause: StatusCodes.BAD_REQUEST }))
+        // create a new chat
+        let newChatData = {
+            POne: {
+                ID: _id
+            },
+            PTwo: {
+                ID: destID
+            },
+            messages: [
+                {
+                    from: _id,
+                    to: destID,
+                    message: message,
+                    date: Date.now()
+                }
+            ]
+        }
+        await chatModel.create(newChatData).then(() => console.log({ message: "new chat is created!" }))
+        newChatData = null
     }
 
     console.log({

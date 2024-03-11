@@ -40,6 +40,10 @@ const schema = new Schema({
         },
         image: {
             secure_url: String
+        },
+        name: {
+            type: String,
+            required: true
         }
     },
     PTwo: { // first receiver
@@ -50,6 +54,10 @@ const schema = new Schema({
         },
         image: {
             secure_url: String
+        },
+        name: {
+            type: String,
+            required: true
         }
     },
     messages: [
@@ -86,28 +94,32 @@ const schema = new Schema({
 // pre and post are some sore of automation , i want to automate the saving of 'lastDate' field to be exactly the same as the last messages.date field
 schema.pre('save', async function (next) {
     const getUser = await Promise.all([
-        touristModel.findById(this.POne.ID).select('profilePicture.secure_url'),
-        tourGuideModel.findById(this.POne.ID).select('profilePicture.secure_url'),
-        touristModel.findById(this.PTwo.ID).select('profilePicture.secure_url'),
-        tourGuideModel.findById(this.PTwo.ID).select('profilePicture.secure_url')
+        touristModel.findById(this.POne.ID).select('profilePicture.secure_url userName'),
+        tourGuideModel.findById(this.POne.ID).select('profilePicture.secure_url firstName'),
+        touristModel.findById(this.PTwo.ID).select('profilePicture.secure_url userName'),
+        tourGuideModel.findById(this.PTwo.ID).select('profilePicture.secure_url firstName')
     ])
     if (getUser[0]) {
         if (getUser[0].profilePicture) {
             this.POne.image.secure_url = getUser[0].profilePicture.secure_url
+            this.POne.name = getUser[0].userName
         }
     } else if (getUser[1]) {
         if (getUser[1].profilePicture) {
             this.POne.image.secure_url = getUser[1].profilePicture.secure_url
+            this.POne.name = getUser[1].firstName
         }
     }
 
     if (getUser[2]) {
         if (getUser[2].profilePicture) {
             this.PTwo.image.secure_url = getUser[2].profilePicture.secure_url
+            this.PTwo.name = getUser[2].userName
         }
     } else if (getUser[3]) {
         if (getUser[3].profilePicture) {
             this.PTwo.image.secure_url = getUser[3].profilePicture.secure_url
+            this.PTwo.name = getUser[3].firstName
         }
     }
 
