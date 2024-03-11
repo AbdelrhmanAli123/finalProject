@@ -65,11 +65,9 @@ export const getRecentChats = async (req, res, next) => {
             { 'PTwo.ID': user._id }
         ],
     }).sort({ lastDate: -1 })
-    if (!getAllAssocChats) {
+    if (getAllAssocChats.length == null || getAllAssocChats.length == 0) {
         console.log({ message: "the user has no chats" })
-        return res.status(StatusCodes.NO_CONTENT).json({
-            message: "the user has not chatted yet!"
-        }) // 204
+        return res.status(StatusCodes.NO_CONTENT).json() // 204
     }
     console.log({ getAllAssocChats })
 
@@ -120,5 +118,21 @@ export const getChat = async (req, res, next) => {
     res.status(StatusCodes.OK).json({
         message: "chat is found!",
         chat: getChat
+    })
+}
+
+export const getTGMeta = async (req, res, next) => {
+    const getTGs = await tourGuideModel.find().select('-_id firstName profilePicture.secure_url status')
+
+    if (!getTGs) {
+        console.log({
+            message: "no tour guides were found!"
+        })
+        return next(new Error('no tour guides were found!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+
+    res.status(200).json({
+        message: "tour guides meta data found",
+        tourGuides: getTGs
     })
 }

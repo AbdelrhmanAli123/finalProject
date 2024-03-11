@@ -27,4 +27,10 @@ router.get(
     asyncHandler(ChatCont.getChat)
 )
 
+router.get(
+    '/getTGMeta',
+    isAuth(ChatRoles.getRecentChat),
+    asyncHandler(ChatCont.getTGMeta)
+)
+
 export default router
