@@ -92,6 +92,10 @@ export const getRecentChats = async (req, res, next) => {
 export const getChat = async (req, res, next) => {
     const user = req.authUser
     const { chatID } = req.body // database ID
+    console.log({
+        request_body: req.body,
+        chatID: req.body.chatID
+    })
 
     const getChat = await chatModel.findOne({
         $and: [
