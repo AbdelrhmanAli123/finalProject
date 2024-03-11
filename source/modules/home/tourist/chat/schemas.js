@@ -9,7 +9,7 @@ export const getRecentChatsSchema = {
 
 export const getChatSchema = {
     body: joi.object({
-        ChatID: generalFields._id
+        chatID: generalFields._id
     }),
     headers: joi.object({
         authorization: generalFields.jwtToken

@@ -199,7 +199,7 @@ export const sendMessage = async (req, res, next) => {
 
     messageData.date = Date.now()
 
-    getIo.to(receiverSocket).emit('sendMessage', messageData)
+    getIo.to(receiverSocket).emit('receiveMessage', messageData)
 
     res.status(200).json({
         message: "message sent"
