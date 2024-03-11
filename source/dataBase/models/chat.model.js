@@ -100,26 +100,26 @@ schema.pre('save', async function (next) {
         tourGuideModel.findById(this.PTwo.ID).select('profilePicture.secure_url firstName')
     ])
     if (getUser[0]) {
+        this.POne.name = getUser[0].userName
         if (getUser[0].profilePicture) {
             this.POne.image.secure_url = getUser[0].profilePicture.secure_url
-            this.POne.name = getUser[0].userName
         }
     } else if (getUser[1]) {
+        this.POne.name = getUser[1].firstName
         if (getUser[1].profilePicture) {
             this.POne.image.secure_url = getUser[1].profilePicture.secure_url
-            this.POne.name = getUser[1].firstName
         }
     }
 
     if (getUser[2]) {
+        this.PTwo.name = getUser[2].userName
         if (getUser[2].profilePicture) {
             this.PTwo.image.secure_url = getUser[2].profilePicture.secure_url
-            this.PTwo.name = getUser[2].userName
         }
     } else if (getUser[3]) {
+        this.PTwo.name = getUser[3].firstName
         if (getUser[3].profilePicture) {
             this.PTwo.image.secure_url = getUser[3].profilePicture.secure_url
-            this.PTwo.name = getUser[3].firstName
         }
     }
 
