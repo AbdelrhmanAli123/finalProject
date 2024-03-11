@@ -135,4 +135,5 @@ export const getTGMeta = async (req, res, next) => {
         message: "tour guides meta data found",
         tourGuides: getTGs
     })
+
 }
