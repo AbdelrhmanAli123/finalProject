@@ -43,6 +43,9 @@ const schema = new Schema({
         },
         name: {
             type: String,
+        },
+        email: {
+            type: String
         }
     },
     PTwo: { // first receiver
@@ -56,18 +59,23 @@ const schema = new Schema({
         },
         name: {
             type: String,
+        },
+        email: {
+            type: String
         }
     },
     messages: [
         {
             from: {
-                type: Schema.Types.ObjectId,
-                refPath: 'PRoles',
+                type: String,
+                // type: Schema.Types.ObjectId,
+                // refPath: 'PRoles',
                 required: true
             },
             to: {
-                type: Schema.Types.ObjectId,
-                refPath: 'PRoles',
+                type: String, // email
+                // type: Schema.Types.ObjectId,
+                // refPath: 'PRoles',
                 required: true
             },
             // first , define it as a string
@@ -92,18 +100,20 @@ const schema = new Schema({
 // pre and post are some sore of automation , i want to automate the saving of 'lastDate' field to be exactly the same as the last messages.date field
 schema.pre('save', async function (next) {
     const getUser = await Promise.all([
-        touristModel.findById(this.POne.ID).select('profilePicture.secure_url userName'),
-        tourGuideModel.findById(this.POne.ID).select('profilePicture.secure_url firstName'),
-        touristModel.findById(this.PTwo.ID).select('profilePicture.secure_url userName'),
-        tourGuideModel.findById(this.PTwo.ID).select('profilePicture.secure_url firstName')
+        touristModel.findById(this.POne.ID).select('profilePicture.secure_url userName email'),
+        tourGuideModel.findById(this.POne.ID).select('profilePicture.secure_url firstName email'),
+        touristModel.findById(this.PTwo.ID).select('profilePicture.secure_url userName email'),
+        tourGuideModel.findById(this.PTwo.ID).select('profilePicture.secure_url firstName email')
     ])
     if (getUser[0]) {
         this.POne.name = getUser[0].userName
+        this.POne.email = getUser[0].email
         if (getUser[0].profilePicture) {
             this.POne.image.secure_url = getUser[0].profilePicture.secure_url
         }
     } else if (getUser[1]) {
         this.POne.name = getUser[1].firstName
+        this.POne.email = getUser[1].email
         if (getUser[1].profilePicture) {
             this.POne.image.secure_url = getUser[1].profilePicture.secure_url
         }
@@ -111,11 +121,13 @@ schema.pre('save', async function (next) {
 
     if (getUser[2]) {
         this.PTwo.name = getUser[2].userName
+        this.PTwo.email = getUser[2].email
         if (getUser[2].profilePicture) {
             this.PTwo.image.secure_url = getUser[2].profilePicture.secure_url
         }
     } else if (getUser[3]) {
         this.PTwo.name = getUser[3].firstName
+        this.PTwo.email = getUser[3].email
         if (getUser[3].profilePicture) {
             this.PTwo.image.secure_url = getUser[3].profilePicture.secure_url
         }

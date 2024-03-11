@@ -60,7 +60,7 @@ export const getRecentChats = async (req, res, next) => {
             { 'POne.ID': user._id },
             { 'PTwo.ID': user._id }
         ],
-    }).sort({ lastDate: -1 })
+    }).select('-POne.ID -PTwo.ID').sort({ lastDate: -1 })
     if (getAllAssocChats.length == null || getAllAssocChats.length == 0) {
         console.log({ message: "the user has no chats" })
         return res.status(StatusCodes.NO_CONTENT).json() // 204
@@ -75,10 +75,10 @@ export const getRecentChats = async (req, res, next) => {
             chat.messages = chat.messages.at(-1)
         }
         // i want to null the meta data of the auth User and leave the meta data of his versus chat participant , so i check which one the request user is and i null him
-        if (chat.POne.ID.toString() === user._id.toString()) {
-            chat.POne.ID = null
+        if (chat.POne.email === user.email) {
+            chat.POne.email = null
         } else {
-            chat.PTwo.ID = null
+            chat.PTwo.email = null
         }
     })
     console.log({ result_after_editing: result })
@@ -91,15 +91,16 @@ export const getRecentChats = async (req, res, next) => {
 
 export const getChat = async (req, res, next) => {
     const user = req.authUser
-    const { chatID } = req.body // database ID
+    const { chatid } = req.headers // database ID
     console.log({
         request_body: req.body,
-        chatID: req.body.chatID
+        chatid: req.body.chatid,
+        headers: req.headers
     })
 
     const getChat = await chatModel.findOne({
         $and: [
-            { _id: chatID },
+            { _id: chatid },
             {
                 $or: [
                     { 'POne.ID': user._id },
@@ -107,7 +108,7 @@ export const getChat = async (req, res, next) => {
                 ]
             }
         ]
-    })
+    }).select('-POne.ID -PTwo.ID')
 
     if (!getChat) {
         console.log({ error_message: "either the chat doesn't include the user or the chat doesn't exist" })
@@ -122,7 +123,7 @@ export const getChat = async (req, res, next) => {
 }
 
 export const getTGMeta = async (req, res, next) => {
-    const getTGs = await tourGuideModel.find().select('-_id firstName profilePicture.secure_url status')
+    const getTGs = await tourGuideModel.find().select('-_id firstName profilePicture.secure_url status email')
 
     if (!getTGs) {
         console.log({
@@ -139,24 +140,35 @@ export const getTGMeta = async (req, res, next) => {
 
 export const sendMessage = async (req, res, next) => {
     // TODO : change later to Email instead of _id in the model and the get APIs
-    const { _id } = req.authUser // sender
-    const { destID, message } = req.body
+    const { _id, email } = req.authUser // sender
+    const { destEmail, message } = req.body
     const getChat = await chatModel.findOne({
         $or: [
             {
                 $and: [
-                    { 'POne.ID': _id },
-                    { 'PTwo.ID': destID }
+                    { 'POne.email': email },
+                    { 'PTwo.email': destEmail }
                 ]
             },
             {
                 $and: [
-                    { 'POne.ID': destID },
-                    { 'PTwo.ID': _id }
+                    { 'POne.email': destEmail },
+                    { 'PTwo.email': email }
                 ]
             }
         ]
     })
+
+    const secondParticipant = await Promise.all([
+        touristModel.findOne({ email: destEmail }),
+        tourGuideModel.findOne({ email: destEmail })
+    ])
+    let secondPId
+    if (secondParticipant[0]) {
+        secondPId = secondParticipant[0]._id
+    } else {
+        secondPId = secondParticipant[1]._id
+    }
 
     if (!getChat) {
         console.log({ message: "chat is not found!" })
@@ -166,12 +178,12 @@ export const sendMessage = async (req, res, next) => {
                 ID: _id
             },
             PTwo: {
-                ID: destID
+                ID: secondPId
             },
             messages: [
                 {
-                    from: _id,
-                    to: destID,
+                    from: email,
+                    to: destEmail,
                     message: message,
                     date: Date.now()
                 }
@@ -187,8 +199,8 @@ export const sendMessage = async (req, res, next) => {
     })
 
     const getReceiver = await Promise.all([
-        touristModel.findById(destID),
-        tourGuideModel.findById(destID)
+        touristModel.findById(destEmail),
+        tourGuideModel.findById(destEmail)
     ])
 
     let receiverSocket
@@ -210,7 +222,7 @@ export const sendMessage = async (req, res, next) => {
 
     const messageData = {
         from: _id,
-        to: destID,
+        to: destEmail,
         message: message,
     }
 

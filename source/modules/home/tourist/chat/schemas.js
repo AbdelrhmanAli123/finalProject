@@ -8,11 +8,12 @@ export const getRecentChatsSchema = {
 }
 
 export const getChatSchema = {
-    body: joi.object({
-        chatID: generalFields._id
-    }),
+    // body: joi.object({
+    //     chatID: generalFields._id
+    // }),
     headers: joi.object({
-        authorization: generalFields.jwtToken
+        authorization: generalFields.jwtToken,
+        chatid: generalFields._id
     }).presence('required').unknown(true)
 }
 
