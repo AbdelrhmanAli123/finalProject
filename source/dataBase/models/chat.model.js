@@ -43,7 +43,6 @@ const schema = new Schema({
         },
         name: {
             type: String,
-            required: true
         }
     },
     PTwo: { // first receiver
@@ -57,7 +56,6 @@ const schema = new Schema({
         },
         name: {
             type: String,
-            required: true
         }
     },
     messages: [
