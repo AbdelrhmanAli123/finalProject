@@ -142,7 +142,7 @@ export const sendMessage = async (req, res, next) => {
     // TODO : change later to Email instead of _id in the model and the get APIs
     const { _id, email } = req.authUser // sender
     const { destEmail, message } = req.body
-    const getChat = await chatModel.findOne({
+    let getChat = await chatModel.findOne({
         $or: [
             {
                 $and: [
@@ -189,7 +189,7 @@ export const sendMessage = async (req, res, next) => {
                 }
             ]
         }
-        await chatModel.create(newChatData).then(() => console.log({ message: "new chat is created!" }))
+        getChat = await chatModel.create(newChatData).then(() => console.log({ message: "new chat is created!" }))
         newChatData = null
     }
 
