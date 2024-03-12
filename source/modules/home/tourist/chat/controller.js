@@ -54,6 +54,7 @@ export const AddChatManually = async (req, res, next) => {
 }
 
 export const getRecentChats = async (req, res, next) => {
+    console.log("\nGET RECENT CHATS\n")
     const user = req.authUser
     const getAllAssocChats = await chatModel.find({
         $or: [
@@ -68,7 +69,7 @@ export const getRecentChats = async (req, res, next) => {
     console.log({ getAllAssocChats })
 
     let result = getAllAssocChats
-    console.log({ result })
+    console.log({ chats: result })
     result.forEach((chat) => {
         // i want to send only the last message
         if (chat.messages.length > 0) {
@@ -81,8 +82,9 @@ export const getRecentChats = async (req, res, next) => {
             chat.PTwo.email = null
         }
     })
-    console.log({ result_after_editing: result })
+    console.log({ chats_after_editing: result })
 
+    console.log("\nGET RECENT CHATS IS DONE\n")
     return res.status(StatusCodes.OK).json({
         message: "chats found!",
         chats: result
@@ -90,6 +92,7 @@ export const getRecentChats = async (req, res, next) => {
 }
 
 export const getChat = async (req, res, next) => {
+    console.log("\nGET CHAT API\n")
     const user = req.authUser
     const { chatid } = req.headers // database ID
     console.log({
@@ -116,6 +119,7 @@ export const getChat = async (req, res, next) => {
     }
     console.log({ message: "chat found", found_chat: getChat })
 
+    console.log("\nGET CHAT API IS DONE!\n")
     res.status(StatusCodes.OK).json({
         message: "chat is found!",
         chat: getChat
@@ -123,6 +127,7 @@ export const getChat = async (req, res, next) => {
 }
 
 export const getTGMeta = async (req, res, next) => {
+    console.log("\nGET TG META API\n")
     const getTGs = await tourGuideModel.find().select('-_id firstName profilePicture.secure_url status email')
 
     if (!getTGs) {
@@ -131,7 +136,9 @@ export const getTGMeta = async (req, res, next) => {
         })
         return next(new Error('no tour guides were found!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
+    console.log({ message: "TourGuides are found", TG_meta: getTGs })
 
+    console.log("\nGET TG META API IS DONE!\n")
     res.status(200).json({
         message: "tour guides meta data found",
         tourGuides: getTGs
@@ -139,6 +146,7 @@ export const getTGMeta = async (req, res, next) => {
 }
 
 export const sendMessage = async (req, res, next) => {
+    console.log("\nSEND MESSAGE API\n")
     // TODO : change later to Email instead of _id in the model and the get APIs
     const { _id, email } = req.authUser // sender
     const { destEmail, message } = req.body
@@ -230,11 +238,12 @@ export const sendMessage = async (req, res, next) => {
     getChat.messages.push(messageData)
     console.log({ new_chat_messages: getChat.messages })
     await getChat.save()
-    console.log({ new_chat_messages: getChat.messages })
+    console.log({ message: "message is saved in database!", new_chat_messages: getChat.messages })
 
 
     getIo().to(receiverSocket).emit('receiveMessage', messageData)
-
+    console.log({ message: "message is sent by socketing" })
+    console.log("\nSEND MESSAGE API IS DONE!\n")
     res.status(200).json({
         message: "message sent"
     })
