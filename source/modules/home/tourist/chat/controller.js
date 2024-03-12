@@ -224,6 +224,7 @@ export const sendMessage = async (req, res, next) => {
         from: email,
         to: destEmail,
         message: message,
+        date: Date.now()
     }
 
     getChat.messages.push(messageData)
@@ -231,7 +232,6 @@ export const sendMessage = async (req, res, next) => {
     await getChat.save()
     console.log({ new_chat_messages: getChat.messages })
 
-    messageData.date = Date.now()
 
     getIo.to(receiverSocket).emit('receiveMessage', messageData)
 
