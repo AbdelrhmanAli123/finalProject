@@ -233,7 +233,7 @@ export const sendMessage = async (req, res, next) => {
     console.log({ new_chat_messages: getChat.messages })
 
 
-    getIo.to(receiverSocket).emit('receiveMessage', messageData)
+    getIo().to(receiverSocket).emit('receiveMessage', messageData)
 
     res.status(200).json({
         message: "message sent"
