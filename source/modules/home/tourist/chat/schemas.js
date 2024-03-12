@@ -25,7 +25,7 @@ export const getTGMetaSchema = {
 
 export const sendMessageSchema = {
     body: joi.object({
-        destEmail: generalFields._id,
+        destEmail: generalFields.email,
         message: joi.string().min(1).max(255)
     }),
     headers: joi.object({
