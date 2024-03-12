@@ -221,7 +221,7 @@ export const sendMessage = async (req, res, next) => {
     }
 
     const messageData = {
-        from: _id,
+        from: email,
         to: destEmail,
         message: message,
     }
