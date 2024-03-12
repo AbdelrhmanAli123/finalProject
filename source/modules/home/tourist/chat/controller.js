@@ -199,8 +199,8 @@ export const sendMessage = async (req, res, next) => {
     })
 
     const getReceiver = await Promise.all([
-        touristModel.findById(destEmail),
-        tourGuideModel.findById(destEmail)
+        touristModel.findOne({ email: destEmail }),
+        tourGuideModel.findOne({ email: destEmail })
     ])
 
     let receiverSocket
