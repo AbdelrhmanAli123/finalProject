@@ -148,6 +148,34 @@ export const getChat = async (req, res, next) => {
 //     },
 //     select: '_id'
 // }])
+
+// let result = []
+// // getTGs.map((doc) => doc.toObject())
+// getTGs.forEach((doc) => result.push(doc.toObject()))
+
+// result.forEach(async (tourGuide) => {
+//     const getChats = await chatModel.find({
+//         $or: [
+//             {
+//                 $and: [
+//                     { 'POne.email': tourGuide.email },
+//                     { 'PTwo.email': user.email }
+//                 ]
+//             },
+//             {
+//                 $and: [
+//                     { 'POne.email': user.email },
+//                     { 'PTwo.email': tourGuide.email }
+//                 ]
+//             }
+//         ]
+//     }).select('_id')
+//     console.log({
+//         TG_email: tourGuide.email,
+//         chats: getChats
+//     })
+//     tourGuide.chats = getChats
+// })
 export const getTGMeta = async (req, res, next) => {
     console.log("\nGET TG META API\n")
     const user = req.authUser
@@ -162,33 +190,6 @@ export const getTGMeta = async (req, res, next) => {
     }
     console.log({ message: "TourGuides are found", TG_meta: getTGs })
 
-    // let result = []
-    // // getTGs.map((doc) => doc.toObject())
-    // getTGs.forEach((doc) => result.push(doc.toObject()))
-
-    // result.forEach(async (tourGuide) => {
-    //     const getChats = await chatModel.find({
-    //         $or: [
-    //             {
-    //                 $and: [
-    //                     { 'POne.email': tourGuide.email },
-    //                     { 'PTwo.email': user.email }
-    //                 ]
-    //             },
-    //             {
-    //                 $and: [
-    //                     { 'POne.email': user.email },
-    //                     { 'PTwo.email': tourGuide.email }
-    //                 ]
-    //             }
-    //         ]
-    //     }).select('_id')
-    //     console.log({
-    //         TG_email: tourGuide.email,
-    //         chats: getChats
-    //     })
-    //     tourGuide.chats = getChats
-    // })
 
     const result = await Promise.all(getTGs.map(async (tourGuide) => {
         const getChats = await chatModel.find({
@@ -319,8 +320,9 @@ export const sendMessage = async (req, res, next) => {
     await getChat.save()
     console.log({ message: "message is saved in database!", new_chat_messages: getChat.messages })
 
-
+    console.log({ message_before: messageData })
     getIo().to(receiverSocket).emit('receiveMessage', messageData)
+    console.log({ message_after: messageData })
     console.log({ message: "message is sent by socketing" })
     console.log("\nSEND MESSAGE API IS DONE!\n")
     res.status(200).json({
