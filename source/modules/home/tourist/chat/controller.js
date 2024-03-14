@@ -125,10 +125,34 @@ export const getChat = async (req, res, next) => {
         chat: getChat
     })
 }
+// { $eq: ["POne.ID", "_id"] },
+// { $eq: ["PTwo.ID", "_id"] }
 
+// .populate([{
+//     path: 'chats',
+//     match: {
+//         $expr: {
+//             $or: [
+//                 {
+//                     $and: [
+//                         { $eq: ["$POne.ID", "$_id"] },
+//                         { $eq: ["$PTwo.ID", user._id] }
+//                     ],
+//                     $and: [
+//                         { $eq: ["$POne.ID", user._id] },
+//                         { $eq: ["PTwo.ID", "$_id"] }
+//                     ]
+//                 }
+//             ]
+//         }
+//     },
+//     select: '_id'
+// }])
 export const getTGMeta = async (req, res, next) => {
     console.log("\nGET TG META API\n")
-    const getTGs = await tourGuideModel.find().select('-_id firstName profilePicture.secure_url status email')
+    const user = req.authUser
+    const getTGs = await tourGuideModel.find()
+        .select('-_id firstName profilePicture.secure_url status email chats')
 
     if (!getTGs) {
         console.log({
@@ -138,10 +162,65 @@ export const getTGMeta = async (req, res, next) => {
     }
     console.log({ message: "TourGuides are found", TG_meta: getTGs })
 
+    // let result = []
+    // // getTGs.map((doc) => doc.toObject())
+    // getTGs.forEach((doc) => result.push(doc.toObject()))
+
+    // result.forEach(async (tourGuide) => {
+    //     const getChats = await chatModel.find({
+    //         $or: [
+    //             {
+    //                 $and: [
+    //                     { 'POne.email': tourGuide.email },
+    //                     { 'PTwo.email': user.email }
+    //                 ]
+    //             },
+    //             {
+    //                 $and: [
+    //                     { 'POne.email': user.email },
+    //                     { 'PTwo.email': tourGuide.email }
+    //                 ]
+    //             }
+    //         ]
+    //     }).select('_id')
+    //     console.log({
+    //         TG_email: tourGuide.email,
+    //         chats: getChats
+    //     })
+    //     tourGuide.chats = getChats
+    // })
+
+    const result = await Promise.all(getTGs.map(async (tourGuide) => {
+        const getChats = await chatModel.find({
+            $or: [
+                {
+                    $and: [
+                        { 'POne.email': tourGuide.email },
+                        { 'PTwo.email': user.email }
+                    ]
+                },
+                {
+                    $and: [
+                        { 'POne.email': user.email },
+                        { 'PTwo.email': tourGuide.email }
+                    ]
+                }
+            ]
+        }).select('_id')
+
+        console.log({
+            TG_email: tourGuide.email,
+            chats: getChats
+        })
+
+        tourGuide.chats = getChats
+        return tourGuide.toObject() // Convert to plain object
+    }))
+
     console.log("\nGET TG META API IS DONE!\n")
     res.status(200).json({
         message: "tour guides meta data found",
-        tourGuides: getTGs
+        tourGuides: result
     })
 }
 

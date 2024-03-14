@@ -3,8 +3,6 @@ import { systemRoles } from "../../utilities/systemRoles.js"
 import { statuses } from "../../utilities/activityStatuses.js"
 import { TourGuideTripsModel } from './tourGuideTrips.model.js'
 
-// TODO : add "socketId" field here
-
 const schema = new Schema({
     firstName: {
         type: String,
@@ -141,8 +139,19 @@ const schema = new Schema({
         type: String,
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
 })
+
+// this virtual field was made only as a link and was bypassed in a query that populates that field but with the bypassing expression (but failed)
+schema.virtual('chats', {
+    localField: '_id',
+    foreignField: 'POne.ID',
+    ref: 'Chats'
+})
+
+export const tourGuideModel = model('TourGuide', schema)
 
 // schema.pre('findOneAndDelete', async function (next) {
 //     const deleteRelatedTrips = await TourGuideTripsModel.deleteMany(this.createdTrips)
@@ -150,5 +159,3 @@ const schema = new Schema({
 // generate trips model
 
 // generate trip by the tourguide
-
-export const tourGuideModel = model('TourGuide', schema)
