@@ -12,3 +12,23 @@ export const createAItrip = {
         authorization: generalFields.jwtToken
     }).unknown(true)
 }
+
+export const getTripSchema = {
+    body: joi.object({
+        tripId: generalFields._id
+    }),
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).unknown(true)
+}
+
+export const getNearbySchema = {
+    query: joi.object({
+        long: joi.number().required(),
+        lat: joi.number().required(),
+        category: joi.string().valid('restaurants', 'hotels').optional()
+    }).presence('required'),
+    headers: joi.object({
+        authorization: generalFields.jwtToken
+    }).unknown(true)
+}

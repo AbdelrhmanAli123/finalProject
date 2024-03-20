@@ -7,7 +7,8 @@ const DayPlacesSchema = new Schema({
     latitude: Number,
     activity: String,
     category: String,
-    time: String
+    time: String,
+    budget: Number
 })
 
 const schema = new Schema({

@@ -109,6 +109,23 @@ export const asyncHandler = (API) => { // API -> api controller
                         async_handler_err: err
                     })
                 }
+                if (err.message === 'Request failed with status code 400') {
+                    console.log({
+                        axios_response: err.response.data.error
+                    })
+                }
+                // AxiosError: 
+                if (err.message === 'Request failed with status code 500') {
+                    console.log({
+                        axios_response: err.response.data
+                    })
+                }
+                // AxiosError: 
+                if (err.message === 'Request failed with status code 429') {
+                    console.log({
+                        axios_response: err.response.data
+                    })
+                }
                 console.log("\nASYNC HANDLER FINISHED!\n")
                 return next(new Error(`API failed to run !\nerror: ${err} \ncause: ${err.message}`, { cause: 500 }))
             })
