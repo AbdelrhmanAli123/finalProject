@@ -11,3 +11,14 @@ export const TGtripStatuses = {
     complete: 'Complete',
     empty: 'Empty'
 }
+
+export const TGtripRequestStatuses = {
+    accepted: 'accepted',
+    rejected: 'rejected',
+    not_handled: 'notHandled'
+}
+
+export const tripRequestAnswer = {
+    yes: 'yes',
+    no: 'no'
+}

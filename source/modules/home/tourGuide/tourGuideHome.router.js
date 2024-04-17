@@ -5,12 +5,14 @@ import { asyncHandler, isAuth, profileCont, profileVS, validationCoreFunction } 
 import tripRouter from './trip/routes.js'
 import profileRouter from './profile/routes.js'
 import settingsRouter from './settings/routes.js'
+import notificationsRouter from './notification/routes.js'
 
 const router = Router()
 
 router.use('/myTrips', tripRouter)
 router.use('/profile', profileRouter)
 router.use('/settings', settingsRouter)
+router.use('/notification', notificationsRouter)
 
 router.post(
     '/logout',

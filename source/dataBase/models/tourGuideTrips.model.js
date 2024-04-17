@@ -37,7 +37,7 @@ const schema = new Schema({
         type: String,
         required: false
     },
-    createdBy: { // tourguide _id
+    createdBy: { // tourGuide _id
         type: Schema.Types.ObjectId,
         ref: 'TourGuide',
         required: true
@@ -59,6 +59,18 @@ const schema = new Schema({
             TGtripStatuses.complete, TGtripStatuses.done, TGtripStatuses.empty,
             TGtripStatuses.pending, TGtripStatuses.started
         ]
+    },
+    currentTravelersNo: {
+        type: Number,
+        required: false,
+        min: 0,
+        default: 0,
+        validate: {
+            validator: function (value) {
+                return value <= this.maximumNumber
+            },
+            message: 'currentTravelersNo should not exceed maximumNumber'
+        }
     },
     included: [String],
     excluded: [String]

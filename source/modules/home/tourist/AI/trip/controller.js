@@ -144,6 +144,7 @@ export const getNearbyPlaces = async (req, res, next) => {
         images: images_responses
     })
 }
+
 // response.then(res => {
 //     const data = getRestaurant(res)
 //     console.log({ rest_data: data })
