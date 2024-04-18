@@ -11,9 +11,21 @@ import { tourGuideModel } from '../dataBase/models/tourGuide.model.js'
 import { checkUserExists, saveUserSocket } from '../utilities/signUpCheck.js'
 import axios from "axios"
 
+// firebase initialization modules :
+import { firebaseAdminFunction } from "../firebase/app.initialize.js"
+
+// ES6 doesn't import from JSON files , so we need to get "createRequire"
+import { createRequire } from "module"
+
+const require = createRequire(import.meta.url)
+const serviceAccount = require("../../grad-project-push-notification-firebase-adminsdk-c3owr-6153042353.json")
+let firebaseAdmin
+
 const initiateApp = (app, express) => {
     const port = +process.env.PORT || 5000
     DBconnection()
+
+    firebaseAdmin = firebaseAdminFunction(serviceAccount)
 
     app.use(express.json()) // for parsing
     app.use(cors())
@@ -96,4 +108,7 @@ const initiateApp = (app, express) => {
     })
 }
 
-export default initiateApp
+export {
+    initiateApp,
+    firebaseAdmin
+} 

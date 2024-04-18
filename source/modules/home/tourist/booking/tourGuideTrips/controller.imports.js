@@ -9,8 +9,10 @@ import { emailService } from '../../../../../services/mailService.js'
 import { getIo } from '../../../../../utilities/ioGeneration.js'
 import { StatusCodes } from 'http-status-codes'
 import { TGtripRequestStatuses } from '../../../../../utilities/activityStatuses.js'
+import { sendPushNotifications } from '../../../../../firebase/pushNotifications.js'
 
 export {
     TourGuideTripsModel, paginate, tourGuideModel, touristModel, tripDaysModel,
-    cloudinary, emailService, StatusCodes, getIo, TGtripReqsModel, TGtripRequestStatuses
+    cloudinary, emailService, StatusCodes, getIo, TGtripReqsModel, TGtripRequestStatuses,
+    sendPushNotifications
 }

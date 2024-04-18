@@ -1,6 +1,7 @@
 import {
     TourGuideTripsModel, paginate, tourGuideModel, touristModel, tripDaysModel,
-    cloudinary, emailService, StatusCodes, getIo, TGtripReqsModel, TGtripRequestStatuses
+    cloudinary, emailService, StatusCodes, getIo, TGtripReqsModel, TGtripRequestStatuses,
+    sendPushNotifications
 } from './controller.imports.js'
 
 export const getTripsLength = async (req, res, next) => {
@@ -187,6 +188,7 @@ export const requestToJoinTrip = async (req, res, next) => {
     })
 
     // TODO : add the push notification here
+    // sendPushNotifications()
 
     console.log("\nTOURIST SEND TRIP REQUEST API DONE!\n")
     res.status(StatusCodes.NO_CONTENT).json() // 204
