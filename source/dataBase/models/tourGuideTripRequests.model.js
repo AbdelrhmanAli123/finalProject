@@ -21,7 +21,7 @@ const schema = new Schema({
         },
         email: {
             type: String,
-            required: true
+            required: false
         },
         country: {
             type: String,

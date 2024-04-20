@@ -25,15 +25,15 @@ export const requestAtripSchema = {
         tripID: generalFields._id.required(),
         userName: joi.string().required(),
         startTripDate: joi.string().optional(),
-        email: generalFields.email,
+        email: generalFields.optionalEmail,
         country: joi.string().optional(),
         countryFlag: joi.string().optional(),
-        phoneNumber: joi.string(),
+        phoneNumber: joi.string().optional(),
         tripType: joi.string().valid('standard', 'luxury', 'vip').required(),
         travelers: joi.number().required().min(0),
-        age: joi.number().min(0),
-        totalPrice: joi.number().min(0),
-        comment: joi.string().min(0).max(255)
+        age: joi.number().min(0).optional(),
+        totalPrice: joi.number().min(0).optional(),
+        comment: joi.string().min(0).max(255).optional()
     }),
     headers: joi.object({
         authorization: generalFields.jwtToken

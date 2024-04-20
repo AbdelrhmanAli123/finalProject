@@ -10,7 +10,7 @@ export const getAllRequests = async (req, res, next) => {
 
     const getRequests = await TGtripReqsModel.find({
         requestedTo: getUser._id
-    }).select('-requestedBy.ID')
+    }).select('-requestedBy.ID -requestedTo')
     if (!getRequests) {
         console.log({
             server_error_message: "failed to get the associated requests!"

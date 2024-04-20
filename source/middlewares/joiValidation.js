@@ -7,6 +7,7 @@ const validationObjectId = (value, helper) => {
 
 export const generalFields = {
     email: joi.string().email({ tlds: { allow: ['com', 'net', 'org'] } }).required(),
+    optionalEmail: joi.string().email({ tlds: { allow: ['com', 'net', 'org'] } }),
     // QUESTION : WHAT IS PASSWORD USED FOR ? , is there any case that the user will send a hashed password ?
     password: joi.string()
         .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)

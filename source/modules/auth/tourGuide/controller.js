@@ -4,7 +4,7 @@ import {
     tourGuideModel, fs, path, fsPromise, queryString, checkUserExists
 } from './controller.imports.js'
 
-// mininstryID -> direct to datat base
+// mininstryID -> direct to data base
 // syndicateID -> OCR first
 // profile picture -> direct to data base
 
