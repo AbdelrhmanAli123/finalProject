@@ -7,3 +7,7 @@ export const firebaseAdminFunction = function (serviceAccount) {
     console.log("firebase initialized successfully!")
     return firebaseAdmin
 }
+
+// import admin_test from 'firebase-admin/messaging'
+
+// const appMessaging = admin_test.getMessaging().subscribeToTopic

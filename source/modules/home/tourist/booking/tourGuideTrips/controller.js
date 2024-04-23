@@ -187,8 +187,31 @@ export const requestToJoinTrip = async (req, res, next) => {
         message: "request created!"
     })
 
-    // TODO : add the push notification here
-    // sendPushNotifications()
+    // TODO : add the push notification here -> tourGuide   
+    if (getTourGuide.devicePushToken !== null) {
+        const title = `${getUser.userName}`
+        const body = `hello ${getTourGuide.firstName} , i want to join your trip !`
+        const sendNotification = sendPushNotifications(getTourGuide.devicePushToken, title, body)
+            .then((res) => {
+                console.log({
+                    message: "notification is sent successfully!",
+                    result: res
+                })
+            })
+            .catch((error) => {
+                console.log({
+                    message: "failed to send the notification to the tour guide!",
+                    error: error
+                })
+            })
+        console.log({ send_notification: sendNotification })
+
+    } else {
+        console.log({
+            message: "can't send the notification to the user as the user doesn't allow the app to send notifications"
+        })
+    }
+
 
     console.log("\nTOURIST SEND TRIP REQUEST API DONE!\n")
     res.status(StatusCodes.NO_CONTENT).json() // 204

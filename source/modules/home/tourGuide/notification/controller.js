@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import {
-    TGtripReqsModel, TourGuideTripsModel, getIo, tourGuideModel, tripDaysModel, tripRequestAnswer, TGtripRequestStatuses, TGtripStatuses
+    TGtripReqsModel, TourGuideTripsModel, getIo, tourGuideModel, tripDaysModel, tripRequestAnswer, TGtripRequestStatuses, TGtripStatuses,
+    sendPushNotifications, touristModel
 } from './controller.imports.js'
 
 // TODO : in the future after you implement the notifications module generally , merge this API into one with the rest that use notifications into one API
@@ -48,7 +49,6 @@ export const handleRequest = async (req, res, next) => {
         console.log({ message: "couldn't get the request from the database!" })
         return next(new Error("couldn't get the request from the database!", { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
-
     if (getRequest.errors) {
         console.log({
             message: "error in getting the request",
@@ -58,6 +58,9 @@ export const handleRequest = async (req, res, next) => {
         return next(new Error(`error in getting the request , errors: ${getRequest.errors}`, { cause: StatusCodes.BAD_REQUEST }))
     }
     console.log({ message: "request is found!", found_request: getRequest })
+
+    const getRequestingTourist = await touristModel.findById(getRequest.requestedBy.ID)
+    console.log({ found_request_tourist: getRequestingTourist })
 
     const getTrip = await TourGuideTripsModel.findOne({
         createdBy: getUser._id,
@@ -131,7 +134,16 @@ export const handleRequest = async (req, res, next) => {
         await getRequest.save()
         console.log({ message: "the request is accepted!" })
 
-        // TODO : send a notification message to the user who got his request accepted !
+        if (getRequestingTourist.devicePushToken !== null) {
+            const title = 'Your Trip Request Is Accepted!'
+            const body = `${getUser.firstName} ${getUser.lastName} accepted your trip request`
+            const sendNotification = await sendPushNotifications(getRequestingTourist.devicePushToken, title, body)
+            console.log({ sent_notification: sendNotification })
+        } else {
+            console.log({
+                message: "can't send the notification to the user as the user doesn't allow the app to send notifications"
+            })
+        }
     }
     else {
         // delete the request from the database and send a notification to the user who got his request rejected !
@@ -148,10 +160,17 @@ export const handleRequest = async (req, res, next) => {
                     error: error
                 })
             })
-
-
-
-        // send the notification to the user !
+        // TODO : send the notification to the user !
+        if (getRequestingTourist.devicePushToken !== null) {
+            const title = 'Your Trip Request Is Rejected!'
+            const body = `${getUser.firstName} ${getUser.lastName} rejected your trip request`
+            const sendNotification = await sendPushNotifications(getRequestingTourist.devicePushToken, title, body)
+            console.log({ sent_notification: sendNotification })
+        } else {
+            console.log({
+                message: "can't send the notification to the user as the user doesn't allow the app to send notifications"
+            })
+        }
 
         return res.status(StatusCodes.OK).json({
             message: "request is rejected!"

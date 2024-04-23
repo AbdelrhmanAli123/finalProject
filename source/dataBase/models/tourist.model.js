@@ -102,6 +102,10 @@ const touristSchema = new Schema({
     }],
     socketID: {
         type: String,
+    },
+    devicePushToken: {
+        type: String,
+        required: false
     }
     // address: { (real time -> socket.io)
     // }

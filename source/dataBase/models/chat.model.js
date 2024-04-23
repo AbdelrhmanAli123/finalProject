@@ -82,6 +82,16 @@ const schema = new Schema({
             message: {
                 type: String,
                 required: true
+
+                // TODO : change to this :
+                // content: {
+                //     type: String,
+                //     // required: true
+                // },
+                // type: {
+                //     type:String,
+                //     enum:['image','text','record']
+                // }
             },
             date: {
                 type: Date,

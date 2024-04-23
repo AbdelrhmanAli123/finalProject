@@ -22,3 +22,9 @@ export const tripRequestAnswer = {
     yes: 'yes',
     no: 'no'
 }
+
+export const FCMPushTokenAction = {
+    enable: 'enable',
+    disable: 'disable',
+    refresh: 'refresh'
+}

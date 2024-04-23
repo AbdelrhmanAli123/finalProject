@@ -18,7 +18,7 @@ import { firebaseAdminFunction } from "../firebase/app.initialize.js"
 import { createRequire } from "module"
 
 const require = createRequire(import.meta.url)
-const serviceAccount = require("../../grad-project-push-notification-firebase-adminsdk-c3owr-6153042353.json")
+const serviceAccount = require("../../graduationproject-f494b-firebase-adminsdk-hb00o-b24cc9c444.json")
 let firebaseAdmin
 
 const initiateApp = (app, express) => {

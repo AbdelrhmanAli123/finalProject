@@ -137,6 +137,10 @@ const schema = new Schema({
     }],
     socketID: {
         type: String,
+    },
+    devicePushToken: {
+        type: String,
+        required: false
     }
 }, {
     timestamps: true,
