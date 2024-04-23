@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { tourGuideModel } from './tourGuide.model.js'
 import { touristModel } from './tourist.model.js'
+import { messageTypes } from '../../utilities/activityStatuses.js'
 
 const imageSchema = new Schema({
     secure_url: {
@@ -82,21 +83,16 @@ const schema = new Schema({
             message: {
                 type: String,
                 required: true
-
-                // TODO : change to this :
-                // content: {
-                //     type: String,
-                //     // required: true
-                // },
-                // type: {
-                //     type:String,
-                //     enum:['image','text','record']
-                // }
             },
             date: {
                 type: Date,
                 required: true
             },
+            type: {
+                type: String,
+                enum: [messageTypes.image, messageTypes.text, messageTypes.video, messageTypes.voice, messageTypes.audio],
+                default: messageTypes.text
+            }
             // status: ['sent','delivered','seen','played']
         }
     ],

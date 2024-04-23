@@ -229,7 +229,7 @@ export const sendMessage = async (req, res, next) => {
     console.log("\nSEND MESSAGE API\n")
     // TODO : change later to Email instead of _id in the model and the get APIs
     const { _id, email } = req.authUser // sender
-    const { destEmail, message } = req.body
+    const { destEmail, message, messageType } = req.body
     let getChat = await chatModel.findOne({
         $or: [
             {
@@ -273,7 +273,8 @@ export const sendMessage = async (req, res, next) => {
                     from: email,
                     to: destEmail,
                     message: message,
-                    date: Date.now()
+                    date: Date.now(),
+                    type: messageType
                 }
             ]
         }
@@ -312,7 +313,8 @@ export const sendMessage = async (req, res, next) => {
         from: email,
         to: destEmail,
         message: message,
-        date: Date.now()
+        date: Date.now(),
+        type: messageType
     }
 
     getChat.messages.push(messageData)

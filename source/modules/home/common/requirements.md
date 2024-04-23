@@ -2,7 +2,7 @@
 
 ## allow notifications API [done , test it]
 
-### inputs (requst)
+### inputs (request)
 
 - pushToken : String -> either new or refreshed
 - token : String

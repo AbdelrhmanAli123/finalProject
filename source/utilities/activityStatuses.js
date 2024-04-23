@@ -28,3 +28,11 @@ export const FCMPushTokenAction = {
     disable: 'disable',
     refresh: 'refresh'
 }
+
+export const messageTypes = {
+    text: 'text',
+    image: 'image',
+    voice: 'voice',
+    video: 'video',
+    audio: 'audio'
+}

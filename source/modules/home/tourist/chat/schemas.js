@@ -1,5 +1,6 @@
 import joi from 'joi'
 import { generalFields } from '../../../../middlewares/joiValidation.js'
+import { messageTypes } from '../../../../utilities/activityStatuses.js'
 
 export const getRecentChatsSchema = {
     headers: joi.object({
@@ -26,7 +27,8 @@ export const getTGMetaSchema = {
 export const sendMessageSchema = {
     body: joi.object({
         destEmail: generalFields.email,
-        message: joi.string().min(1).max(255)
+        message: joi.string().min(1).max(255),
+        messageType: joi.string().valid(messageTypes.image, messageTypes.text, messageTypes.video, messageTypes.voice, messageTypes.audio)
     }),
     headers: joi.object({
         authorization: generalFields.jwtToken
