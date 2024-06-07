@@ -12,6 +12,13 @@ export const TGtripStatuses = {
     empty: 'Empty'
 }
 
+export const tripDateStatuses = {
+    current: 'current',
+    upcoming: 'upcoming',
+    completed: 'completed',
+    NA: 'notAssigned'
+}
+
 export const TGtripRequestStatuses = {
     accepted: 'accepted',
     rejected: 'rejected',

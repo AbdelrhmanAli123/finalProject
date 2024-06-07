@@ -3,7 +3,7 @@ import {
 } from './controller.imports.js'
 
 export const MomentTest = async (req, res, next) => {
-    const DateStringVariable = Date.parse('3/8/2024')
+    const DateStringVariable = Date.parse('2024-03-05')
     const DateLocalVariable = Date.now().valueOf()
     const DateExpoVariable = Date.now().toExponential()
     const DatePrecisionVariable = Date.now().toPrecision()

@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { TGtripStatuses } from '../../utilities/activityStatuses.js'
+import { TGtripStatuses, tripDateStatuses } from '../../utilities/activityStatuses.js'
 
 const DayPlacesSchema = new Schema({
     placeName: String,
@@ -20,13 +20,12 @@ const schema = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
-    status: { // NOTE: can be determined fr
+    status: { // NOTE: this is the trip status with date not with rooms !
         type: String,
         required: false,
-        default: TGtripStatuses.empty,
+        default: tripDateStatuses.NA,
         enum: [
-            TGtripStatuses.complete, TGtripStatuses.done, TGtripStatuses.empty,
-            TGtripStatuses.pending, TGtripStatuses.started
+            tripDateStatuses.completed, tripDateStatuses.current, tripDateStatuses.upcoming, tripDateStatuses.NA
         ]
     },
     title: {

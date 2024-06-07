@@ -51,7 +51,7 @@ const schema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'TripDay' // tripDays
     }],
-    status: {
+    status: { // reservation status (has rooms for tourists or not)
         type: String,
         required: false,
         default: TGtripStatuses.empty,
@@ -73,7 +73,16 @@ const schema = new Schema({
         }
     },
     included: [String],
-    excluded: [String]
+    excluded: [String],
+    // from , to (date) :
+    from: {
+        type: String,
+        required: false
+    },
+    to: {
+        type: String,
+        required: false
+    }
 }, {
     timestamps: true,
     toObject: { virtuals: true },

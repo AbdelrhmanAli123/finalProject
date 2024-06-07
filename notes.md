@@ -861,6 +861,56 @@ if name == 'main':
                     //         return next(new Error('invalid token', { cause: 400 }))
                     //     }
                     // }
+
+                    
+// .then((res) => {
+//     console.log(`old document : ${res}`)
+//     res.updateOne({
+//         placeName: req.body.placeName || res.placeName,
+//         latitude: req.body.latitude || res.latitude,
+//         longitude: req.body.longitude || res.longitude,
+//         category: req.body.category || res.category,
+//         government: req.body.government || res.government,
+//         activity: req.body.activity || res.activity,
+//         image: req.body.image || res.image,
+//         priceRange: req.body.priceRange || res.priceRange
+//     })
+//     console.log("message : document updated! , document : ")
+//     console.log(res);
+// })
+
+// , {
+//     // i want to either set the placeName value to what's inside the request body or not change it
+//     placeName: req.body.placeName
+// }
+
+// if (req.body.placeName) {
+//     getTrip.placeName = req.body.placeName
+// }
+// if (req.body.longitude) {
+//     getTrip.longitude = req.body.longitude
+// }
+// if (req.body.latitude) {
+//     getTrip.latitude = req.body.latitude
+// }
+// if (req.body.category) {
+//     getTrip.category = req.body.category
+// }
+// if (req.body.government) {
+//     getTrip.government = req.body.government
+// }
+// if (req.body.activity) {
+//     getTrip.activity = req.body.activity
+// }
+// if (req.body.image) {
+//     getTrip.image = req.body.image
+// }
+// if (req.body.priceRange) {
+//     getTrip.priceRange = req.body.priceRange
+// }
+
+// await getTrip.save()
+
 ```
 
 ### req.file code (.single())
