@@ -109,6 +109,36 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     tripData.tripDetails = tripDaysData
     console.log({ message: "tripDays are saved" })
 
+    // images uploading
+    // if (req.files) {
+    //     tripData.images = []
+    //     const customId = nanoid()
+    //     tripData.customId = customId
+    //     let imagePath = `${process.env.PROJECT_UPLOADS_FOLDER}/trips/${customId}`
+
+    //     req.files.forEach(async (image) => {
+    //         let secure_url, public_id
+    //         try {
+    //             const upload = await cloudinary.uploader.upload(image.path, {
+    //                 folder: imagePath
+    //             })
+    //             secure_url = upload.secure_url
+    //             public_id = upload.public_id
+    //             console.log({ message: "image uploaded successfully!" })
+    //         } catch (error) {
+    //             console.log({
+    //                 api_error_message: "failed to upload the trip image",
+    //                 error: error
+    //             })
+    //             return next(new Error('failed to upload the trip image!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    //         }
+    //         tripData.images.push({
+    //             secure_url,
+    //             public_id
+    //         })
+    //     });
+    // }
+
     // image uploading
 
     if (req.file) {
@@ -350,11 +380,42 @@ export const editTrip = async (req, res, next) => {
         })
     }
 
+    // if(req.files) {
+    //     // i must first get the length of the existing images (if they exist)
+    //     // then i check the operation that needs to be done (add a field in the request that defines the operation with coordination with front)
+    //     // execute the operation
+    //     /**
+    //      * possible operations : 
+    //      * add another image (push it)
+    //      * remove a certain image (requires an identifier)
+    //      * replace an existing image with a new one (requires an identifier)
+    //      * remove the whole array of images and replace it with a new one
+    //      * remove the whole array of images
+    //      */
+
+    //     let path
+    //     let imagesLength
+    //     if (getTrip.customId) {
+    //         path = `${process.env.PROJECT_UPLOADS_FOLDER}/trips/${getTrip.customId}`
+    //         console.log({ message: "user had a custom id!", existing_customId: getTrip.customId, customId_length: getTrip.customId?.length })
+    //         if(getTrip.images?.length > 0) {
+    //             imagesLength = getTrip.images?.length
+    //         }
+    //     }
+    //     else if (!getTrip.customId) {
+    //         const newCustomId = nanoid()
+    //         getTrip.customId = newCustomId
+    //         path = `${process.env.PROJECT_UPLOADS_FOLDER}/trips/${newCustomId}`
+    //         console.log({ message: "user had no path and got one created!" })
+    //     }
+
+    // }
+
     if (req.file) {
         let path
         if (getTrip.customId) {
             path = `${process.env.PROJECT_UPLOADS_FOLDER}/trips/${getTrip.customId}`
-            console.log({ message: "user had a custom id!", existing_customId: getTrip.customId, cusomtId_length: getTrip.customId?.length })
+            console.log({ message: "user had a custom id!", existing_customId: getTrip.customId, customId_length: getTrip.customId?.length })
         }
         else if (!getTrip.customId) {
             const newCustomId = nanoid()

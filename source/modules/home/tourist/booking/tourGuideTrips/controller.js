@@ -212,7 +212,6 @@ export const requestToJoinTrip = async (req, res, next) => {
         })
     }
 
-
     console.log("\nTOURIST SEND TRIP REQUEST API DONE!\n")
     res.status(StatusCodes.NO_CONTENT).json() // 204
 }

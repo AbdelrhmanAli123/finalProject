@@ -1,12 +1,7 @@
 import { model, Schema } from 'mongoose'
 
 export const categoryValues = ['Cultural Centers', 'Religious Sites', 'Natural Landmarks', 'Historical landmark', 'Bazaar', 'Entertainment Centers', 'Malls']
-
-const schema = new Schema({
-    tourist: {
-        type: Schema.Types.ObjectId,
-        ref: 'Tourist'
-    },
+const TripDayPlacesSchema = new Schema({
     placeName: {
         type: String,
         required: true
@@ -39,5 +34,35 @@ const schema = new Schema({
         min: 0
     }
 })
+const tripDaysSchema = new Schema({
+    dayName: {
+        type: String,
+        required: true
+    },
+    dayPlaces: [TripDayPlacesSchema]
+})
 
-export const customTripModel = model('customTrip', schema)
+const TripSchema = new Schema({
+    tourist: {
+        type: Schema.Types.ObjectId,
+        ref: 'Tourist'
+    },
+    title: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+    },
+    startDate: {
+        type: String,
+        required: true
+    },
+    endDate: {
+        type: String,
+        required: true
+    },
+    tripDetails: [tripDaysSchema],
+})
+
+
+export const customTripModel = model('customTrip', TripSchema)

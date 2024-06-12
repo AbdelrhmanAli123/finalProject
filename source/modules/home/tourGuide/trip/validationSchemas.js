@@ -35,6 +35,18 @@ export const createTripSchema = {
         path: joi.string(),
         size: joi.number()
     }).presence('optional'),
+    // files: joi.object({
+    //     images: joi.array().items(joi.object({
+    //         fieldname: joi.string(),
+    //         originalname: joi.string(),
+    //         encoding: joi.string(),
+    //         mimetype: joi.string(),
+    //         destination: joi.string(),
+    //         filename: joi.string(),
+    //         path: joi.string(),
+    //         size: joi.number()
+    //     }))
+    // }),
     headers: joi.object({
         authorization: generalFields.jwtToken
     }).presence('required').unknown(true)

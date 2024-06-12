@@ -8,7 +8,12 @@ const router = Router()
 router.post(
     '/createTrip',
     isAuth(tripAPIroles.createTrip),
-    multerHostFunction(allowedExtensions.image).single('image'),
+    multerHostFunction(allowedExtensions.image)
+        .single('image')
+    // .fields([
+    //     { name: 'images', maxCount: 5 }
+    // ])
+    ,
     validationCoreFunction(TG_trip_vs.createTripSchema),
     asyncHandler(TG_trip_cont.generateTrip)
 )

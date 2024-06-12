@@ -13,3 +13,4 @@ const schema = new Schema({
 })
 
 export const AItripDaysModel = model('AItripDay', schema)
+

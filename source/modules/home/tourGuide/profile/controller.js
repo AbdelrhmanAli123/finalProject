@@ -66,7 +66,7 @@ export const getUserInfo = async (req, res, next) => {
 
     console.log("\nAUTH GET USER INFO IS DONE!\n")
     res.status(200).json({
-        message: "user fetching is successfull!",
+        message: "user fetching is successful!",
         user: getUser
     })
 }

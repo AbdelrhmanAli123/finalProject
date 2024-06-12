@@ -2,11 +2,30 @@ import { customTripModel } from "../../../../../dataBase/models/customTrip.model
 import { StatusCodes, ReasonPhrases } from 'http-status-codes'
 
 export const createTrip = async (req, res, next) => {
+    console.log("\nTOURIST CREATE CUSTOM TRIP!\n")
     const getUser = req.authUser
-    const { placeName, latitude, longitude, category, government, activity, image, priceRange } = req.body
+    const { title, startDate, endDate, tripDetails } = req.body
+
+    // we need to make sure that the trip title is unique to the user trips only not all the trips in the database
+    const isTitleUnique = await customTripModel.find({
+        title,
+        tourist: getUser._id
+    })
+    if (isTitleUnique.length > 0) {
+        console.log("message: the title entered is not unique !")
+        console.log({ the_duplicate_trips: isTitleUnique })
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "the title entered is not unique"
+        })
+    }
+    console.log("the trip title is unique and valid !")
 
     const saveTrip = await customTripModel.create({
-        tourist: getUser._id, placeName, activity, category, government, image, latitude, longitude, priceRange
+        tourist: getUser._id,
+        startDate,
+        title,
+        endDate,
+        tripDetails
     })
 
     if (!saveTrip) {
@@ -14,6 +33,7 @@ export const createTrip = async (req, res, next) => {
         return next(new Error('error saving the trip in data base!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
 
+    console.log("\nTOURIST CREATE CUSTOM TRIP dONE!\n")
     res.status(StatusCodes.NO_CONTENT).json({})
 }
 
@@ -21,7 +41,7 @@ export const getAllTrips = async (req, res, next) => {
     const getUser = req.authUser
     const getTrips = await customTripModel.find({
         tourist: getUser._id
-    }).select('-_id -tourist')
+    }).select('-tourist')
 
     if (getTrips.length == 0) {
         console.log('message : there are no trips associated with the user!')
@@ -36,27 +56,39 @@ export const getAllTrips = async (req, res, next) => {
 
 export const editTrip = async (req, res, next) => {
     const getUser = req.authUser
-    const { tripId } = req.body
+    const { title, startDate, endDate, tripDetails } = req.body
+    const { tripId } = req.query
 
     const getTrip = await customTripModel.findOne({
         tourist: getUser._id,
         _id: tripId
-    }
-    )
+    })
 
-    await customTripModel.updateOne(
-        { _id: getTrip._id },
-        {
-            placeName: req.body.placeName || getTrip.placeName,
-            latitude: req.body.latitude || getTrip.latitude,
-            longitude: req.body.longitude || getTrip.longitude,
-            category: req.body.category || getTrip.category,
-            government: req.body.government || getTrip.government,
-            activity: req.body.activity || getTrip.activity,
-            image: req.body.image || getTrip.image,
-            priceRange: req.body.priceRange || getTrip.priceRange
+    // to check the uniqueness of the new title
+    const isTitleUnique = await customTripModel.find({
+        title,
+        tourist: getUser._id
+    })
+    if (isTitleUnique.length > 0) {
+        // this case means that the new title is the same as another trip's title
+        if (getTrip.title !== title) {
+            console.log("message: the title entered is not unique !")
+            console.log({ the_duplicate_trips: isTitleUnique })
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "the title entered is not unique"
+            })
         }
-    )
+    }
+    console.log("the trip title is unique and valid !")
+
+    const updateTrip = await customTripModel.updateOne({
+        _id: tripId
+    }, {
+        title: title || getTrip.title,
+        startDate: startDate || getTrip.startDate,
+        endDate: endDate || getTrip.endDate,
+        tripDetails: tripDetails || getTrip.tripDetails
+    })
 
     res.status(StatusCodes.CREATED).json({
         message: "trip updated!"
@@ -65,7 +97,7 @@ export const editTrip = async (req, res, next) => {
 
 export const deleteTrip = async (req, res, next) => {
     const getUser = req.authUser
-    const { tripId } = req.body
+    const { tripId } = req.query
 
     const deleteTrip = await customTripModel.findOneAndDelete({
         _id: tripId,

@@ -33,6 +33,14 @@ const schema = new Schema({
             type: String
         }
     },
+    // images: [{
+    //     secure_url: {
+    //         type: String
+    //     },
+    //     public_id: {
+    //         type: String
+    //     }
+    // }],
     customId: {
         type: String,
         required: false

@@ -17,6 +17,7 @@ const schema = new Schema({
             required: true
         },
         image: { // include the secure url directly .
+            // TODO : make it to an array -> ['image_url','image_url','image_url']
             type: String
         },
         email: {
