@@ -17,7 +17,9 @@ export const getAllTrips = async (req, res, next) => {
     const getTrips = await Promise.all([
         TourGuideTripsModel.find({
             subscribers: { $in: tourist._id }
-        }),
+        })
+            .select('-subscribers -createdBy -id -createdAt -updatedAt -__v')
+            .populate([{ path: 'tripDetails', select: '-createdAt -updatedAt -__v' }]),
         AItripModel.find({
             touristId: tourist._id
         }),
