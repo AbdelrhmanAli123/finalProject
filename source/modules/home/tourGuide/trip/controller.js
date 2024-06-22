@@ -16,12 +16,14 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     console.log({
         tripDetails
     })
-    for (const day of tripDetails) {
-        console.log({
-            day: day,
-            dayName: day.dayName,
-            places: day.dayPlaces,
-        })
+    if (tripDetails) {
+        for (const day of tripDetails) {
+            console.log({
+                day: day,
+                dayName: day.dayName,
+                places: day.dayPlaces,
+            })
+        }
     }
 
     if (maximumNumber <= 0) {
@@ -92,38 +94,52 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
         tripData.excluded = excluded
     }
 
-    let tripDaysData = [] // _id array
-    for (const day of tripDetails) {
-        console.log({ message: "about to save day data" })
-        const data = await tripDaysModel.create(day)
-        if (data?.errors) {
-            console.log({
-                api_error_message: "error in saving the trip details!",
-                error_info: data?.errors
-            })
-            return next(new Error('failure in saving the trip details!', { cause: 500 }))
+    if (tripDetails) {
+        let tripDaysData = [] // _id array
+        for (const day of tripDetails) {
+            console.log({ message: "about to save day data" })
+            const data = await tripDaysModel.create(day)
+            if (data?.errors) {
+                console.log({
+                    api_error_message: "error in saving the trip details!",
+                    error_info: data?.errors
+                })
+                return next(new Error('failure in saving the trip details!', { cause: 500 }))
+            }
+            tripDaysData.push(data._id)
         }
-        tripDaysData.push(data._id)
-    }
 
-    tripData.tripDetails = tripDaysData
-    console.log({ message: "tripDays are saved" })
+        tripData.tripDetails = tripDaysData
+        console.log({ message: "tripDays are saved" })
+    }
+    const newTrip = await TourGuideTripsModel.create(tripData)
+    if (newTrip?.errors) {
+        console.log({
+            api_error_message: "failed to create the trip",
+            errors: newTrip?.errors
+        })
+        return next(new Error('failure in saving the trip!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+    console.log({ message: "trip is saved successfully!" })
 
     // images uploading
     // if (req.files) {
-    //     tripData.images = []
+    //     console.log(req.files);
+
     //     const customId = nanoid()
-    //     tripData.customId = customId
+    //     newTrip.customId = customId
     //     let imagePath = `${process.env.PROJECT_UPLOADS_FOLDER}/trips/${customId}`
 
-    //     req.files.forEach(async (image) => {
-    //         let secure_url, public_id
+    //     await req.files.images.forEach(async (image) => {
     //         try {
     //             const upload = await cloudinary.uploader.upload(image.path, {
     //                 folder: imagePath
     //             })
-    //             secure_url = upload.secure_url
-    //             public_id = upload.public_id
+    //             newTrip.images.push({
+    //                 secure_url: upload.secure_url,
+    //                 public_id: upload.public_id
+    //             })
+    //             await newTrip.save()
     //             console.log({ message: "image uploaded successfully!" })
     //         } catch (error) {
     //             console.log({
@@ -132,10 +148,6 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
     //             })
     //             return next(new Error('failed to upload the trip image!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
     //         }
-    //         tripData.images.push({
-    //             secure_url,
-    //             public_id
-    //         })
     //     });
     // }
 
@@ -167,15 +179,8 @@ export const generateTrip = async (req, res, next) => { // TODO : test this API 
         }
     }
 
-    const newTrip = await TourGuideTripsModel.create(tripData)
-    if (newTrip?.errors) {
-        console.log({
-            api_error_message: "failed to create the trip",
-            errors: newTrip?.errors
-        })
-        return next(new Error('failure in saving the trip!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
-    }
-    console.log({ message: "trip is saved successfully!" })
+    console.log(tripData);
+
 
     req.authUser.createdTrips.push(newTrip._id)
     await req.authUser.save()
@@ -195,9 +200,13 @@ export const editTrip = async (req, res, next) => {
     const {
         title, brief, plans, maximumNumber, newTripDetails, trip_id,
         newDay, removeDay, included, excluded
+        , removeImages, imageIndex, removeImage, replaceImage
     } = req.body
     // newDay -> new day with it's data
     // removeDay -> _id of the day desired to be removed
+
+    // removeImages -> boolean
+    // removeImage -> boolean , requires the presence of "imageIndex" with it
 
     const getTrip = await TourGuideTripsModel.findOne({
         $and: [
@@ -302,10 +311,10 @@ export const editTrip = async (req, res, next) => {
         // you need to first delete these tripDays from the tripDays model
         let newDaysIds = []
         const oldTripDetails = getTrip.tripDetails // these are _ids , you need to delete them each
-        const deletdTripDetails = await tripDaysModel.deleteMany({
+        const deletedTripDetails = await tripDaysModel.deleteMany({
             _id: { $in: oldTripDetails }
         })
-        if (!deletdTripDetails.acknowledged) {
+        if (!deletedTripDetails.acknowledged) {
             console.log({
                 message: "failed to delete the old trip details"
             })
@@ -313,7 +322,7 @@ export const editTrip = async (req, res, next) => {
         }
         console.log({
             message: "old trip details are deleted successfully!",
-            deleted_trip_details: deletdTripDetails.deletedCount
+            deleted_trip_details: deletedTripDetails.deletedCount
         })
 
         const newTripDays = await tripDaysModel.insertMany(newTripDetails)
@@ -380,26 +389,29 @@ export const editTrip = async (req, res, next) => {
         })
     }
 
-    // if(req.files) {
-    //     // i must first get the length of the existing images (if they exist)
-    //     // then i check the operation that needs to be done (add a field in the request that defines the operation with coordination with front)
-    //     // execute the operation
-    //     /**
-    //      * possible operations : 
-    //      * add another image (push it)
-    //      * remove a certain image (requires an identifier)
-    //      * replace an existing image with a new one (requires an identifier)
-    //      * remove the whole array of images and replace it with a new one
-    //      * remove the whole array of images
-    //      */
+    // if (req.files) {
+
+    //     //     // i must first get the length of the existing images (if they exist)
+    //     //     // then i check the operation that needs to be done (add a field in the request that defines the operation with coordination with front)
+    //     //     // execute the operation
+    //     //     /**
+    //     //      * possible operations : 
+    //     //      * add another image (push it)
+    //     //      * remove a certain image (requires an identifier)
+    //     //      * replace an existing image with a new one (requires an identifier)
+    //     //      * remove the whole array of images and replace it with a new one
+    //     //      * remove the whole array of images (requires a boolean only not in the files part)
+    //     //      */
 
     //     let path
     //     let imagesLength
     //     if (getTrip.customId) {
     //         path = `${process.env.PROJECT_UPLOADS_FOLDER}/trips/${getTrip.customId}`
     //         console.log({ message: "user had a custom id!", existing_customId: getTrip.customId, customId_length: getTrip.customId?.length })
-    //         if(getTrip.images?.length > 0) {
+    //         if (getTrip.images?.length > 0) {
     //             imagesLength = getTrip.images?.length
+    //         } else {
+    //             console.log("the trip has no images")
     //         }
     //     }
     //     else if (!getTrip.customId) {
@@ -409,7 +421,56 @@ export const editTrip = async (req, res, next) => {
     //         console.log({ message: "user had no path and got one created!" })
     //     }
 
+    //     // if the user entered a new image to be added , we need to have the multer module set to accept that image with a field named for that purpose
+    //     // field name : newImage
+    //     if (req.files.newImage) {
+    //         // the logic to add that new image to the array of the trip images
+    //         try {
+    //             const addedUpload = await cloudinary.uploader.upload(
+    //                 req.files.newImage.path, {
+    //                 folder: path
+    //             }
+    //             )
+    //             getTrip.images.push({
+    //                 secure_url: addedUpload.secure_url,
+    //                 public_id: addedUpload.public_id
+    //             })
+    //             await newTrip.save()
+    //             console.log({ message: "image uploaded successfully!" })
+    //         } catch (error) {
+    //             console.log(`failed to upload the new image , error: ${error}`)
+    //             return next(new Error('failure regarding image updating!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    //         }
+    //     }
+    //     // if not , then it must be another operation
+    //     // removing the whole array of images and replacing them with the new one 
+    //     else if (req.files.newImages) {
+    //         // logic to replace the whole array of images
+    //         // i must first check if the trip has images or not :
+    //         /** if the trip :
+    //          * 1. has images : then i must first remove the existing images
+    //          * 2. has no images : then i directly upload the new images
+    //          */
+    //         if (getTrip.images.length > 0) {
+
+    //         } else {
+
+    //         }
+
+    //     } else if (req.files.replaceImage) {
+    //         // logic to replace an existing image with a new one (requires imageID)
+
+    //     } else if (removeImage) {
+    //         // logic to remove an existing image (requires imageID)
+
+    //     }
+
+    // } else if (removeImages) {
+    //     // logic to remove the array of images only
+    // } else {
+    //     // no operation on trip images
     // }
+
 
     if (req.file) {
         let path

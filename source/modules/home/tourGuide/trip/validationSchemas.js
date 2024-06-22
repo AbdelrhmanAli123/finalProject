@@ -21,7 +21,7 @@ export const createTripSchema = {
                 longitude: joi.string().optional(),
                 activity: joi.string().optional()
             }))
-        })),
+        })).presence('optional'),
         included: joi.array().items(joi.string()).optional(),
         excluded: joi.array().items(joi.string()).optional()
     }),
@@ -63,6 +63,9 @@ export const editTripSchema = {
             luxury: joi.number().min(0).optional(),
             VIP: joi.number().min(0).optional()
         }).optional(),
+        // imageIndex: joi.number().optional(),
+        // removeImage: joi.boolean().optional(),
+        // replaceImage: joi.boolean().optional(),
         maximumNumber: joi.number().min(1).optional(), // [{day1},{day2},{day3},{day4}]
         newDay: joi.object({
             dayName: joi.string().optional(),
@@ -87,7 +90,16 @@ export const editTripSchema = {
         })).presence('optional'),
         included: joi.array().items(joi.string()).optional(),
         excluded: joi.array().items(joi.string()).optional()
-    }).presence('optional'),
+    }).presence('optional')
+    // .with('removeImage', 'imageIndex')
+    // .when(joi.object({ removeImage: joi.boolean().valid(true) }).unknown(), {
+    //     then: joi.object({ imageIndex: joi.number().required() }).unknown()
+    // })
+    // .with('replaceImage', 'imageIndex')
+    // .when(joi.object({ replaceImage: joi.boolean().valid(true) }).unknown(), {
+    //     then: joi.object({ imageIndex: joi.number().required() }).unknown()
+    // })
+    ,
     file: joi.object({
         fieldname: joi.string(),
         originalname: joi.string(),
