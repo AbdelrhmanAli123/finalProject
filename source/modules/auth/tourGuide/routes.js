@@ -17,6 +17,15 @@ router.post(
     asyncHandler(TG_cont.TG_signUp)
 )
 
+router.post(
+    '/imgRecTest',
+    multertempFunction([...allowedExtensions.application, ...allowedExtensions.image]).fields([
+        { name: "syndicateID", maxCount: 1 },
+        { name: "ministryID", maxCount: 1 }
+    ]),
+    asyncHandler(TG_cont.imageRecTest)
+)
+
 router.get(
     '/confirmAccount:confirmToken',
     validationCoreFunction(TG_vs.confirmAccountSchema),

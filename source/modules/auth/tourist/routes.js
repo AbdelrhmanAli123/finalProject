@@ -19,6 +19,12 @@ router.get(
 )
 
 router.post(
+    '/loginWithGmail',
+    validationCoreFunction(touristVS.GmailLoginSchema),
+    asyncHandler(touristCont.logInWithGmail)
+)
+
+router.post(
     '/logIn',
     validationCoreFunction(touristVS.touristLoginSchema),
     asyncHandler(touristCont.touristLogIn)

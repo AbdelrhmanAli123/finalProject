@@ -1,3 +1,5 @@
+// deprecated schema
+
 import { Schema, model } from 'mongoose'
 
 const DayPlacesSchema = new Schema({

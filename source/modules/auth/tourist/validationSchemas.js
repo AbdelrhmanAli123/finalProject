@@ -48,6 +48,12 @@ export const confirmAccountSchema = {
     }).presence('required')
 }
 
+export const GmailLoginSchema = {
+    body: joi.object({
+        idToken: joi.string().required()
+    }).presence('required')
+}
+
 export const touristLoginSchema = {
     body: joi.object({
         email: generalFields.email,

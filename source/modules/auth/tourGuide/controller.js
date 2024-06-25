@@ -1,7 +1,8 @@
+import { deleteTempFiles } from '../../../utilities/tempFiles.js'
 import {
     EGphoneCodes, FormData, ReasonPhrases, StatusCodes, axios, bcrypt, cloudinary,
     customAlphabet, emailService, generateToken, verifyToken, slugify, statuses, systemRoles,
-    tourGuideModel, fs, path, fsPromise, queryString, checkUserExists
+    tourGuideModel, fs, path, fsPromise, queryString, checkUserExists, OAuth2Client
 } from './controller.imports.js'
 
 // mininstryID -> direct to data base
@@ -125,7 +126,6 @@ export const TG_signUp = async (req, res, next) => {
     //     return next(new Error('the CV file must be sent', { cause: 400 }))
     // }
 
-
     const ministry_array = req.files['ministryID']
     console.log({
         message: "ministry array is found!",
@@ -150,6 +150,60 @@ export const TG_signUp = async (req, res, next) => {
         syndicate_liscence_image: syndicate_image
     })
 
+    // image verification model
+
+    let AI_result2;
+    const imageRecUrl = process.env.AI_IMAGE_REC_URL
+    console.log(imageRecUrl);
+
+    const formData1 = new FormData();
+    formData1.append('file1', fs.createReadStream(path.resolve(`${process.env.LOCAL_TEMP_UPLOADS_PATH}/${req.syndicateFileName}`)))
+    formData1.append('file2', fs.createReadStream(path.resolve(`${process.env.LOCAL_TEMP_UPLOADS_PATH}/${req.ministryFileName}`)))
+    console.log({
+        message: 'form data is created!',
+        created_form_data: formData1
+    });
+    console.log({
+        phase: "image verification request",
+        status: "prepared and about to be sent"
+    })
+
+    try {
+        const AI_response = await axios.post(imageRecUrl, formData1, {
+            headers: formData1.getHeaders()
+        })
+
+        console.log({
+            message: 'response came from the AI model!',
+            response_status: AI_response.status,
+            response: AI_response.data,
+            response_type: typeof (AI_response.data)
+        });
+
+        AI_result2 = AI_response
+
+    } catch (error) {
+        console.log({
+            message: 'failed to send the request to the AI model!',
+            error_message: error.message,
+            error: error,
+        });
+
+        return next(new Error('failed to send the request to the AI model', { cause: 400 }));
+    }
+
+    console.log({
+        phase: "image recognition request",
+        status: "successfully ended!",
+        message: "Ai result is successful!",
+        AI_result: AI_result2.data,
+        verified: AI_result2.data.verified
+    })
+
+    if (!AI_result2.data.verified) {
+        await deleteTempFiles()
+        return next(new Error('images do not match', { cause: StatusCodes.BAD_REQUEST }))
+    }
 
     console.log({
         phase: "OCR request",
@@ -163,6 +217,7 @@ export const TG_signUp = async (req, res, next) => {
         message: "request temp file name check",
         tempFileName: req.syndicateFileName
     })
+
     const formData = new FormData();
     formData.append('image', fs.createReadStream(path.resolve(`${process.env.LOCAL_TEMP_UPLOADS_PATH}/${req.syndicateFileName}`)))
     // const languages_string = queryString.stringify({ languages: languages })
@@ -199,13 +254,13 @@ export const TG_signUp = async (req, res, next) => {
             error_message: error.message,
             error: error,
         });
-
+        await deleteTempFiles()
         return next(new Error('failed to send the request to the AI model', { cause: 400 }));
     }
     console.log({
         phase: "OCR request",
         status: "successfully ended!",
-        message: "Ai result is successfull!",
+        message: "Ai result is successful!",
         AI_result: AI_result.data,
         returned_languages_length: AI_result.data.languages.length,
         returned_languages_length_type: typeof (AI_result.data.languages.length)
@@ -223,6 +278,8 @@ export const TG_signUp = async (req, res, next) => {
         verification: AI_result.data.languages
     })
     userData.languages = AI_result.data.languages
+
+
     userData.verified = true
 
     const customId = nanoid()
@@ -387,25 +444,12 @@ export const TG_signUp = async (req, res, next) => {
         }
         console.log({
             phase: "CV file uploading!",
-            state: "successfull!"
+            state: "successful!"
         })
     }
 
     // NOTE : we need to delete every saved image in the folder after we upload the files on cloudinary because we need the same path for cloudinary not only the AI request with axios
-    try {
-        const temp_folder_files = await fsPromise.readdir(process.env.LOCAL_TEMP_UPLOADS_PATH)
-        await Promise.all(temp_folder_files.map(async (file) => {
-            const filePath = path.join(process.env.LOCAL_TEMP_UPLOADS_PATH, file)
-            await fsPromise.unlink(filePath)
-        }))
-        console.log({
-            message: `folder ${process.env.LOCAL_TEMP_UPLOADS_PATH} is emptied successfully!`
-        })
-    } catch (error) {
-        console.log({
-            message: `failed to empty the folder ${process.env.LOCAL_TEMP_UPLOADS_PATH}`
-        })
-    }
+    await deleteTempFiles()
 
     const saveUser = await tourGuideModel.create(userData)
     if (!saveUser) {
@@ -767,5 +811,130 @@ export const TG_resetPassword = async (req, res, next) => {
     console.log("\nTOUR GUIDE PASSWORD RESET IS DONE!\n")
     res.status(200).json({
         message: "reset password done!"
+    })
+}
+
+export const imageRecTest = async (req, res, next) => {
+    console.log("controller active !")
+
+    console.log({
+        request_files: req.files,
+        // img1: req.files['syndicateID'],
+        // img2: req.files['ministryID']
+    });
+
+    // const httpClient = axios.create()
+    // httpClient.defaults.timeout = 100000
+
+    // console.log(path.resolve(path.join(process.env.LOCAL_TEMP_UPLOADS_PATH, req.syndicateFileName)))
+
+    // console.log({
+    //     phase: 'image recognition request',
+    //     status: 'preparing'
+    // })
+
+    // const image1Path = path.resolve(process.env.LOCAL_TEMP_UPLOADS_PATH, req.syndicateFileName);
+    // const image2Path = path.resolve(process.env.LOCAL_TEMP_UPLOADS_PATH, req.syndicateFileName);
+
+    // const image1Buffer = fs.readFileSync(image1Path, 'base64url');
+    // const image2Buffer = fs.readFileSync(image2Path, 'base64url');
+
+    // const image1Base64 = image1Buffer.toString();
+    // const image2Base64 = image2Buffer.toString();
+
+    // const imgRecBody = {
+    //     img1_path: `<img src='data:image/jpeg; base64,${image1Base64}'>`,
+    //     img2_path: `<img src='data:image/jpeg; base64,${image2Base64}'>`
+    // };
+
+    // console.log({ image_rec_body_img1: imgRecBody.img1_path, image_rec_body_img2: imgRecBody.img2_path })
+
+    // try {
+    //     const AI_response = await httpClient.post(imageRecUrl, imgRecBody, {
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         }
+    //     })
+
+    //     console.log({
+    //         message: 'response came from the AI model!',
+    //         response_status: AI_response.status,
+    //         response: AI_response.data,
+    //         response_type: typeof (AI_response.data)
+    //     });
+
+    //     AI_result2 = AI_response
+
+    // } catch (error) {
+    //     console.log({
+    //         message: 'failed to send the request to the AI model!',
+    //         error_message: error.message,
+    //         error: error.response.data,
+    //         full_error: error
+    //     });
+
+    //     return next(new Error(`failed to send the request to the AI model , image1:${image1Base64}`, { cause: 400 }));
+    // }
+
+    // image verification model
+
+    let AI_result2;
+    const imageRecUrl = process.env.AI_IMAGE_REC_URL
+    console.log(imageRecUrl);
+
+    const formData1 = new FormData();
+    formData1.append('file1', fs.createReadStream(path.resolve(`${process.env.LOCAL_TEMP_UPLOADS_PATH}/${req.syndicateFileName}`)))
+    formData1.append('file2', fs.createReadStream(path.resolve(`${process.env.LOCAL_TEMP_UPLOADS_PATH}/${req.ministryFileName}`)))
+    console.log({
+        message: 'form data is created!',
+        created_form_data: formData1
+    });
+    console.log({
+        phase: "OCR request",
+        status: "prepared and about to be sent"
+    })
+
+    try {
+        const AI_response = await axios.post(imageRecUrl, formData1, {
+            headers: formData1.getHeaders()
+        })
+
+        console.log({
+            message: 'response came from the AI model!',
+            response_status: AI_response.status,
+            response: AI_response.data,
+            response_type: typeof (AI_response.data)
+        });
+
+        AI_result2 = AI_response
+
+    } catch (error) {
+        console.log({
+            message: 'failed to send the request to the AI model!',
+            error_message: error.message,
+            error: error,
+        });
+
+        return next(new Error('failed to send the request to the AI model', { cause: 400 }));
+    }
+
+    console.log({
+        phase: "image recognition request",
+        status: "successfully ended!",
+        message: "Ai result is successful!",
+        AI_result: AI_result2.data,
+        verified: AI_result2.data.verified
+    })
+
+    if (!AI_result2.data.verified) {
+        await deleteTempFiles()
+        return next(new Error('images do not match', { cause: StatusCodes.BAD_REQUEST }))
+    }
+
+    await deleteTempFiles()
+
+    res.status(200).json({
+        message: "success !",
+        AI_result: AI_result2.data
     })
 }

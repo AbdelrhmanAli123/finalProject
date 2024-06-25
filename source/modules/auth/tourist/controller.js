@@ -1,7 +1,7 @@
 import {
     StatusCodes, bcrypt, cloudinary,
     customAlphabet, emailService, generateToken, slugify, statuses, systemRoles, verifyToken,
-    touristModel, ReasonPhrases, checkUserExists
+    touristModel, ReasonPhrases, checkUserExists, OAuth2Client, socialProviders
 } from './controller.imports.js'
 
 // for tourist sign up :
@@ -152,6 +152,140 @@ export const confirmAccount = async (req, res, next) => {
     })
 }
 
+export const logInWithGmail = async (req, res, next) => {
+    const client = new OAuth2Client()
+    const { idToken } = req.body
+    async function verify() {
+        const ticket = await client.verifyIdToken({
+            idToken,
+            audience: process.env.CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
+            // Or, if multiple clients access the backend:
+            //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+        })
+        const payload = ticket.getPayload()
+        console.log({ social_login_payload: payload })
+        return payload
+    }
+
+    const { email_verified, email, name } = await verify()
+    if (!email_verified) {
+        return next(new Error('invalid email', { cause: 400 }))
+    }
+
+    const getUser = await touristModel.findOne({ email, provider: 'GOOGLE' })
+
+    if (getUser) {
+        const token = generateToken({
+            expiresIn: '1d',
+            signature: process.env.LOGIN_SECRET_KEY,
+            payload: {
+                email: getUser.email,
+                userName: getUser.userName,
+                role: systemRoles.tourGuide
+            }
+        })
+
+        if (!token) {
+            console.log({
+                api_error_message: "failed to generate user token!",
+            })
+            return next(new Error('failed to generate user token', { cause: 500 }))
+        }
+        console.log({
+            message: "user token is generated!"
+        })
+
+        getUser.status = statuses.online
+        getUser.token = token
+        getUser.provider = socialProviders.google
+        await getUser.save()
+
+        console.log({
+            message: "user is now online!",
+            logged_in_user: {
+                firstName: getUser.firstName,
+                lastName: getUser.lastName,
+                token: getUser.token,
+                email: getUser.email,
+                confirmed: getUser.confirmed
+            }
+        })
+
+        return res.status(StatusCodes.OK).json({
+            message: "tour guide logged in !",
+            logged_in_user: {
+                firstName: getUser.firstName,
+                lastName: getUser.lastName,
+                token: getUser.token,
+                email: getUser.email,
+                confirmed: getUser.confirmed
+            }
+        })
+    }
+
+    const newUserData = {
+        userName: name,
+        slug: slugify(name, '_'),
+        email,
+        password: nanoid(6),
+        provider: socialProviders.google,
+        confirmed: true,
+        role: systemRoles.tourist,
+    }
+
+    const newUser = await touristModel.create(newUserData)
+    if (!newUser) {
+        console.log("failed to save the new user in the database!")
+        return next(new Error('failed to save the new user in the database!', { cause: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+
+    const token = generateToken({
+        expiresIn: '1d',
+        signature: process.env.LOGIN_SECRET_KEY,
+        payload: {
+            email: newUser.email,
+            userName: newUser.userName,
+            role: systemRoles.tourist
+        }
+    })
+    if (!token) {
+        console.log({
+            api_error_message: "failed to generate user token!",
+        })
+        return next(new Error('failed to generate user token', { cause: 500 }))
+    }
+    console.log({
+        message: "user token is generated!"
+    })
+
+    newUser.token = token
+    newUser.status = statuses.online
+    await newUser.save()
+
+    res.status(StatusCodes.OK).json({
+        message: "login is successful!",
+        user: {
+            userName: newUser.userName,
+            email: newUser.email,
+            token: newUser.token
+        }
+    })
+
+    // client ID for the App (google cloud) -> from the ENV file
+
+    // id token from the request body 
+
+    /** if the social login is successfull :
+     * check if the user exists in database : 
+     * if true : generate token and send a response (like in the login API)
+     * if false : create a user in the database and then create a token and send a response (like the signUp API) :
+     *  - note that the user will have no password but since it's database-critical , you will create it randomly and you won't use it anyway unless you will convert the user to be a system user
+     */
+
+    // consider an API that would convert a user that logins socially only to a normal system user
+
+}
+
 export const touristLogIn = async (req, res, next) => {
     console.log("\nTOURIST LOGIN API\n")
 
@@ -215,7 +349,7 @@ export const touristLogIn = async (req, res, next) => {
 
     console.log("\nTOURIST LOGIN IS DONE!\n")
     res.status(200).json({
-        message: "login is successfull!",
+        message: "login is successful!",
         user: updateUser
     })
 }

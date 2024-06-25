@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose"
 import { systemRoles } from "../../utilities/systemRoles.js"
 import { statuses } from "../../utilities/activityStatuses.js"
 import { languages, languagesCodes } from "../../utilities/languages.js"
+import { socialProviders } from "../../utilities/socialProviders.js"
 
 // TODO : add "socketId" field here
 
@@ -70,6 +71,12 @@ const touristSchema = new Schema({
     confirmed: {
         type: Boolean,
         default: false
+    },
+    provider: {
+        type: String,
+        required: false,
+        enum: socialProviders,
+        default: socialProviders.default
     },
     token: String, // login token
     resetCode: String, // reset code (password reset)

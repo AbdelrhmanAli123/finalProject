@@ -6,6 +6,7 @@ export const createAItrip = async (req, res, next) => {
     console.log("\nAI SAVE TRIP API\n")
     const { tripDetails, from, to, title } = req.body
     const getUser = req.authUser
+    console.log(tripDetails)
     let tripData = {
         tripDetails,
         title,
